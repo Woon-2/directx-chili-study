@@ -35,6 +35,7 @@ function(COMMON_CONFIGURATION targetName)
             /JMC-
             /Zc:__cplusplus
             /Zc:preprocessor
+            /std:c++latest
         )
     endif()
 
