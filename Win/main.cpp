@@ -43,8 +43,8 @@ int CALLBACK WinMain(
 
     // Message Loop
 
-    MSG msg;
-    BOOL result;
+    auto msg = MSG();
+    auto result = BOOL();
 
     while ( ( result = GetMessage( &msg, hWnd, 0, 0 ) ) > 0 )
     {
