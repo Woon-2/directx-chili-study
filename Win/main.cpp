@@ -2,9 +2,9 @@
 
 int CALLBACK WinMain(
     HINSTANCE hInstance,
-    HINSTANCE hPrevInstance,
-    LPSTR lpCmdLine,
-    int nCmdShow
+    [[maybe_unused]] HINSTANCE hPrevInstance,
+    [[maybe_unused]] LPSTR lpCmdLine,
+    [[maybe_unused]] int nCmdShow
 )
 {
     while (true);
