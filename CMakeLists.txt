@@ -66,5 +66,4 @@ include("${CMAKE_SOURCE_DIR}/cmake/gitlog.cmake")
 ACTIVATE_GITLOG()
 
 add_subdirectory(InitialTest)
-
-# add_subdirectory(InitialTest)
+add_subdirectory(Win)
