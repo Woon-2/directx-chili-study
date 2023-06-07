@@ -26,7 +26,7 @@ int CALLBACK WinMain(
     MSG msg;
     BOOL result;
 
-    while ( ( result = GetMessage( &msg, v.front()->get(), 0, 0 ) ) > 0 ) {
+    while ( ( result = GetMessage( &msg, nullptr, 0, 0 ) ) > 0 ) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
