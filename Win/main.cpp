@@ -1,5 +1,7 @@
 #include <Windows.h>
 #include <tchar.h>
+#include <string>
+#include <sstream>
 
 #include "WindowsMessageMap.hpp"
 
@@ -24,6 +26,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         static auto title = std::wstring();
         title.push_back( static_cast<wchar_t>(wParam) );
         SetWindowText(hWnd, title.c_str());
+        break;
+    }
+
+    case WM_LBUTTONDOWN: {
+        auto posClicked = MAKEPOINTS(lParam);
+        auto oss = std::wostringstream();
+        oss << TEXT("Click On (") << posClicked.x << TEXT(", ")
+            << posClicked.y << TEXT(")");
+        
+        SetWindowText(hWnd, oss.str().c_str());
         break;
     }
     }
