@@ -8,8 +8,9 @@ int CALLBACK WinMain(
     [[maybe_unused]] int nCmdShow
 )
 {
-    auto className = TEXT("hw3d");
+    // Window Creation
 
+    auto className = TEXT("hw3d");
     auto wc = WNDCLASSEX();
 
     wc.cbSize = sizeof(wc);
@@ -40,6 +41,7 @@ int CALLBACK WinMain(
     );
 
     ShowWindow(hWnd, SW_SHOW);
+
 
     // Message Loop
 
