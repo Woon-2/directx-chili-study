@@ -41,10 +41,6 @@ function(COMMON_CONFIGURATION targetName)
 
     # Platform setting
     if(WIN32)
-        target_compile_definitions(${targetName}
-        PRIVATE
-            WIN32_LEAN_AND_MIN NOMINMAX
-        )
         set_target_properties(${targetName}
         PROPERTIES
             WINDOWS_EXPORT_ALL_SYMBOLS OFF
