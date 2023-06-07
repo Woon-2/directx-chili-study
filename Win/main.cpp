@@ -2,6 +2,7 @@
 #include <tchar.h>
 #include <string>
 #include <sstream>
+#include <memory>
 
 #include "Window.hpp"
 
@@ -12,12 +13,20 @@ int CALLBACK WinMain(
     [[maybe_unused]] int nCmdShow
 )
 {
-    Window wnd( 100, 100, 800, 600, TEXT("Sex") );
+    std::vector<std::unique_ptr<Window>> v;
+
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            std::wostringstream oss;
+            oss << L'(' << j << L", " << i << L")\n";
+            v.push_back( std::unique_ptr<Window>( new Window{ 100 + 240 * j, 100 + 180 * i, 240, 180, oss.str() } ) );
+        }
+    }
 
     MSG msg;
     BOOL result;
 
-    while ( ( result = GetMessage( &msg, wnd.get(), 0, 0 ) ) > 0 ) {
+    while ( ( result = GetMessage( &msg, v.front()->get(), 0, 0 ) ) > 0 ) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }

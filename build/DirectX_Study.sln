@@ -27,11 +27,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZERO_CHECK", "ZERO_CHECK.vc
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gitlog", "gitlog.vcxproj", "{5194236A-01CD-39D0-B1ED-8B1AC5678921}"
-	ProjectSection(ProjectDependencies) = postProject
-		{61BFE26E-5A05-38A8-934F-9125C4EF6C06} = {61BFE26E-5A05-38A8-934F-9125C4EF6C06}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gmock", "_deps\googletest-build\googlemock\gmock.vcxproj", "{10908256-0A3E-3528-BB33-C1D5DD7AE738}"
 	ProjectSection(ProjectDependencies) = postProject
 		{61BFE26E-5A05-38A8-934F-9125C4EF6C06} = {61BFE26E-5A05-38A8-934F-9125C4EF6C06}
@@ -80,8 +75,6 @@ Global
 		{61BFE26E-5A05-38A8-934F-9125C4EF6C06}.Debug|x64.Build.0 = Debug|x64
 		{61BFE26E-5A05-38A8-934F-9125C4EF6C06}.Release|x64.ActiveCfg = Release|x64
 		{61BFE26E-5A05-38A8-934F-9125C4EF6C06}.Release|x64.Build.0 = Release|x64
-		{5194236A-01CD-39D0-B1ED-8B1AC5678921}.Debug|x64.ActiveCfg = Debug|x64
-		{5194236A-01CD-39D0-B1ED-8B1AC5678921}.Release|x64.ActiveCfg = Release|x64
 		{10908256-0A3E-3528-BB33-C1D5DD7AE738}.Debug|x64.ActiveCfg = Debug|x64
 		{10908256-0A3E-3528-BB33-C1D5DD7AE738}.Debug|x64.Build.0 = Debug|x64
 		{10908256-0A3E-3528-BB33-C1D5DD7AE738}.Release|x64.ActiveCfg = Release|x64
