@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 
 project(PWin VERSION 2023.06.05 LANGUAGES CXX)
 
-add_executable(Win main.cpp)
+add_executable(Win main.cpp WindowsMessageMap.cpp WindowsMessageMap.hpp)
 
 # Common Options
 

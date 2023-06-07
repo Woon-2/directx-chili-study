@@ -1,7 +1,14 @@
 #include <Windows.h>
 #include <tchar.h>
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+#include "WindowsMessageMap.hpp"
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    static WindowsMessageMap wmm;
+
+    OutputDebugString( wmm(msg, lParam, wParam).c_str() );
+
     switch( msg ) {
     case WM_CLOSE:
         PostQuitMessage(69);
@@ -16,7 +23,8 @@ int CALLBACK WinMain(
     [[maybe_unused]] HINSTANCE hPrevInstance,
     [[maybe_unused]] LPSTR lpCmdLine,
     [[maybe_unused]] int nCmdShow
-) {
+)
+{
     // Window Creation
 
     auto className = TEXT("hw3d");
