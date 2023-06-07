@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(PWin VERSION 2023.06.05 LANGUAGES CXX)
+project(PWin VERSION 2023.06.07 LANGUAGES CXX)
 
 add_executable(Win)
 
