@@ -4,11 +4,20 @@
     <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowsMessageMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.inl">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
