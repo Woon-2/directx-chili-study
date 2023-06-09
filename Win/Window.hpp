@@ -1,9 +1,6 @@
 #ifndef __Window
 #define __Window
 
-#define UNICODE
-#define _UNICODE
-
 #include <Windows.h>
 #include <tchar.h>
 #include <string>
@@ -11,8 +8,8 @@
 
 #include "WindowsMessageMap.hpp"
 
-template <class CharT = wchar_t, class Traits = std::char_traits<CharT>,
-    class Allocator = std::allocator<CharT> >
+template <class Concrete, class CharT = wchar_t,
+    class Traits = std::char_traits<CharT>, class Allocator = std::allocator<CharT> >
 class Window
 {
 public:
@@ -43,8 +40,7 @@ private:
     static LRESULT CALLBACK HandleMsgThunk( HWND hWnd, UINT msg,
         WPARAM wParam, LPARAM lParam );
 
-    LRESULT HandleMsg( HWND hWnd, UINT msg, WPARAM wParam,
-        LPARAM lParam );
+    LRESULT ForwardMsgToHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 private:
     HWND hWnd_;
@@ -54,8 +50,8 @@ private:
     int height_;    
 };
 
-template <class CharT, class Traits, class Allocator>
-class Window<CharT, Traits, Allocator>::WindowClass
+template <class Concrete, class CharT, class Traits, class Allocator>
+class Window<Concrete, CharT, Traits, Allocator>::WindowClass
 {
 public:
     WindowClass(const CharT* name) noexcept;
@@ -74,45 +70,45 @@ private:
     HINSTANCE hInst_;
 };
 
-template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::WindowClass::
+template <class Concrete, class CharT, class Traits, class Allocator>
+Window<Concrete, CharT, Traits, Allocator>::WindowClass::
 WindowClass(const CharT* name) noexcept
     : hInst_( GetModuleHandle(nullptr) ), name_( name )
 {
     registerWC();
 }
 
-template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::WindowClass::
+template <class Concrete, class CharT, class Traits, class Allocator>
+Window<Concrete, CharT, Traits, Allocator>::WindowClass::
 WindowClass(const String& name) noexcept
 {
     registerWC();
 }
 
-template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::WindowClass::
+template <class Concrete, class CharT, class Traits, class Allocator>
+Window<Concrete, CharT, Traits, Allocator>::WindowClass::
 ~WindowClass()
 {
     UnregisterClass(name_.c_str(), hInst_);
 }
 
-template <class CharT, class Traits, class Allocator>
-HINSTANCE Window<CharT, Traits, Allocator>::WindowClass::
+template <class Concrete, class CharT, class Traits, class Allocator>
+HINSTANCE Window<Concrete, CharT, Traits, Allocator>::WindowClass::
 getInst() const noexcept
 {
     return hInst_;
 }
 
-template <class CharT, class Traits, class Allocator>
-const typename Window<CharT, Traits, Allocator>::String&
-Window<CharT, Traits, Allocator>::WindowClass::
+template <class Concrete, class CharT, class Traits, class Allocator>
+const typename Window<Concrete, CharT, Traits, Allocator>::String&
+Window<Concrete, CharT, Traits, Allocator>::WindowClass::
 getName() const noexcept
 {
     return name_;
 }
 
-template <class CharT, class Traits, class Allocator>
-void Window<CharT, Traits, Allocator>::WindowClass::registerWC()
+template <class Concrete, class CharT, class Traits, class Allocator>
+void Window<Concrete, CharT, Traits, Allocator>::WindowClass::registerWC()
 {
     auto wc = WNDCLASSEX();
 
@@ -130,14 +126,13 @@ void Window<CharT, Traits, Allocator>::WindowClass::registerWC()
     RegisterClassEx(&wc);
 }
 
-template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::WindowClass
-Window<CharT, Traits, Allocator>::wc( TEXT("DefWindowClass") );
+template <class Concrete, class CharT, class Traits, class Allocator>
+typename Window<Concrete, CharT, Traits, Allocator>::WindowClass
+Window<Concrete, CharT, Traits, Allocator>::wc( TEXT("DefWindowClass") );
 
 
-template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::
-Window(int left, int top, int width, int height, const CharT* name)
+template <class Concrete, class CharT, class Traits, class Allocator>
+Window<Concrete, CharT, Traits, Allocator>::Window(int left, int top, int width, int height, const CharT* name)
     : left_(left), top_(top), width_(width), height_(height)
 {
     /*
@@ -166,52 +161,47 @@ Window(int left, int top, int width, int height, const CharT* name)
     ShowWindow(hWnd_, SW_SHOWDEFAULT);
 }
 
-template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::
-Window(int width, int height, const CharT* name)
+template <class Concrete, class CharT, class Traits, class Allocator>
+Window<Concrete, CharT, Traits, Allocator>::Window(int width, int height, const CharT* name)
     : Window( 0, 0, width, height, name )
 {}
 
-template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::
-Window(const RECT& rect, const CharT* name)
+template <class Concrete, class CharT, class Traits, class Allocator>
+Window<Concrete, CharT, Traits, Allocator>::Window(const RECT& rect, const CharT* name)
     : Window( rect.left, rect.top, rect.right - rect.left,
         rect.bottom - rect.top, name )
 {}
 
-template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::
-Window(int left, int top, int width, int height, const String& name)
+template <class Concrete, class CharT, class Traits, class Allocator>
+Window<Concrete, CharT, Traits, Allocator>::Window(int left, int top, int width, int height, const String& name)
     : Window( left, top, width, height, name.c_str() )
 {}
 
-template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::
-Window(int width, int height, const String& name)
+template <class Concrete, class CharT, class Traits, class Allocator>
+Window<Concrete, CharT, Traits, Allocator>::Window(int width, int height, const String& name)
     : Window( width, height, name.c_str() )
 {}
 
-template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::
-Window(const RECT& rect, const String& name)
+template <class Concrete, class CharT, class Traits, class Allocator>
+Window<Concrete, CharT, Traits, Allocator>::Window(const RECT& rect, const String& name)
     : Window( rect, name.c_str() )
 {}
 
-template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::~Window()
+template <class Concrete, class CharT, class Traits, class Allocator>
+Window<Concrete, CharT, Traits, Allocator>::~Window()
 {
     DestroyWindow(hWnd_);
 }
 
-template <class CharT, class Traits, class Allocator>
-HWND Window<CharT, Traits, Allocator>::get() const
+template <class Concrete, class CharT, class Traits, class Allocator>
+HWND Window<Concrete, CharT, Traits, Allocator>::get() const
 {
     return hWnd_;
 }
 
-template <class CharT, class Traits, class Allocator>
-LRESULT CALLBACK Window<CharT, Traits, Allocator>::
-HandleMsgSetup( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+template <class Concrete, class CharT, class Traits, class Allocator>
+LRESULT CALLBACK Window<Concrete, CharT, Traits, Allocator>::HandleMsgSetup( HWND hWnd, UINT msg,
+    WPARAM wParam, LPARAM lParam )
 {
     if (msg != WM_NCCREATE) {
         return DefWindowProc( hWnd, msg, wParam, lParam );
@@ -230,23 +220,74 @@ HandleMsgSetup( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
     SetWindowLongPtr( hWnd, GWLP_WNDPROC,
         reinterpret_cast<LONG_PTR>( &Window::HandleMsgThunk ) );
 
-    return pWnd->HandleMsg( hWnd, msg, wParam, lParam );
+    return pWnd->ForwardMsgToHandler( hWnd, msg, wParam, lParam );
 }
 
-template <class CharT, class Traits, class Allocator>
-LRESULT CALLBACK Window<CharT, Traits, Allocator>::
-HandleMsgThunk( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+template <class Concrete, class CharT, class Traits, class Allocator>
+LRESULT CALLBACK Window<Concrete, CharT, Traits, Allocator>::HandleMsgThunk( HWND hWnd, UINT msg,
+    WPARAM wParam, LPARAM lParam )
 {
     auto pWnd = reinterpret_cast< Window* >(
         GetWindowLongPtr( hWnd, GWLP_USERDATA )
     );
 
-    return pWnd->HandleMsg( hWnd, msg, wParam, lParam );
+    return pWnd->ForwardMsgToHandler( hWnd, msg, wParam, lParam );
 }
 
-template <class CharT, class Traits, class Allocator>
-LRESULT Window<CharT, Traits, Allocator>::
-HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+template <class Concrete, class CharT, class Traits, class Allocator>
+LRESULT Window<Concrete, CharT, Traits, Allocator>::ForwardMsgToHandler( HWND hWnd, UINT msg,
+    WPARAM wParam, LPARAM lParam )
+{
+    return static_cast<Concrete*>(this)->HandleMsg(hWnd, msg, wParam, lParam);
+}
+
+class WindowImpl : public Window<WindowImpl, wchar_t>
+{
+public:
+    friend class Window;
+
+    WindowImpl(int left, int top, int width, int height, wchar_t* name);
+    WindowImpl(int width, int height, wchar_t* name);
+    WindowImpl(const RECT& rect, wchar_t* name);
+    WindowImpl(int left, int top, int width, int height, const std::wstring& name);
+    WindowImpl(int width, int height, const std::wstring& name);
+    WindowImpl(const RECT& rect, const std::wstring& name);
+
+    ~WindowImpl() = default;
+    WindowImpl(const WindowImpl&) = delete;
+    WindowImpl& operator=(const WindowImpl&) = delete;
+
+private:
+    LRESULT HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
+};
+
+WindowImpl::WindowImpl(int left, int top, int width, int height, wchar_t* name)
+    : Window(left, top, width, height, name)
+{}
+
+WindowImpl::WindowImpl(int width, int height, wchar_t* name)
+    : Window(width, height, name)
+{}
+
+WindowImpl::WindowImpl(const RECT& rect, wchar_t* name)
+    : Window(rect, name)
+{}
+
+WindowImpl::WindowImpl(int left, int top, int width, int height, const std::wstring& name)
+    : Window(left, top, width, height, name)
+{}
+
+WindowImpl::WindowImpl(int width, int height, const std::wstring& name)
+    : Window(width, height, name)
+{}
+
+WindowImpl::WindowImpl(const RECT& rect, const std::wstring& name)
+    : Window(rect, name)
+{}
+
+
+LRESULT WindowImpl::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam,
+    LPARAM lParam )
 {
     static WindowsMessageMap wmm;
 
