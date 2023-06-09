@@ -136,7 +136,8 @@ Window<CharT, Traits, Allocator>::wc( TEXT("DefWindowClass") );
 
 
 template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::Window(int left, int top, int width, int height, const CharT* name)
+Window<CharT, Traits, Allocator>::
+Window(int left, int top, int width, int height, const CharT* name)
     : left_(left), top_(top), width_(width), height_(height)
 {
     /*
@@ -166,28 +167,33 @@ Window<CharT, Traits, Allocator>::Window(int left, int top, int width, int heigh
 }
 
 template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::Window(int width, int height, const CharT* name)
+Window<CharT, Traits, Allocator>::
+Window(int width, int height, const CharT* name)
     : Window( 0, 0, width, height, name )
 {}
 
 template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::Window(const RECT& rect, const CharT* name)
+Window<CharT, Traits, Allocator>::
+Window(const RECT& rect, const CharT* name)
     : Window( rect.left, rect.top, rect.right - rect.left,
         rect.bottom - rect.top, name )
 {}
 
 template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::Window(int left, int top, int width, int height, const String& name)
+Window<CharT, Traits, Allocator>::
+Window(int left, int top, int width, int height, const String& name)
     : Window( left, top, width, height, name.c_str() )
 {}
 
 template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::Window(int width, int height, const String& name)
+Window<CharT, Traits, Allocator>::
+Window(int width, int height, const String& name)
     : Window( width, height, name.c_str() )
 {}
 
 template <class CharT, class Traits, class Allocator>
-Window<CharT, Traits, Allocator>::Window(const RECT& rect, const String& name)
+Window<CharT, Traits, Allocator>::
+Window(const RECT& rect, const String& name)
     : Window( rect, name.c_str() )
 {}
 
@@ -204,8 +210,8 @@ HWND Window<CharT, Traits, Allocator>::get() const
 }
 
 template <class CharT, class Traits, class Allocator>
-LRESULT CALLBACK Window<CharT, Traits, Allocator>::HandleMsgSetup( HWND hWnd, UINT msg,
-    WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK Window<CharT, Traits, Allocator>::
+HandleMsgSetup( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     if (msg != WM_NCCREATE) {
         return DefWindowProc( hWnd, msg, wParam, lParam );
@@ -228,8 +234,8 @@ LRESULT CALLBACK Window<CharT, Traits, Allocator>::HandleMsgSetup( HWND hWnd, UI
 }
 
 template <class CharT, class Traits, class Allocator>
-LRESULT CALLBACK Window<CharT, Traits, Allocator>::HandleMsgThunk( HWND hWnd, UINT msg,
-    WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK Window<CharT, Traits, Allocator>::
+HandleMsgThunk( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     auto pWnd = reinterpret_cast< Window* >(
         GetWindowLongPtr( hWnd, GWLP_USERDATA )
@@ -239,8 +245,8 @@ LRESULT CALLBACK Window<CharT, Traits, Allocator>::HandleMsgThunk( HWND hWnd, UI
 }
 
 template <class CharT, class Traits, class Allocator>
-LRESULT Window<CharT, Traits, Allocator>::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam,
-    LPARAM lParam )
+LRESULT Window<CharT, Traits, Allocator>::
+HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     static WindowsMessageMap wmm;
 
