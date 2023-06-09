@@ -3,21 +3,21 @@
 
 #include "WindowBase.hpp"
 
-class WindowImpl : public Window<WindowImpl, wchar_t>
+class Window : public WindowBase<Window, wchar_t>
 {
 public:
-    friend class Window;
+    friend class WindowBase;
 
-    WindowImpl(int left, int top, int width, int height, wchar_t* name);
-    WindowImpl(int width, int height, wchar_t* name);
-    WindowImpl(const RECT& rect, wchar_t* name);
-    WindowImpl(int left, int top, int width, int height, const std::wstring& name);
-    WindowImpl(int width, int height, const std::wstring& name);
-    WindowImpl(const RECT& rect, const std::wstring& name);
+    Window(int left, int top, int width, int height, wchar_t* name);
+    Window(int width, int height, wchar_t* name);
+    Window(const RECT& rect, wchar_t* name);
+    Window(int left, int top, int width, int height, const std::wstring& name);
+    Window(int width, int height, const std::wstring& name);
+    Window(const RECT& rect, const std::wstring& name);
 
-    ~WindowImpl() = default;
-    WindowImpl(const WindowImpl&) = delete;
-    WindowImpl& operator=(const WindowImpl&) = delete;
+    ~Window() = default;
+    Window(const Window&) = delete;
+    Window& operator=(const Window&) = delete;
 
 private:
     LRESULT HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );

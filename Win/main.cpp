@@ -13,13 +13,13 @@ int CALLBACK WinMain(
     [[maybe_unused]] int nCmdShow
 )
 {
-    std::vector<std::unique_ptr<WindowImpl>> v;
+    std::vector<std::unique_ptr<Window>> v;
 
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
             std::wostringstream oss;
             oss << L'(' << j << L", " << i << L")\n";
-            v.push_back( std::unique_ptr<WindowImpl>( new WindowImpl{ 100 + 240 * j, 100 + 180 * i, 240, 180, oss.str() } ) );
+            v.push_back( std::unique_ptr<Window>( new Window{ 100 + 240 * j, 100 + 180 * i, 240, 180, oss.str() } ) );
         }
     }
 

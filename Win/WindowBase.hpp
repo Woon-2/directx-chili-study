@@ -10,7 +10,7 @@
 
 template <class Concrete, class CharT = wchar_t,
     class Traits = std::char_traits<CharT>, class Allocator = std::allocator<CharT> >
-class Window
+class WindowBase
 {
 public:
     using String = std::basic_string<CharT, Traits, Allocator>;
@@ -19,16 +19,16 @@ private:
     class WindowClass;
 
 public:
-    Window(int left, int top, int width, int height, const CharT* name);
-    Window(int width, int height, const CharT* name);
-    Window(const RECT& rect, const CharT* name);
-    Window(int left, int top, int width, int height, const String& name);
-    Window(int width, int height, const String& name);
-    Window(const RECT& rect, const String& name);
-    ~Window();
+    WindowBase(int left, int top, int width, int height, const CharT* name);
+    WindowBase(int width, int height, const CharT* name);
+    WindowBase(const RECT& rect, const CharT* name);
+    WindowBase(int left, int top, int width, int height, const String& name);
+    WindowBase(int width, int height, const String& name);
+    WindowBase(const RECT& rect, const String& name);
+    ~WindowBase();
 
-    Window(const Window&) = delete;
-    Window& operator=(const Window&) = delete;
+    WindowBase(const WindowBase&) = delete;
+    WindowBase& operator=(const WindowBase&) = delete;
 
     HWND get() const;
 
@@ -51,7 +51,7 @@ private:
 };
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-class Window<Concrete, CharT, Traits, Allocator>::WindowClass
+class WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass
 {
 public:
     WindowClass(const CharT* name) noexcept;

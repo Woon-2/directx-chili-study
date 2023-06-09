@@ -1,11 +1,11 @@
 #include "WindowBase.hpp"
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-typename Window<Concrete, CharT, Traits, Allocator>::WindowClass
-Window<Concrete, CharT, Traits, Allocator>::wc( TEXT("DefWindowClass") );
+typename WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass
+WindowBase<Concrete, CharT, Traits, Allocator>::wc( TEXT("DefWindowClass") );
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-Window<Concrete, CharT, Traits, Allocator>::WindowClass::
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
 WindowClass(const CharT* name) noexcept
     : hInst_( GetModuleHandle(nullptr) ), name_( name )
 {
@@ -13,36 +13,36 @@ WindowClass(const CharT* name) noexcept
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-Window<Concrete, CharT, Traits, Allocator>::WindowClass::
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
 WindowClass(const String& name) noexcept
 {
     registerWC();
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-Window<Concrete, CharT, Traits, Allocator>::WindowClass::
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
 ~WindowClass()
 {
     UnregisterClass(name_.c_str(), hInst_);
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-HINSTANCE Window<Concrete, CharT, Traits, Allocator>::WindowClass::
+HINSTANCE WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
 getInst() const noexcept
 {
     return hInst_;
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-const typename Window<Concrete, CharT, Traits, Allocator>::String&
-Window<Concrete, CharT, Traits, Allocator>::WindowClass::
+const typename WindowBase<Concrete, CharT, Traits, Allocator>::String&
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
 getName() const noexcept
 {
     return name_;
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-void Window<Concrete, CharT, Traits, Allocator>::WindowClass::registerWC()
+void WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::registerWC()
 {
     auto wc = WNDCLASSEX();
 
@@ -61,7 +61,7 @@ void Window<Concrete, CharT, Traits, Allocator>::WindowClass::registerWC()
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-Window<Concrete, CharT, Traits, Allocator>::Window(int left, int top, int width, int height, const CharT* name)
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int left, int top, int width, int height, const CharT* name)
     : left_(left), top_(top), width_(width), height_(height)
 {
     /*
@@ -91,45 +91,45 @@ Window<Concrete, CharT, Traits, Allocator>::Window(int left, int top, int width,
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-Window<Concrete, CharT, Traits, Allocator>::Window(int width, int height, const CharT* name)
-    : Window( 0, 0, width, height, name )
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int width, int height, const CharT* name)
+    : WindowBase( 0, 0, width, height, name )
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-Window<Concrete, CharT, Traits, Allocator>::Window(const RECT& rect, const CharT* name)
-    : Window( rect.left, rect.top, rect.right - rect.left,
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(const RECT& rect, const CharT* name)
+    : WindowBase( rect.left, rect.top, rect.right - rect.left,
         rect.bottom - rect.top, name )
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-Window<Concrete, CharT, Traits, Allocator>::Window(int left, int top, int width, int height, const String& name)
-    : Window( left, top, width, height, name.c_str() )
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int left, int top, int width, int height, const String& name)
+    : WindowBase( left, top, width, height, name.c_str() )
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-Window<Concrete, CharT, Traits, Allocator>::Window(int width, int height, const String& name)
-    : Window( width, height, name.c_str() )
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int width, int height, const String& name)
+    : WindowBase( width, height, name.c_str() )
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-Window<Concrete, CharT, Traits, Allocator>::Window(const RECT& rect, const String& name)
-    : Window( rect, name.c_str() )
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(const RECT& rect, const String& name)
+    : WindowBase( rect, name.c_str() )
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-Window<Concrete, CharT, Traits, Allocator>::~Window()
+WindowBase<Concrete, CharT, Traits, Allocator>::~WindowBase()
 {
     DestroyWindow(hWnd_);
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-HWND Window<Concrete, CharT, Traits, Allocator>::get() const
+HWND WindowBase<Concrete, CharT, Traits, Allocator>::get() const
 {
     return hWnd_;
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-LRESULT CALLBACK Window<Concrete, CharT, Traits, Allocator>::HandleMsgSetup( HWND hWnd, UINT msg,
+LRESULT CALLBACK WindowBase<Concrete, CharT, Traits, Allocator>::HandleMsgSetup( HWND hWnd, UINT msg,
     WPARAM wParam, LPARAM lParam )
 {
     if (msg != WM_NCCREATE) {
@@ -139,7 +139,7 @@ LRESULT CALLBACK Window<Concrete, CharT, Traits, Allocator>::HandleMsgSetup( HWN
     // extract ptr to window from creation data
     const auto pCreate = reinterpret_cast<
         const CREATESTRUCT*>( lParam );
-    auto pWnd = static_cast<Window*>( pCreate->lpCreateParams );
+    auto pWnd = static_cast<WindowBase*>( pCreate->lpCreateParams );
     
     // make WinAPI-managed user data to store the ptr to window
     SetWindowLongPtr( hWnd, GWLP_USERDATA,
@@ -147,16 +147,16 @@ LRESULT CALLBACK Window<Concrete, CharT, Traits, Allocator>::HandleMsgSetup( HWN
     // setup is done,
     // change message handler into regular one.
     SetWindowLongPtr( hWnd, GWLP_WNDPROC,
-        reinterpret_cast<LONG_PTR>( &Window::HandleMsgThunk ) );
+        reinterpret_cast<LONG_PTR>( &WindowBase::HandleMsgThunk ) );
 
     return pWnd->ForwardMsgToHandler( hWnd, msg, wParam, lParam );
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-LRESULT CALLBACK Window<Concrete, CharT, Traits, Allocator>::HandleMsgThunk( HWND hWnd, UINT msg,
+LRESULT CALLBACK WindowBase<Concrete, CharT, Traits, Allocator>::HandleMsgThunk( HWND hWnd, UINT msg,
     WPARAM wParam, LPARAM lParam )
 {
-    auto pWnd = reinterpret_cast< Window* >(
+    auto pWnd = reinterpret_cast< WindowBase* >(
         GetWindowLongPtr( hWnd, GWLP_USERDATA )
     );
 
@@ -164,7 +164,7 @@ LRESULT CALLBACK Window<Concrete, CharT, Traits, Allocator>::HandleMsgThunk( HWN
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-LRESULT Window<Concrete, CharT, Traits, Allocator>::ForwardMsgToHandler( HWND hWnd, UINT msg,
+LRESULT WindowBase<Concrete, CharT, Traits, Allocator>::ForwardMsgToHandler( HWND hWnd, UINT msg,
     WPARAM wParam, LPARAM lParam )
 {
     return static_cast<Concrete*>(this)->HandleMsg(hWnd, msg, wParam, lParam);

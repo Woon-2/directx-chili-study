@@ -1,31 +1,31 @@
 #include "Window.hpp"
 
-WindowImpl::WindowImpl(int left, int top, int width, int height, wchar_t* name)
-    : Window(left, top, width, height, name)
+Window::Window(int left, int top, int width, int height, wchar_t* name)
+    : WindowBase(left, top, width, height, name)
 {}
 
-WindowImpl::WindowImpl(int width, int height, wchar_t* name)
-    : Window(width, height, name)
+Window::Window(int width, int height, wchar_t* name)
+    : WindowBase(width, height, name)
 {}
 
-WindowImpl::WindowImpl(const RECT& rect, wchar_t* name)
-    : Window(rect, name)
+Window::Window(const RECT& rect, wchar_t* name)
+    : WindowBase(rect, name)
 {}
 
-WindowImpl::WindowImpl(int left, int top, int width, int height, const std::wstring& name)
-    : Window(left, top, width, height, name)
+Window::Window(int left, int top, int width, int height, const std::wstring& name)
+    : WindowBase(left, top, width, height, name)
 {}
 
-WindowImpl::WindowImpl(int width, int height, const std::wstring& name)
-    : Window(width, height, name)
+Window::Window(int width, int height, const std::wstring& name)
+    : WindowBase(width, height, name)
 {}
 
-WindowImpl::WindowImpl(const RECT& rect, const std::wstring& name)
-    : Window(rect, name)
+Window::Window(const RECT& rect, const std::wstring& name)
+    : WindowBase(rect, name)
 {}
 
 
-LRESULT WindowImpl::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam,
+LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam,
     LPARAM lParam )
 {
     static WindowsMessageMap wmm;
