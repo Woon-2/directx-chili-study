@@ -1,6 +1,7 @@
 #include "WindowBase.hpp"
 
 #include <sstream>
+#include <type_traits>
 
 template <class Concrete, class CharT, class Traits, class Allocator>
 WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
@@ -43,7 +44,17 @@ template <class Concrete, class CharT, class Traits, class Allocator>
 void WindowBase<Concrete, CharT, Traits, Allocator>::
 WindowClass::registerWC()
 {
-    auto wc = WNDCLASSEX();
+    auto wc = std::conditional_t<
+        std::is_same_v<CharT, char>, WNDCLASSEXA,
+        std::conditional_t<
+            std::is_same_v<CharT, wchar_t>, WNDCLASSEXW,
+            std::false_type
+        >
+    >();
+
+    if constexpr( std::is_same_v<decltype(wc), std::false_type> ) {
+        static_assert("There's no matching character type on Window to CharT.");
+    }
 
     wc.cbSize = sizeof(wc);
     wc.cbWndExtra = 0;
@@ -72,19 +83,31 @@ WindowBase(const RECT& rect, const CharT* name)
     AdjustWindowRect( &region_, WS_CAPTION | WS_MINIMIZEBOX
         | WS_SYSMENU, false );
 
-    hWnd_ = CreateWindow(
-        wc.getName().c_str(),
-        name,
-        WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
-        region_.left,
-        region_.top,
-        region_.right - region_.left,
-        region_.bottom - region_.top,
-        nullptr,
-        nullptr,
-        wc.getInst(),
-        this
-    );
+#define __CWArgList \
+    0,  \
+    wc.getName().c_str(),   \
+    name,   \
+    WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,   \
+    region_.left,   \
+    region_.top,    \
+    region_.right - region_.left,   \
+    region_.bottom - region_.top,   \
+    nullptr,    \
+    nullptr,    \
+    wc.getInst(),   \
+    this
+
+    if constexpr( std::is_same_v<CharT, char> ) {
+        hWnd_ = CreateWindowExA(__CWArgList);
+    }
+    else if constexpr( std::is_same_v<CharT, wchar_t> ) {
+        hWnd_ = CreateWindowExW(__CWArgList);
+    }
+    else {
+        static_assert("There's no matching character type on Window to CharT.");
+    }
+
+#undef __CWArgList
 
     ShowWindow(hWnd_, SW_SHOWDEFAULT);
 }
@@ -135,13 +158,25 @@ template <class Concrete, class CharT, class Traits, class Allocator>
 LRESULT CALLBACK WindowBase<Concrete, CharT, Traits, Allocator>::
 handleMsgSetup( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
+    using MyCreateStruct = std::conditional_t<
+        std::is_same_v<CharT, char>, CREATESTRUCTA,
+        std::conditional_t<
+            std::is_same_v<CharT, wchar_t>, CREATESTRUCTW,
+            std::false_type
+        >
+    >;
+
+    if constexpr( std::is_same_v<MyCreateStruct, std::false_type> ) {
+        static_assert("There's no matching character type on Window to CharT.");
+    }
+
     if (msg != WM_NCCREATE) {
         return DefWindowProc( hWnd, msg, wParam, lParam );
     }
 
     // extract ptr to window from creation data
     const auto pCreate = reinterpret_cast<
-        const CREATESTRUCT*>( lParam );
+        const MyCreateStruct*>( lParam );
     auto pWnd = static_cast<WindowBase*>( pCreate->lpCreateParams );
     
     // make WinAPI-managed user data to store the ptr to window
