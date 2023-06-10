@@ -9,7 +9,8 @@
 #include "WindowsMessageMap.hpp"
 
 template <class Concrete, class CharT = wchar_t,
-    class Traits = std::char_traits<CharT>, class Allocator = std::allocator<CharT> >
+    class Traits = std::char_traits<CharT>,
+    class Allocator = std::allocator<CharT> >
 class WindowBase
 {
 public:
@@ -40,7 +41,8 @@ private:
     static LRESULT CALLBACK HandleMsgThunk( HWND hWnd, UINT msg,
         WPARAM wParam, LPARAM lParam );
 
-    LRESULT ForwardMsgToHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
+    LRESULT ForwardMsgToHandler( HWND hWnd, UINT msg,
+        WPARAM wParam, LPARAM lParam );
 
 private:
     HWND hWnd_;

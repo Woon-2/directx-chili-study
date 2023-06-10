@@ -42,7 +42,8 @@ getName() const noexcept
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-void WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::registerWC()
+void WindowBase<Concrete, CharT, Traits, Allocator>::
+WindowClass::registerWC()
 {
     auto wc = WNDCLASSEX();
 
@@ -61,7 +62,8 @@ void WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::registerWC()
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(const RECT& rect, const CharT* name)
+WindowBase<Concrete, CharT, Traits, Allocator>::
+WindowBase(const RECT& rect, const CharT* name)
     : region_(rect)
 {
     /*
@@ -69,7 +71,8 @@ WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(const RECT& rect, con
      which is caused by the window outline and title bar.
      So adjust the client area's size up to the intended size.
     */
-    AdjustWindowRect( &region_, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, false );
+    AdjustWindowRect( &region_, WS_CAPTION | WS_MINIMIZEBOX
+        | WS_SYSMENU, false );
 
     hWnd_ = CreateWindow(
         wc.getName().c_str(),
@@ -95,22 +98,26 @@ WindowBase(int left, int top, int width, int height, const CharT* name)
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int width, int height, const CharT* name)
+WindowBase<Concrete, CharT, Traits, Allocator>::
+WindowBase(int width, int height, const CharT* name)
     : WindowBase( 0, 0, width, height, name )
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(const RECT& rect, const String& name)
+WindowBase<Concrete, CharT, Traits, Allocator>::
+WindowBase(const RECT& rect, const String& name)
     : WindowBase( rect, name.c_str() )
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int left, int top, int width, int height, const String& name)
+WindowBase<Concrete, CharT, Traits, Allocator>::
+WindowBase(int left, int top, int width, int height, const String& name)
     : WindowBase( left, top, width, height, name.c_str() )
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int width, int height, const String& name)
+WindowBase<Concrete, CharT, Traits, Allocator>::
+WindowBase(int width, int height, const String& name)
     : WindowBase( width, height, name.c_str() )
 {}
 
@@ -127,8 +134,8 @@ HWND WindowBase<Concrete, CharT, Traits, Allocator>::get() const
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-LRESULT CALLBACK WindowBase<Concrete, CharT, Traits, Allocator>::HandleMsgSetup( HWND hWnd, UINT msg,
-    WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WindowBase<Concrete, CharT, Traits, Allocator>::
+HandleMsgSetup( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     if (msg != WM_NCCREATE) {
         return DefWindowProc( hWnd, msg, wParam, lParam );
@@ -151,8 +158,8 @@ LRESULT CALLBACK WindowBase<Concrete, CharT, Traits, Allocator>::HandleMsgSetup(
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-LRESULT CALLBACK WindowBase<Concrete, CharT, Traits, Allocator>::HandleMsgThunk( HWND hWnd, UINT msg,
-    WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WindowBase<Concrete, CharT, Traits, Allocator>::
+HandleMsgThunk( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     auto pWnd = reinterpret_cast< WindowBase* >(
         GetWindowLongPtr( hWnd, GWLP_USERDATA )
@@ -162,8 +169,8 @@ LRESULT CALLBACK WindowBase<Concrete, CharT, Traits, Allocator>::HandleMsgThunk(
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-LRESULT WindowBase<Concrete, CharT, Traits, Allocator>::ForwardMsgToHandler( HWND hWnd, UINT msg,
-    WPARAM wParam, LPARAM lParam )
+LRESULT WindowBase<Concrete, CharT, Traits, Allocator>::
+ForwardMsgToHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     return static_cast<Concrete*>(this)->HandleMsg(hWnd, msg, wParam, lParam);
 }
