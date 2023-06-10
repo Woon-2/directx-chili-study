@@ -80,12 +80,14 @@ WindowBase(const RECT& rect, const CharT* name)
      which is caused by the window outline and title bar.
      So adjust the client area's size up to the intended size.
     */
-    AdjustWindowRect( &region_, WS_CAPTION | WS_MINIMIZEBOX
-        | WS_SYSMENU, false );
+    if ( !AdjustWindowRect( &region_, WS_CAPTION | WS_MINIMIZEBOX
+        | WS_SYSMENU, false ) ) {
+        throw WND_LAST_EXCEPT();
+    }
 
 #define __CWArgList \
     0,  \
-    wc.getName().c_str(),   \
+    L"fuck",   \
     name,   \
     WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,   \
     region_.left,   \
@@ -108,6 +110,10 @@ WindowBase(const RECT& rect, const CharT* name)
     }
 
 #undef __CWArgList
+
+    if (hWnd_ == nullptr) {
+        throw WND_LAST_EXCEPT();
+    }
 
     ShowWindow(hWnd_, SW_SHOWDEFAULT);
 }

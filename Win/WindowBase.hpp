@@ -8,6 +8,7 @@
 
 
 #define WND_EXCEPT(hr) WindowException(__LINE__, __FILE__, hr)
+#define WND_LAST_EXCEPT() WindowException( __LINE__, __FILE__, GetLastError() )
 
 template <class Concrete, class CharT = wchar_t,
     class Traits = std::char_traits<CharT>,

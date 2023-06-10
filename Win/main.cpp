@@ -14,22 +14,38 @@ int CALLBACK WinMain(
     [[maybe_unused]] int nCmdShow
 )
 {
-    std::vector<std::unique_ptr<Window>> v;
+    try {
 
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            std::wostringstream oss;
-            oss << L'(' << j << L", " << i << L")\n";
-            v.push_back( std::unique_ptr<Window>( new Window{ 100 + 240 * j, 100 + 180 * i, 240, 180, oss.str() } ) );
+        std::vector<std::unique_ptr<Window>> v;
+
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                std::wostringstream oss;
+                oss << L'(' << j << L", " << i << L")\n";
+                v.push_back(std::unique_ptr<Window>(new Window{ 100 + 240 * j, 100 + 180 * i, 240, 180, oss.str() }));
+            }
         }
+
+        MSG msg;
+        BOOL result;
+
+        while ((result = GetMessage(&msg, nullptr, 0, 0)) > 0) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+
+    }   // try block
+    catch (const Woon2Exception& e) {
+        MessageBoxA(nullptr, e.what(), "Woon2 Exception",
+            MB_OK | MB_ICONEXCLAMATION);
     }
-
-    MSG msg;
-    BOOL result;
-
-    while ( ( result = GetMessage( &msg, nullptr, 0, 0 ) ) > 0 ) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+    catch (const std::exception& e) {
+        MessageBoxA(nullptr, e.what(), "Standard Exception",
+            MB_OK | MB_ICONEXCLAMATION);
+    }
+    catch (...) {
+        MessageBoxA(nullptr, "no details available",
+            "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
     }
 
     return 0;
