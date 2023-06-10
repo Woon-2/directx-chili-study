@@ -240,7 +240,7 @@ translateErrorCode(HRESULT hr) noexcept
             FORMAT_MESSAGE_ALLOCATE_BUFFER |
             FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
             nullptr, hr, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
-            reinterpret_cast<LPSTR>(&pMsgBuf), 0, nullptr
+            reinterpret_cast<LPWSTR>(&pMsgBuf), 0, nullptr
         );
 
         if (!msgLen) {
