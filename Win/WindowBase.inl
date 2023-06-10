@@ -55,7 +55,7 @@ WindowClass::registerWC()
     wc.hIcon = nullptr;
     wc.hIconSm = nullptr;
     wc.hInstance = hInst_;
-    wc.lpfnWndProc = HandleMsgSetup;
+    wc.lpfnWndProc = handleMsgSetup;
     wc.lpszClassName = name_.c_str();
 
     RegisterClassEx(&wc);
@@ -135,7 +135,7 @@ HWND WindowBase<Concrete, CharT, Traits, Allocator>::get() const
 
 template <class Concrete, class CharT, class Traits, class Allocator>
 LRESULT CALLBACK WindowBase<Concrete, CharT, Traits, Allocator>::
-HandleMsgSetup( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+handleMsgSetup( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     if (msg != WM_NCCREATE) {
         return DefWindowProc( hWnd, msg, wParam, lParam );
@@ -152,25 +152,25 @@ HandleMsgSetup( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
     // setup is done,
     // change message handler into regular one.
     SetWindowLongPtr( hWnd, GWLP_WNDPROC,
-        reinterpret_cast<LONG_PTR>( &WindowBase::HandleMsgThunk ) );
+        reinterpret_cast<LONG_PTR>( &WindowBase::handleMsgThunk ) );
 
-    return pWnd->ForwardMsgToHandler( hWnd, msg, wParam, lParam );
+    return pWnd->handleMsgForward( hWnd, msg, wParam, lParam );
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
 LRESULT CALLBACK WindowBase<Concrete, CharT, Traits, Allocator>::
-HandleMsgThunk( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+handleMsgThunk( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     auto pWnd = reinterpret_cast< WindowBase* >(
         GetWindowLongPtr( hWnd, GWLP_USERDATA )
     );
 
-    return pWnd->ForwardMsgToHandler( hWnd, msg, wParam, lParam );
+    return pWnd->handleMsgForward( hWnd, msg, wParam, lParam );
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
 LRESULT WindowBase<Concrete, CharT, Traits, Allocator>::
-ForwardMsgToHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+handleMsgForward( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    return static_cast<Concrete*>(this)->HandleMsg(hWnd, msg, wParam, lParam);
+    return static_cast<Concrete*>(this)->handleMsg(hWnd, msg, wParam, lParam);
 }

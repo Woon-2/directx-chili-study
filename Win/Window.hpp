@@ -20,7 +20,7 @@ public:
     Window& operator=(const Window&) = delete;
 
 private:
-    LRESULT HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
+    LRESULT handleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 };
 
 #endif // __Window

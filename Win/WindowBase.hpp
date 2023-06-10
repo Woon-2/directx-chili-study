@@ -36,12 +36,12 @@ public:
 private:
     static WindowClass wc;
 
-    static LRESULT CALLBACK HandleMsgSetup( HWND hWnd, UINT msg,
+    static LRESULT CALLBACK handleMsgSetup( HWND hWnd, UINT msg,
         WPARAM wParam, LPARAM lParam );
-    static LRESULT CALLBACK HandleMsgThunk( HWND hWnd, UINT msg,
+    static LRESULT CALLBACK handleMsgThunk( HWND hWnd, UINT msg,
         WPARAM wParam, LPARAM lParam );
 
-    LRESULT ForwardMsgToHandler( HWND hWnd, UINT msg,
+    LRESULT handleMsgForward( HWND hWnd, UINT msg,
         WPARAM wParam, LPARAM lParam );
 
 private:

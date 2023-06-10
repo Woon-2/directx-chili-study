@@ -25,7 +25,7 @@ Window::Window(const RECT& rect, const std::wstring& name)
 {}
 
 
-LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam,
+LRESULT Window::handleMsg( HWND hWnd, UINT msg, WPARAM wParam,
     LPARAM lParam )
 {
     static WindowsMessageMap wmm;
