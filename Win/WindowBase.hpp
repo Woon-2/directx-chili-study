@@ -19,12 +19,12 @@ private:
     class WindowClass;
 
 public:
+    WindowBase(const RECT& rect, const CharT* name);
     WindowBase(int left, int top, int width, int height, const CharT* name);
     WindowBase(int width, int height, const CharT* name);
-    WindowBase(const RECT& rect, const CharT* name);
+    WindowBase(const RECT& rect, const String& name);
     WindowBase(int left, int top, int width, int height, const String& name);
     WindowBase(int width, int height, const String& name);
-    WindowBase(const RECT& rect, const String& name);
     ~WindowBase();
 
     WindowBase(const WindowBase&) = delete;
@@ -44,10 +44,7 @@ private:
 
 private:
     HWND hWnd_;
-    int left_;
-    int top_;
-    int width_;
-    int height_;    
+    RECT region_; 
 };
 
 template <class Concrete, class CharT, class Traits, class Allocator>

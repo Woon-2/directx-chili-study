@@ -61,26 +61,24 @@ void WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::registerWC()
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int left, int top, int width, int height, const CharT* name)
-    : left_(left), top_(top), width_(width), height_(height)
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(const RECT& rect, const CharT* name)
+    : region_(rect)
 {
     /*
      Client area's size is slightly smaller than whole window area,
      which is caused by the window outline and title bar.
      So adjust the client area's size up to the intended size.
     */
-
-    auto wr = RECT{ left, top, left + width, top + height };
-    AdjustWindowRect( &wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, false );
+    AdjustWindowRect( &region_, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, false );
 
     hWnd_ = CreateWindow(
         wc.getName().c_str(),
         name,
         WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
-        wr.left,
-        wr.top,
-        wr.right - wr.left,
-        wr.bottom - wr.top,
+        region_.left,
+        region_.top,
+        region_.right - region_.left,
+        region_.bottom - region_.top,
         nullptr,
         nullptr,
         wc.getInst(),
@@ -91,14 +89,19 @@ WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int left, int top, in
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
+WindowBase<Concrete, CharT, Traits, Allocator>::
+WindowBase(int left, int top, int width, int height, const CharT* name)
+    : WindowBase( RECT{left, top, left + width, top + height}, name )
+{}
+
+template <class Concrete, class CharT, class Traits, class Allocator>
 WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int width, int height, const CharT* name)
     : WindowBase( 0, 0, width, height, name )
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(const RECT& rect, const CharT* name)
-    : WindowBase( rect.left, rect.top, rect.right - rect.left,
-        rect.bottom - rect.top, name )
+WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(const RECT& rect, const String& name)
+    : WindowBase( rect, name.c_str() )
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
@@ -109,11 +112,6 @@ WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int left, int top, in
 template <class Concrete, class CharT, class Traits, class Allocator>
 WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(int width, int height, const String& name)
     : WindowBase( width, height, name.c_str() )
-{}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowBase(const RECT& rect, const String& name)
-    : WindowBase( rect, name.c_str() )
 {}
 
 template <class Concrete, class CharT, class Traits, class Allocator>
