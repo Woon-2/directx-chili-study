@@ -5,7 +5,8 @@ project(PWin VERSION 2023.06.07 LANGUAGES CXX)
 add_executable(Win)
 
 target_sources(Win PRIVATE main.cpp WindowBase.hpp WindowBase.inl
-    Window.hpp Window.cpp WindowsMessageMap.cpp WindowsMessageMap.hpp)
+    Window.hpp Window.cpp WindowsMessageMap.cpp WindowsMessageMap.hpp
+    Woon2Exception.hpp Woon2Exception.cpp)
 
 # Common Options
 
