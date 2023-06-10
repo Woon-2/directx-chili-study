@@ -32,10 +32,5 @@ int CALLBACK WinMain(
         DispatchMessage(&msg);
     }
 
-    if (result == -1) {
-        return -1;
-    }
-    else {
-        return static_cast<int>(msg.wParam);
-    }
+    return 0;
 }

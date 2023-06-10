@@ -4,6 +4,9 @@
     <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

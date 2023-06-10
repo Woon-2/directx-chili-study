@@ -189,6 +189,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\main.cpp" />
     <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.hpp" />
     <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.inl" />
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.cpp" />
     <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Window.hpp" />
     <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Window.cpp" />
     <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowsMessageMap.cpp" />

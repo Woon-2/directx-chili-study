@@ -4,25 +4,21 @@
 #include <string>
 #include <exception>
 
-template < class CharT, class Traits = std::char_traits<CharT>,
-    class Allocator = std::allocator<CharT> >
 class Woon2Exception : public std::exception
 {
 public:
-    using String = std::basic_string<CharT, Traits, Allocator>;
-
-    Woon2Exception( int lineNum, const CharT* fileStr ) noexcept;
-    const CharT* what() const noexcept override;
-    virtual const CharT* getType() const noexcept;
+    Woon2Exception( int lineNum, const char* fileStr ) noexcept;
+    const char* what() const noexcept override;
+    virtual const char* getType() const noexcept;
     int getLineNum() const noexcept;
-    const String& getFileStr() const noexcept;
-    String getMetaStr() const noexcept;
+    const std::string& getFileStr() const noexcept;
+    std::string getMetaStr() const noexcept;
 
 private:
     int lineNum_;
-    String fileStr_;
+    std::string fileStr_;
 protected:
-    mutable String whatBuffer_;
+    mutable std::string whatBuffer_;
 };
 
 #endif  // __Woon2Exception

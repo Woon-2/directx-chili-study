@@ -6,6 +6,9 @@
 
 #include "Woon2Exception.hpp"
 
+
+#define WND_EXCEPT(hr) WindowException(__LINE__, __FILE__, hr)
+
 template <class Concrete, class CharT = wchar_t,
     class Traits = std::char_traits<CharT>,
     class Allocator = std::allocator<CharT> >
@@ -67,21 +70,17 @@ private:
     HINSTANCE hInst_;
 };
 
-template < class CharT, class Traits = std::char_traits<CharT>,
-    class Allocator = std::allocator<CharT> >
-class WindowException : public Woon2Exception<CharT, Traits, Allocator>
+class WindowException : public Woon2Exception
 {
 public:
-    using String = std::basic_string<CharT, Traits, Allocator>;
+    WindowException( int lineNum, const char* fileStr, HRESULT hr ) noexcept;
 
-    WindowException( int lineNum, const CharT* fileStr, HRESULT hr ) noexcept;
+    static std::string translateErrorCode( HRESULT hr ) noexcept;
 
-    static String translateErrorCode( HRESULT hr ) noexcept;
-
-    const CharT* what() const noexcept override;
-    virtual const CharT* getType() const noexcept override;
+    const char* what() const noexcept override;
+    virtual const char* getType() const noexcept override;
     HRESULT getErrorCode() const noexcept;
-    String getErrorStr() const noexcept;
+    std::string getErrorStr() const noexcept;
 
 private:
     HRESULT hr_;
