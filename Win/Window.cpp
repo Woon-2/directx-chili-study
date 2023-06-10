@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include "WindowsMessageMap.hpp"
+
 template <>
 typename WindowBase<Window, wchar_t>::WindowClass
 WindowBase<Window, wchar_t>::wc( L"DefWindowClass" );

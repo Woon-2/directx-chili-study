@@ -2,10 +2,9 @@
 #define __WindowBase
 
 #include <Windows.h>
-#include <tchar.h>
 #include <string>
 
-#include "WindowsMessageMap.hpp"
+#include "Woon2Exception.hpp"
 
 template <class Concrete, class CharT = wchar_t,
     class Traits = std::char_traits<CharT>,
@@ -66,6 +65,27 @@ private:
 
     String name_;
     HINSTANCE hInst_;
+};
+
+template < class CharT, class Traits = std::char_traits<CharT>,
+    class Allocator = std::allocator<CharT> >
+class WindowException : public Woon2Exception<CharT, Traits, Allocator>
+{
+public:
+    using String = std::basic_string<CharT, Traits, Allocator>;
+
+    WindowException( int lineNum, const CharT* fileStr, HRESULT hr ) noexcept;
+
+    static String translateErrorCode( HRESULT hr ) noexcept;
+
+    const CharT* what() const noexcept override;
+    virtual const CharT* getType() const noexcept override;
+    HRESULT getErrorCode() const noexcept;
+    String getErrorStr() const noexcept;
+
+private:
+    HRESULT hr_;
+
 };
 
 #include "WindowBase.inl"

@@ -1,5 +1,7 @@
 #include "WindowBase.hpp"
 
+#include <sstream>
+
 template <class Concrete, class CharT, class Traits, class Allocator>
 WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
 WindowClass(const CharT* name) noexcept
@@ -169,4 +171,108 @@ LRESULT WindowBase<Concrete, CharT, Traits, Allocator>::
 handleMsgForward( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     return static_cast<Concrete*>(this)->handleMsg(hWnd, msg, wParam, lParam);
+}
+
+template < class CharT, class Traits, class Allocator >
+WindowException<CharT, Traits, Allocator>::
+WindowException( int lineNum, const CharT* fileStr, HRESULT hr ) noexcept
+    : Woon2Exception(lineNum, fileStr), hr_(hr)
+{}
+
+template < class CharT, class Traits, class Allocator >
+typename WindowException<CharT, Traits, Allocator>::String
+WindowException<CharT, Traits, Allocator>::
+translateErrorCode(HRESULT hr) noexcept
+{
+    CharT* pMsgBuf = nullptr;
+
+    auto msgLen = DWORD(0);
+
+    if constexpr( std::is_same_v<CharT, char> ) {
+        msgLen = FormatMessageA(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER |
+            FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+            nullptr, hr, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
+            reinterpret_cast<LPSTR>(&pMsgBuf), 0, nullptr
+        );
+
+        if (!msgLen) {
+            return "Unidentified error code";
+        }
+    }
+    else if constexpr( std::is_same_v<CharT, wchar_t> ) {
+        msgLen = FormatMessageW(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER |
+            FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+            nullptr, hr, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
+            reinterpret_cast<LPSTR>(&pMsgBuf), 0, nullptr
+        );
+
+        if (!msgLen) {
+            return L"Unidentified error code";
+        }
+    }
+    else {
+        static_assert("There's no matching character type on WindowException to CharT.");
+        return String();
+    }
+
+    auto errorStr = String(pMsgBuf, msgLen);
+    LocalFree(pMsgBuf);
+
+    return errorStr;
+}
+
+template < class CharT, class Traits, class Allocator >
+const CharT* WindowException<CharT, Traits, Allocator>::
+what() const noexcept
+{
+    auto oss = std::basic_ostringstream<CharT, Traits, Allocator>;
+    oss << getType() << '\n';
+
+    if constexpr( std::is_same_v<CharT, char> ) {
+        oss << "[Error Code] " << getErrorCode() << '\n'
+            << "[Description] " << getErrorStr() << '\n'
+            << this->getMetaStr() << '\n';
+    }
+    else if constexpr( std::is_same_v<CharT, wchar_t> ) {
+        oss << L"[Error Code] " << getErrorCode() << '\n'
+            << L"[Description] " << getErrorStr() << '\n'
+            << this->getMetaStr() << '\n';
+    }
+    else {
+        static_assert("There's no matching character type on WindowException to CharT.");
+        return nullptr;
+    }
+}
+
+template < class CharT, class Traits, class Allocator >
+const CharT* WindowException<CharT, Traits, Allocator>::
+getType() const noexcept
+{
+    if constexpr( std::is_same_v<CharT, char> ) {
+        return "Window Exception";
+    }
+    else if constexpr( std::is_same_v<CharT, wchar_t> ) {
+        return L"Window Exception";
+    }
+    else {
+        static_assert("There's no matching character type on WindowException to CharT.");
+        return nullptr;
+    }
+}
+
+template < class CharT, class Traits, class Allocator >
+HRESULT WindowException<CharT, Traits, Allocator>::
+getErrorCode() const noexcept
+{
+    return hr_;
+}
+
+template < class CharT, class Traits, class Allocator >
+typename WindowException<CharT, Traits, Allocator>::String
+WindowException<CharT, Traits, Allocator>::
+getErrorStr() const noexcept
+{
+    return translateErrorCode( getErrorCode() );
 }

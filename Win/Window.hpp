@@ -3,6 +3,8 @@
 
 #include "WindowBase.hpp"
 
+#include <string>
+
 class Window : public WindowBase<Window, wchar_t>
 {
 public:
