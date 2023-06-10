@@ -1,10 +1,6 @@
 #include "WindowBase.hpp"
 
 template <class Concrete, class CharT, class Traits, class Allocator>
-typename WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass
-WindowBase<Concrete, CharT, Traits, Allocator>::wc( TEXT("DefWindowClass") );
-
-template <class Concrete, class CharT, class Traits, class Allocator>
 WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
 WindowClass(const CharT* name) noexcept
     : hInst_( GetModuleHandle(nullptr) ), name_( name )

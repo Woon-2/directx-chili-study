@@ -1,5 +1,11 @@
 #include "Window.hpp"
 
+#include <sstream>
+
+template <>
+typename WindowBase<Window, wchar_t>::WindowClass
+WindowBase<Window, wchar_t>::wc( L"DefWindowClass" );
+
 Window::Window(int left, int top, int width, int height, wchar_t* name)
     : WindowBase(left, top, width, height, name)
 {}
