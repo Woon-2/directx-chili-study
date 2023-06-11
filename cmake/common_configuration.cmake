@@ -46,4 +46,10 @@ function(COMMON_CONFIGURATION targetName)
             WINDOWS_EXPORT_ALL_SYMBOLS OFF
         )
     endif()
+
+    # Set Resource Path
+    target_compile_definitions(${targetName}
+    PRIVATE
+        RESOURCE_PATH="${CMAKE_SOURCE_DIR}/resource"
+    )
 endfunction()
