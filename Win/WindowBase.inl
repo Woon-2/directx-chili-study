@@ -61,7 +61,17 @@ WindowClass::registerWC()
     wc.cbClsExtra = 0;
     wc.hbrBackground = nullptr;
     wc.hCursor = nullptr;
-    wc.hIcon = nullptr;
+
+    wc.hIcon = static_cast<HICON>(LoadImageW(
+        nullptr,
+        L"C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource/icon.ico",
+        IMAGE_ICON,
+        0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE
+    ));
+    if (!wc.hIcon) {
+        throw WND_LAST_EXCEPT();
+    }
+
     wc.hIconSm = nullptr;
     wc.hInstance = hInst_;
     wc.lpfnWndProc = handleMsgSetup;
@@ -87,7 +97,7 @@ WindowBase(const RECT& rect, const CharT* name)
 
 #define __CWArgList \
     0,  \
-    L"fuck",   \
+    wc.getName().c_str(),   \
     name,   \
     WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,   \
     region_.left,   \
