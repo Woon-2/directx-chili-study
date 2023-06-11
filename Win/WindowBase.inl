@@ -3,184 +3,18 @@
 #include <sstream>
 #include <type_traits>
 
-#include "macros.hpp"
-
 template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
-WindowClass(const CharT* name) noexcept
-    : hInst_( GetModuleHandle(nullptr) ), name_( name )
+void WindowBase<Concrete, CharT, Traits, Allocator>::
+injectWndProc(WNDCLASSEXW& wc) noexcept
 {
-    registerWC();
-}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
-WindowClass(const String& name) noexcept
-{
-    registerWC();
-}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
-~WindowClass()
-{
-    UnregisterClass(name_.c_str(), hInst_);
-}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-HINSTANCE WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
-getInst() const noexcept
-{
-    return hInst_;
-}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-const typename WindowBase<Concrete, CharT, Traits, Allocator>::String&
-WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
-getName() const noexcept
-{
-    return name_;
+    wc.lpfnWndProc = handleMsgSetup;
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>
 void WindowBase<Concrete, CharT, Traits, Allocator>::
-WindowClass::registerWC()
+injectWndProc(WNDCLASSEXA& wc) noexcept
 {
-    auto wc = std::conditional_t<
-        std::is_same_v<CharT, char>, WNDCLASSEXA,
-        std::conditional_t<
-            std::is_same_v<CharT, wchar_t>, WNDCLASSEXW,
-            std::false_type
-        >
-    >();
-
-    if constexpr( std::is_same_v<decltype(wc), std::false_type> ) {
-        static_assert("There's no matching character type on Window to CharT.");
-    }
-
-    wc.cbSize = sizeof(wc);
-    wc.cbWndExtra = 0;
-    wc.cbClsExtra = 0;
-    wc.hbrBackground = nullptr;
-    wc.hCursor = nullptr;
-    
-    if constexpr( std::is_same_v<decltype(wc), WNDCLASSEXA> ) {
-        wc.hIcon = static_cast<HICON>(LoadImageA(
-            nullptr,
-            QUOTEA(RESOURCE_PATH/icon.ico),
-            IMAGE_ICON,
-            0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE
-        ));
-    }
-    else {  // WNDCLASSEXW
-        wc.hIcon = static_cast<HICON>(LoadImageW(
-            nullptr,
-            QUOTEW(RESOURCE_PATH/icon.ico),
-            IMAGE_ICON,
-            0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE
-        ));
-    }
-    
-    if (!wc.hIcon) {
-        throw WND_LAST_EXCEPT();
-    }
-
-    wc.hIconSm = nullptr;
-    wc.hInstance = hInst_;
     wc.lpfnWndProc = handleMsgSetup;
-    wc.lpszClassName = name_.c_str();
-
-    RegisterClassEx(&wc);
-}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::
-WindowBase(const RECT& rect, const CharT* name)
-    : region_(rect)
-{
-    /*
-     Client area's size is slightly smaller than whole window area,
-     which is caused by the window outline and title bar.
-     So adjust the client area's size up to the intended size.
-    */
-    if ( !AdjustWindowRect( &region_, WS_CAPTION | WS_MINIMIZEBOX
-        | WS_SYSMENU, false ) ) {
-        throw WND_LAST_EXCEPT();
-    }
-
-#define __CWArgList \
-    0,  \
-    wc.getName().c_str(),   \
-    name,   \
-    WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,   \
-    region_.left,   \
-    region_.top,    \
-    region_.right - region_.left,   \
-    region_.bottom - region_.top,   \
-    nullptr,    \
-    nullptr,    \
-    wc.getInst(),   \
-    this
-
-    if constexpr( std::is_same_v<CharT, char> ) {
-        hWnd_ = CreateWindowExA(__CWArgList);
-    }
-    else if constexpr( std::is_same_v<CharT, wchar_t> ) {
-        hWnd_ = CreateWindowExW(__CWArgList);
-    }
-    else {
-        static_assert("There's no matching character type on Window to CharT.");
-    }
-
-#undef __CWArgList
-
-    if (hWnd_ == nullptr) {
-        throw WND_LAST_EXCEPT();
-    }
-
-    ShowWindow(hWnd_, SW_SHOWDEFAULT);
-}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::
-WindowBase(int left, int top, int width, int height, const CharT* name)
-    : WindowBase( RECT{left, top, left + width, top + height}, name )
-{}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::
-WindowBase(int width, int height, const CharT* name)
-    : WindowBase( 0, 0, width, height, name )
-{}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::
-WindowBase(const RECT& rect, const String& name)
-    : WindowBase( rect, name.c_str() )
-{}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::
-WindowBase(int left, int top, int width, int height, const String& name)
-    : WindowBase( left, top, width, height, name.c_str() )
-{}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::
-WindowBase(int width, int height, const String& name)
-    : WindowBase( width, height, name.c_str() )
-{}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-WindowBase<Concrete, CharT, Traits, Allocator>::~WindowBase()
-{
-    DestroyWindow(hWnd_);
-}
-
-template <class Concrete, class CharT, class Traits, class Allocator>
-HWND WindowBase<Concrete, CharT, Traits, Allocator>::get() const
-{
-    return hWnd_;
 }
 
 template <class Concrete, class CharT, class Traits, class Allocator>

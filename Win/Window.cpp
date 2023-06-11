@@ -3,42 +3,144 @@
 #include <sstream>
 
 #include "WindowsMessageMap.hpp"
+#include "macros.hpp"
 
-template <>
-typename WindowBase<Window, wchar_t>::WindowClass
-WindowBase<Window, wchar_t>::wc( L"DefWindowClass" );
+std::unique_ptr< Window::WindowClass > Window::pWindowClass;
 
-Window::Window(int left, int top, int width, int height, wchar_t* name)
-    : WindowBase(left, top, width, height, name)
+Window::WindowClass::WindowClass(const wchar_t* name)
+    : WindowClass( std::wstring(name) )
+{
+
+}
+
+Window::WindowClass::WindowClass(const std::wstring& name)
+    : hInst_( GetModuleHandle(nullptr) ), name_(name)
+{
+    WNDCLASSEXW wc;
+
+    // fill wc
+    wc.cbSize = sizeof(wc);
+    wc.cbWndExtra = 0;
+    wc.cbClsExtra = 0;
+    wc.hbrBackground = nullptr;
+    wc.hCursor = nullptr;
+    wc.hIcon = static_cast<HICON>(LoadImageW(
+        nullptr,
+        QUOTEW(RESOURCE_PATH/icon.ico),
+        IMAGE_ICON,
+        0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE
+    ));
+    if (!wc.hIcon) {
+        throw WND_LAST_EXCEPT();
+    }
+    wc.hIconSm = nullptr;
+    wc.hInstance = hInst_;
+    wc.lpszClassName = name_.c_str();
+
+    // set WndProc in base class
+    injectWndProc(wc);
+
+    // register wc
+    RegisterClassExW(&wc);
+}
+
+Window::WindowClass::~WindowClass()
+{
+    UnregisterClassW(name_.c_str(), hInst_);
+}
+
+HINSTANCE Window::WindowClass::getInst() const
+{
+    return hInst_;
+}
+
+const std::wstring& Window::WindowClass::getName() const
+{
+    return name_;
+}
+
+void Window::initWindowClass()
+{
+    pWindowClass.reset( new WindowClass(L"Simple Window Class") );
+}
+
+Window::Window(const RECT& rect, const wchar_t* name)
+    : region_(rect), hWnd_(nullptr)
+{
+    if ( !pWindowClass ) {
+        // lazy initialization of window class
+        initWindowClass();
+    }
+    /*
+     Client area's size is slightly smaller than whole window area,
+     which is caused by the window outline and title bar.
+     So adjust the client area's size up to the intended size.
+    */
+    if ( !AdjustWindowRect( &region_, WS_CAPTION | WS_MINIMIZEBOX
+        | WS_SYSMENU, false ) ) {
+        // on AdjustWindowRect failed
+        throw WND_LAST_EXCEPT();
+    }
+
+    hWnd_ = CreateWindowExW(
+        0,
+        pWindowClass->getName().c_str(),
+        name,
+        WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
+        region_.left,
+        region_.top,
+        region_.right - region_.left,
+        region_.bottom - region_.top,
+        nullptr,
+        nullptr,
+        pWindowClass->getInst(),
+        this
+    );
+
+    if (hWnd_ == nullptr) {
+        // on window creation failed
+        throw WND_LAST_EXCEPT();
+    }
+
+    ShowWindow(hWnd_, SW_SHOWDEFAULT);
+}
+
+Window::Window(int left, int top, int width, int height, const wchar_t* name)
+    : Window( RECT{left, top, left + width, top + height}, name)
 {}
 
-Window::Window(int width, int height, wchar_t* name)
-    : WindowBase(width, height, name)
-{}
-
-Window::Window(const RECT& rect, wchar_t* name)
-    : WindowBase(rect, name)
+Window::Window(int width, int height, const wchar_t* name)
+    : Window( 0, 0, width, height, name )
 {}
 
 Window::Window(int left, int top, int width, int height, const std::wstring& name)
-    : WindowBase(left, top, width, height, name)
+    : Window( left, top, width, height, name.c_str() )
 {}
 
 Window::Window(int width, int height, const std::wstring& name)
-    : WindowBase(width, height, name)
+    : Window( width, height, name.c_str() )
 {}
 
 Window::Window(const RECT& rect, const std::wstring& name)
-    : WindowBase(rect, name)
+    : Window( rect, name.c_str() )
 {}
 
+Window::~Window()
+{
+    DestroyWindow(hWnd_);
+}
+
+HWND Window::get() const noexcept
+{
+    return hWnd_;
+}
 
 LRESULT Window::handleMsg( HWND hWnd, UINT msg, WPARAM wParam,
     LPARAM lParam )
 {
     static WindowsMessageMap wmm;
 
-    OutputDebugString( wmm(msg, lParam, wParam).c_str() );
+    OutputDebugStringW( wmm(msg, lParam, wParam).c_str() );
 
     try {
 
@@ -49,24 +151,24 @@ LRESULT Window::handleMsg( HWND hWnd, UINT msg, WPARAM wParam,
 
         case WM_KEYUP:
             if (wParam == 'F') {
-                SetWindowText(hWnd, TEXT("Danger field"));
+                SetWindowTextW(hWnd, L"Danger field");
             }
             break;
 
         case WM_CHAR: {
             static auto title = std::wstring();
             title.push_back(static_cast<wchar_t>(wParam));
-            SetWindowText(hWnd, title.c_str());
+            SetWindowTextW(hWnd, title.c_str());
             break;
         }
 
         case WM_LBUTTONDOWN: {
             auto posClicked = MAKEPOINTS(lParam);
             auto oss = std::wostringstream();
-            oss << TEXT("Click On (") << posClicked.x << TEXT(", ")
-                << posClicked.y << TEXT(")");
+            oss << L"Click On (" << posClicked.x << L", "
+                << posClicked.y << L')';
 
-            SetWindowText(hWnd, oss.str().c_str());
+            SetWindowTextW(hWnd, oss.str().c_str());
 
             throw WND_EXCEPT(STG_S_BLOCK);
 
