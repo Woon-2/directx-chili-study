@@ -62,7 +62,7 @@ WindowClass::registerWC()
     wc.hbrBackground = nullptr;
     wc.hCursor = nullptr;
 
-    if constexpr( std::is_same_v<decltype(wc), WNDCLASSEXA ) {
+    if constexpr( std::is_same_v<decltype(wc), WNDCLASSEXA> ) {
         wc.hIcon = static_cast<HICON>(LoadImageA(
             nullptr,
             "C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource/icon.ico",
