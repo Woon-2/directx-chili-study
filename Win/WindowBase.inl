@@ -3,6 +3,8 @@
 #include <sstream>
 #include <type_traits>
 
+#include "macros.hpp"
+
 template <class Concrete, class CharT, class Traits, class Allocator>
 WindowBase<Concrete, CharT, Traits, Allocator>::WindowClass::
 WindowClass(const CharT* name) noexcept
@@ -61,11 +63,11 @@ WindowClass::registerWC()
     wc.cbClsExtra = 0;
     wc.hbrBackground = nullptr;
     wc.hCursor = nullptr;
-
+    
     if constexpr( std::is_same_v<decltype(wc), WNDCLASSEXA> ) {
         wc.hIcon = static_cast<HICON>(LoadImageA(
             nullptr,
-            "C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource/icon.ico",
+            QUOTEA(RESOURCE_PATH/icon.ico),
             IMAGE_ICON,
             0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE
         ));
@@ -73,7 +75,7 @@ WindowClass::registerWC()
     else {  // WNDCLASSEXW
         wc.hIcon = static_cast<HICON>(LoadImageW(
             nullptr,
-            L"C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource/icon.ico",
+            QUOTEW(RESOURCE_PATH/icon.ico),
             IMAGE_ICON,
             0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE
         ));

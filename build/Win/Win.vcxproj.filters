@@ -33,6 +33,9 @@
     <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Woon2Exception.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\macros.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\CMakeLists.txt" />

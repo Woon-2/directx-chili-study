@@ -6,7 +6,7 @@ add_executable(Win)
 
 target_sources(Win PRIVATE main.cpp WindowBase.hpp WindowBase.inl WindowBase.cpp
     Window.hpp Window.cpp WindowsMessageMap.cpp WindowsMessageMap.hpp
-    Woon2Exception.hpp Woon2Exception.cpp)
+    Woon2Exception.hpp Woon2Exception.cpp macros.hpp)
 
 # Common Options
 
