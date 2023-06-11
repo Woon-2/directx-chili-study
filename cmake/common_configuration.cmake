@@ -50,6 +50,6 @@ function(COMMON_CONFIGURATION targetName)
     # Set Resource Path
     target_compile_definitions(${targetName}
     PRIVATE
-        RESOURCE_PATH="${CMAKE_SOURCE_DIR}/resource"
+        RESOURCE_PATH=${CMAKE_SOURCE_DIR}/resource
     )
 endfunction()
