@@ -62,12 +62,23 @@ WindowClass::registerWC()
     wc.hbrBackground = nullptr;
     wc.hCursor = nullptr;
 
-    wc.hIcon = static_cast<HICON>(LoadImageW(
-        nullptr,
-        L"C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource/icon.ico",
-        IMAGE_ICON,
-        0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE
-    ));
+    if constexpr( std::is_same_v<decltype(wc), WNDCLASSEXA ) {
+        wc.hIcon = static_cast<HICON>(LoadImageA(
+            nullptr,
+            "C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource/icon.ico",
+            IMAGE_ICON,
+            0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE
+        ));
+    }
+    else {  // WNDCLASSEXW
+        wc.hIcon = static_cast<HICON>(LoadImageW(
+            nullptr,
+            L"C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource/icon.ico",
+            IMAGE_ICON,
+            0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE
+        ));
+    }
+    
     if (!wc.hIcon) {
         throw WND_LAST_EXCEPT();
     }
