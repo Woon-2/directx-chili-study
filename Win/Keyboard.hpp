@@ -31,8 +31,8 @@ public:
     class Event
     {
     public:
-        Event() noexcept;
-        Event(KeyType key, KeyState state) noexcept;
+        explicit Event() noexcept;
+        explicit Event(KeyType key, KeyState state) noexcept;
         Event(const Event&) noexcept = default;
         Event& operator=(const Event&) noexcept = default;
         Event(Event&&) noexcept = default;
