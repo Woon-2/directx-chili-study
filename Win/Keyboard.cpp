@@ -198,3 +198,8 @@ bool Keyboard::EventQueue::enabled() const
 {
     return bActivate_;
 }
+
+void Keyboard::EventQueue::trimBuffer(...)
+{
+    // this shouldn't compile.
+}

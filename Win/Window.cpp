@@ -149,16 +149,19 @@ LRESULT Window::handleMsg( HWND hWnd, UINT msg, WPARAM wParam,
             PostQuitMessage(69);
             break;
 
-        case WM_KEYUP:
-            if (wParam == 'F') {
-                SetWindowTextW(hWnd, L"Danger field");
-            }
+        case WM_KEYDOWN: case WM_SYSKEYDOWN:
+            kbd.getEventQueue().onKeyPressed( static_cast<
+                Keyboard::KeyType>(wParam) );
+            break;
+
+        case WM_KEYUP: case WM_SYSKEYUP:
+            kbd.getEventQueue().onKeyReleased( static_cast<
+                Keyboard::KeyType>(wParam) );
             break;
 
         case WM_CHAR: {
-            static auto title = std::wstring();
-            title.push_back(static_cast<wchar_t>(wParam));
-            SetWindowTextW(hWnd, title.c_str());
+            kbd.getEventQueue().onChar( static_cast<
+                Keyboard::KeyType>(wParam) );
             break;
         }
 

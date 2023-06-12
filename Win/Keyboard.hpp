@@ -149,9 +149,4 @@ void Keyboard::EventQueue::trimBuffer(Buffer& buffer)
     }
 }
 
-void Keyboard::EventQueue::trimBuffer(...)
-{
-    // this shouldn't compile.
-}
-
 #endif  // __Keyboard

@@ -6,6 +6,8 @@
 #include <string>
 #include <memory>
 
+#include "Keyboard.hpp"
+
 class Window : public WindowBase<Window, wchar_t>
 {
 private:
@@ -26,6 +28,9 @@ public:
     Window& operator=(const Window&) = delete;
 
     HWND get() const noexcept;
+
+public:
+    Keyboard kbd;
 
 private:
     static std::unique_ptr<WindowClass> pWindowClass;
