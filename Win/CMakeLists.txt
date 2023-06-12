@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(PWin VERSION 2023.06.10 LANGUAGES CXX)
+project(PWin VERSION 2023.06.12 LANGUAGES CXX)
 
 add_executable(Win)
 
 target_sources(Win PRIVATE main.cpp WindowBase.hpp WindowBase.inl WindowBase.cpp
     Window.hpp Window.cpp WindowsMessageMap.cpp WindowsMessageMap.hpp
-    Woon2Exception.hpp Woon2Exception.cpp macros.hpp)
+    Woon2Exception.hpp Woon2Exception.cpp macros.hpp
+    Keyboard.hpp Keyboard.cpp)
 
 # Common Options
 

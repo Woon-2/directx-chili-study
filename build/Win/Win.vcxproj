@@ -197,6 +197,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Woon2Exception.hpp" />
     <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Woon2Exception.cpp" />
     <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\macros.hpp" />
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Keyboard.hpp" />
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Keyboard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\ZERO_CHECK.vcxproj">
