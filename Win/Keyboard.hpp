@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <queue>
 #include <optional>
+#include <limits>
 
 class Keyboard
 {
@@ -114,8 +115,10 @@ public:
     template <std::ranges::input_range R>
     constexpr void embedListenKeys(R&& listenKeys) noexcept;
     void embedListenKeys(std::set<KeyType>&& listenKeys) noexcept;
-    constexpr void enableListening() noexcept;
-    constexpr void disableListening() noexcept;
+    void enableListening() noexcept;
+    void disableListening() noexcept;
+    bool isListening() const noexcept;
+    bool isListeningKey(KeyType key) const noexcept;
     EventQueue& getEventQueue() noexcept;
     const EventQueue& getEventQueue() const noexcept;
 

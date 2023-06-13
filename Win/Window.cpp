@@ -37,6 +37,7 @@ Window::WindowClass::WindowClass(const std::wstring& name)
         0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE
     ));
     if (!wc.hIcon) {
+        // on icon setting failed
         throw WND_LAST_EXCEPT();
     }
     wc.hIconSm = nullptr;
@@ -76,7 +77,7 @@ void Window::initWindowClass()
 }
 
 Window::Window(const RECT& rect, const wchar_t* name)
-    : region_(rect), hWnd_(nullptr)
+    : region_(rect), hWnd_(nullptr), kbd()
 {
     if ( !pWindowClass ) {
         // lazy initialization of window class
@@ -170,11 +171,10 @@ LRESULT Window::handleMsg( HWND hWnd, UINT msg, WPARAM wParam,
                 Keyboard::KeyType>(wParam) );
             break;
 
-        case WM_CHAR: {
+        case WM_CHAR:
             kbd.getEventQueue().onChar( static_cast<
                 Keyboard::KeyType>(wParam) );
             break;
-        }
 
         case WM_LBUTTONDOWN: {
             auto posClicked = MAKEPOINTS(lParam);

@@ -14,6 +14,10 @@ Keyboard::Keyboard(std::set<Keyboard::KeyType>&& listenKeys,
 
 void Keyboard::scan()
 {
+    if ( !isListening() ) {
+        return;
+    }
+
     for (const auto key : listenKeys_) {
         keys_.set( static_cast<size_t>(key),
             static_cast<bool>( GetAsyncKeyState(key) & 0x8000 ) );
@@ -32,6 +36,10 @@ void Keyboard::ignoreKey(KeyType key) noexcept
 
 Keyboard::KeyState Keyboard::getKeyState(KeyType key) const
 {
+    if ( !isListening() ) {
+        return KeyState::Invalid;
+    }
+
     if ( listenKeys_.find(key) == listenKeys_.end() ) {
         return KeyState::Invalid;
     }
@@ -48,14 +56,24 @@ void Keyboard::embedListenKeys(std::set<KeyType>&& listenKeys) noexcept
     listenKeys_ = std::move(listenKeys);
 }
 
-constexpr void Keyboard::enableListening() noexcept
+void Keyboard::enableListening() noexcept
 {
     bListen_ = true;
 }
 
-constexpr void Keyboard::disableListening() noexcept
+void Keyboard::disableListening() noexcept
 {
     bListen_ = false;
+}
+
+bool Keyboard::isListening() const noexcept
+{
+    return bListen_;
+}
+
+bool Keyboard::isListeningKey(KeyType key) const noexcept
+{
+    return listenKeys_.contains(key);
 }
 
 Keyboard::EventQueue& Keyboard::getEventQueue() noexcept

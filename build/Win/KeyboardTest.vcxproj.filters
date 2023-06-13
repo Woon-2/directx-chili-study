@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\KeyboardTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Keyboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\KeyboardTestWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Woon2Exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.inl">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Keyboard.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\KeyboardTestWindow.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Woon2Exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\macros.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{3FCFBCA9-9E72-38A4-A3D4-32F2814203D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6B9184B1-72DD-3590-BD0D-7C6240B0B7B1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

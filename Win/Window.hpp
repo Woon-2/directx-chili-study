@@ -29,7 +29,6 @@ public:
 
     HWND get() const noexcept;
 
-public:
     Keyboard kbd;
 
 private:
