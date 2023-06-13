@@ -26,10 +26,20 @@ int CALLBACK WinMain(
             }
         }
 
+        auto& wnd = *( v.front() );
+        wnd.kbd.embedListenKeys( std::set<Keyboard::KeyType>({VK_SPACE}) );
+
         MSG msg;
         BOOL result;
 
         while ((result = GetMessage(&msg, nullptr, 0, 0)) > 0) {
+            wnd.kbd.scan();
+
+            if ( wnd.kbd.getKeyState(VK_SPACE) == Keyboard::KeyState::Pressed ) {
+                 MessageBoxW(nullptr, L"Something happen!", L"Space key was pressed.",
+                     MB_OK);
+            }
+
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }

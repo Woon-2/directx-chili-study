@@ -5,7 +5,7 @@
 #include "WindowsMessageMap.hpp"
 #include "macros.hpp"
 
-std::unique_ptr< Window::WindowClass > Window::pWindowClass;
+std::unique_ptr< Window::WindowClass > Window::pWindowClass = nullptr;
 
 Window::WindowClass::WindowClass(const wchar_t* name)
     : WindowClass( std::wstring(name) )
@@ -14,8 +14,13 @@ Window::WindowClass::WindowClass(const wchar_t* name)
 }
 
 Window::WindowClass::WindowClass(const std::wstring& name)
-    : hInst_( GetModuleHandle(nullptr) ), name_(name)
+    : hInst_( GetModuleHandleW(nullptr) ), name_(name)
 {
+    if (!hInst_) {
+        // on GetModuleHandleW failed
+        throw WND_LAST_EXCEPT();
+    }
+
     WNDCLASSEXW wc;
 
     // fill wc
@@ -24,6 +29,7 @@ Window::WindowClass::WindowClass(const std::wstring& name)
     wc.cbClsExtra = 0;
     wc.hbrBackground = nullptr;
     wc.hCursor = nullptr;
+    wc.hIcon = nullptr;
     wc.hIcon = static_cast<HICON>(LoadImageW(
         nullptr,
         QUOTEW(RESOURCE_PATH/icon.ico),
@@ -36,12 +42,17 @@ Window::WindowClass::WindowClass(const std::wstring& name)
     wc.hIconSm = nullptr;
     wc.hInstance = hInst_;
     wc.lpszClassName = name_.c_str();
+    wc.style = CS_OWNDC;
+    wc.lpszMenuName = nullptr;
 
     // set WndProc in base class
     injectWndProc(wc);
 
     // register wc
-    RegisterClassExW(&wc);
+    if (!RegisterClassExW(&wc)) {
+        // on RegisterClassEx failed
+        throw WND_LAST_EXCEPT();
+    }
 }
 
 Window::WindowClass::~WindowClass()
