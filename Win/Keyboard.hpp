@@ -75,9 +75,6 @@ private:
         void enableAutoRepeat() noexcept;
         void disableAutoRepeat() noexcept;
         bool autoRepeatEnabled() const noexcept;
-        template <class Buffer>
-        static void trimBuffer(Buffer& buffer);
-        static void trimBuffer(...);
         void onKeyPressed(KeyType key);
         void onKeyReleased(KeyType key);
         void onChar(KeyType ch);
@@ -86,6 +83,10 @@ private:
         bool enabled() const;
 
     private:
+        template <class Buffer>
+        static void trimBuffer(Buffer& buffer);
+        static void trimBuffer(...);
+
         bool bActivate_;
         bool bAutoRepeat_;
         std::queue<Event> keyQueue_;
