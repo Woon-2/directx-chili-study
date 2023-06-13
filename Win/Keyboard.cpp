@@ -201,5 +201,5 @@ bool Keyboard::EventQueue::enabled() const
 
 void Keyboard::EventQueue::trimBuffer(...)
 {
-    // this shouldn't compile.
+    static_assert("trimBuffer must support push & pop methods.");
 }
