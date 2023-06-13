@@ -10,6 +10,9 @@
 #include <optional>
 #include <limits>
 
+// TODO: event queue decoupling
+// detach auto repeat check from event queue
+
 class Keyboard
 {
 public:

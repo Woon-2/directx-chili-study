@@ -5,7 +5,7 @@
 
 #include "macros.hpp"
 
-#define ENABLE_KEY_LIST 'W', 'w', 'A', 'a', 'S', 's', 'D', 'd', VK_SPACE, VK_MENU
+#define ENABLE_KEY_LIST 'W', 'w', 'A', 'a', 'S', 's', 'D', 'd', VK_SPACE
 
 std::unique_ptr< KeyboardTestWindow::WindowClass >
 KeyboardTestWindow::pWndClass;
@@ -202,13 +202,19 @@ LRESULT KeyboardTestWindow::handleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 
         case WM_KEYDOWN: case WM_SYSKEYDOWN:
             if ( kbd.isListening() && kbd.isListeningKey( static_cast<
-                Keyboard::KeyType>(wParam) ) ) {
+                Keyboard::KeyType>(wParam) )
+                && ( kbd.getEventQueue().autoRepeatEnabled()
+                    || !( lParam & BIT(30) ) )
+            ) {
                 kbd.getEventQueue().onKeyPressed( static_cast<
                     Keyboard::KeyType>(wParam) );                
             }
 
             if (wParam == VK_RETURN) {
                 kbd.disableListening();
+            }
+            else if (wParam == VK_MENU) {
+                kbd.getEventQueue().disableAutoRepeat();
             }
             break;
 
@@ -221,6 +227,9 @@ LRESULT KeyboardTestWindow::handleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 
             if (wParam == VK_RETURN) {
                 kbd.enableListening();
+            }
+            else if (wParam == VK_MENU) {
+                kbd.getEventQueue().enableAutoRepeat();
             }
 
             break;
