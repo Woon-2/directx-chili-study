@@ -161,6 +161,14 @@ LRESULT Window::handleMsg( HWND hWnd, UINT msg, WPARAM wParam,
             PostQuitMessage(69);
             break;
 
+        case WM_KILLFOCUS:
+            kbd.disableListening();
+            break;
+
+        case WM_SETFOCUS:
+            kbd.enableListening();
+            break;
+
         case WM_KEYDOWN: case WM_SYSKEYDOWN:
             kbd.getEventQueue().onKeyPressed( static_cast<
                 Keyboard::KeyType>(wParam) );

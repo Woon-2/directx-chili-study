@@ -192,6 +192,14 @@ LRESULT KeyboardTestWindow::handleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
             PostQuitMessage(69);
             break;
 
+        case WM_KILLFOCUS:
+            kbd.disableListening();
+            break;
+
+        case WM_SETFOCUS:
+            kbd.enableListening();
+            break;
+
         case WM_KEYDOWN: case WM_SYSKEYDOWN:
             if ( kbd.isListening() && kbd.isListeningKey( static_cast<
                 Keyboard::KeyType>(wParam) ) ) {
