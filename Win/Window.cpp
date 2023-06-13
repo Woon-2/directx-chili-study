@@ -9,9 +9,7 @@ std::unique_ptr< Window::WindowClass > Window::pWindowClass = nullptr;
 
 Window::WindowClass::WindowClass(const wchar_t* name)
     : WindowClass( std::wstring(name) )
-{
-
-}
+{}
 
 Window::WindowClass::WindowClass(const std::wstring& name)
     : hInst_( GetModuleHandleW(nullptr) ), name_(name)
@@ -76,8 +74,8 @@ void Window::initWindowClass()
     pWindowClass.reset( new WindowClass(L"Simple Window Class") );
 }
 
-Window::Window(const RECT& rect, const wchar_t* name)
-    : region_(rect), hWnd_(nullptr), kbd()
+Window::Window(const RECT& rect, const std::wstring& title)
+    : region_(rect), hWnd_(nullptr), title_(title), kbd()
 {
     if ( !pWindowClass ) {
         // lazy initialization of window class
@@ -97,7 +95,7 @@ Window::Window(const RECT& rect, const wchar_t* name)
     hWnd_ = CreateWindowExW(
         0,
         pWindowClass->getName().c_str(),
-        name,
+        title_.c_str(),
         WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
         region_.left,
         region_.top,
@@ -117,24 +115,26 @@ Window::Window(const RECT& rect, const wchar_t* name)
     ShowWindow(hWnd_, SW_SHOWDEFAULT);
 }
 
-Window::Window(int left, int top, int width, int height, const wchar_t* name)
-    : Window( RECT{left, top, left + width, top + height}, name)
+Window::Window(int left, int top, int width, int height, const std::wstring& title)
+    : Window( RECT{left, top, left + width, top + height}, title )
 {}
 
-Window::Window(int width, int height, const wchar_t* name)
-    : Window( 0, 0, width, height, name )
+Window::Window(int width, int height, const std::wstring& title)
+    : Window( 0, 0, width, height, title )
 {}
 
-Window::Window(int left, int top, int width, int height, const std::wstring& name)
-    : Window( left, top, width, height, name.c_str() )
+Window::Window(const RECT& rect, const wchar_t* title)
+    : Window( rect, std::wstring(title) )
+{
+
+}
+
+Window::Window(int left, int top, int width, int height, const wchar_t* title)
+    : Window( RECT{left, top, left + width, top + height}, title)
 {}
 
-Window::Window(int width, int height, const std::wstring& name)
-    : Window( width, height, name.c_str() )
-{}
-
-Window::Window(const RECT& rect, const std::wstring& name)
-    : Window( rect, name.c_str() )
+Window::Window(int width, int height, const wchar_t* title)
+    : Window( 0, 0, width, height, title )
 {}
 
 Window::~Window()
@@ -145,6 +145,23 @@ Window::~Window()
 HWND Window::get() const noexcept
 {
     return hWnd_;
+}
+
+void Window::setTitle(const std::wstring& title)
+{
+    title_ = title;
+    SetWindowTextW( hWnd_, title_.c_str() );
+}
+
+void Window::setTitle(std::wstring&& title) noexcept
+{
+    title_ = std::move(title);
+    SetWindowTextW( hWnd_, title_.c_str() );
+}
+
+const std::wstring& Window::getTitle() const noexcept
+{
+    return title_;
 }
 
 LRESULT Window::handleMsg( HWND hWnd, UINT msg, WPARAM wParam,
@@ -190,7 +207,7 @@ LRESULT Window::handleMsg( HWND hWnd, UINT msg, WPARAM wParam,
             oss << L"Click On (" << posClicked.x << L", "
                 << posClicked.y << L')';
 
-            SetWindowTextW(hWnd, oss.str().c_str());
+            setTitle( oss.str() );
 
             throw WND_EXCEPT(STG_S_BLOCK);
 

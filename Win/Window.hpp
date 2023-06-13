@@ -28,6 +28,9 @@ public:
     Window& operator=(const Window&) = delete;
 
     HWND get() const noexcept;
+    void setTitle(const std::wstring& title);
+    void setTitle(std::wstring&& title) noexcept;
+    const std::wstring& getTitle() const noexcept;
 
     Keyboard kbd;
 
@@ -39,6 +42,7 @@ private:
 
     RECT region_;
     HWND hWnd_;
+    std::wstring title_;
 };
 
 class Window::WindowClass
