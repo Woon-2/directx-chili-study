@@ -14,11 +14,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{315A82F9-F664-3100-96E0-9FA50D9E501F}</ProjectGuid>
+    <ProjectGuid>{EA6E33B7-13C2-37FE-B83A-3FF0F7651E4E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <Platform>x64</Platform>
-    <ProjectName>SampleNumArgs</ProjectName>
+    <ProjectName>SampleGenNumArgs</ProjectName>
     <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -42,14 +42,14 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SampleNumArgs.dir\Debug\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SampleNumArgs</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SampleGenNumArgs.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SampleGenNumArgs</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SampleNumArgs.dir\Release\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SampleNumArgs</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SampleGenNumArgs.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SampleGenNumArgs</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
@@ -92,8 +92,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Debug/SampleNumArgs.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Debug/SampleNumArgs.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Debug/SampleGenNumArgs.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Debug/SampleGenNumArgs.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -138,8 +138,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Release/SampleNumArgs.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Release/SampleNumArgs.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Release/SampleGenNumArgs.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Release/SampleGenNumArgs.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -178,8 +178,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\SampleNumArgs.cpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\NumArgs.hpp" />
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\GenNumArgsMain.cpp" />
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\GenNumArgs.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\ZERO_CHECK.vcxproj">

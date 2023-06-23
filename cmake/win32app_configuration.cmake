@@ -1,11 +1,11 @@
 include(${CMAKE_SOURCE_DIR}/cmake/common_configuration.cmake)
 
-function(WIN32APP_MINIMUM_CONFIGURATION targetName)
+function(WIN32APP_MINIMUM_CONFIGURATION targetName accessModifier)
 
-    COMMON_CONFIGURATION(${targetName})
+    COMMON_CONFIGURATION(${targetName} ${accessModifier})
 
     target_compile_options(${targetName}
-    PRIVATE
+    ${accessModifier}
         /MP     # compilation speed-up via multi processor
         /sdl    # security check
         /Ot     # maximum speed optimization
@@ -13,7 +13,7 @@ function(WIN32APP_MINIMUM_CONFIGURATION targetName)
     )
 
     target_compile_definitions(${targetName}
-    PRIVATE
+    ${accessModifier}
         UNICODE _UNICODE
         # disable unused window stuff, Keep Window.h light
         WIN32_LEAN_AND_MEAN
@@ -56,7 +56,7 @@ function(WIN32APP_MINIMUM_CONFIGURATION targetName)
     )
 
     target_link_options(${targetName}
-    PRIVATE
+    ${accessModifier}
         "/SUBSYSTEM:WINDOWS"
         "/ENTRY:WinMainCRTStartup"
     )
@@ -64,19 +64,19 @@ function(WIN32APP_MINIMUM_CONFIGURATION targetName)
     # Release Options
 
     target_compile_definitions(${targetName}
-    PRIVATE
+    ${accessModifier}
         $<$<CONFIG:Release>:NDEBUG>     # Standard way to check release mode
     )
 
     target_compile_options(${targetName}
-    PRIVATE
+    ${accessModifier}
         $<$<CONFIG:Release>:/MT>        # Multi-threaded & Static libraries
     )
 
     # Debug Options
 
     target_compile_options(${targetName}
-    PRIVATE
+    ${accessModifier}
         $<$<CONFIG:Debug>:/MTd>         # Multi-threaded & Static libraries & debug options
     )
 

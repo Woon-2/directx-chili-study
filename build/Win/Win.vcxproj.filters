@@ -36,9 +36,6 @@
     <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Woon2Exception.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\macros.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Keyboard.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

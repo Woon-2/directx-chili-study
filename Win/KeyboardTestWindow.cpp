@@ -3,7 +3,8 @@
 #include <vector>
 #include <sstream>
 
-#include "macros.hpp"
+#include <Quote.hpp>
+#include <Bit.hpp>
 
 #define ENABLE_KEY_LIST 'W', 'w', 'A', 'a', 'S', 's', 'D', 'd', VK_SPACE
 

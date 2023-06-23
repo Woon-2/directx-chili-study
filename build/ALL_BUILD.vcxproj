@@ -107,21 +107,33 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\GenIterateCall.vcxproj">
-      <Project>{D02AD8E6-604B-379F-A646-498E8AFCC82C}</Project>
-      <Name>GenIterateCall</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\GenNumArgs.vcxproj">
-      <Project>{FB432E10-9B98-3ABD-81F3-A3D38B6DF9DC}</Project>
-      <Name>GenNumArgs</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\GenOneHotEncode.vcxproj">
-      <Project>{898AEB16-B00D-3616-964C-8076821B8655}</Project>
-      <Name>GenOneHotEncode</Name>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\Bit.vcxproj">
+      <Project>{1E48DE30-55E7-3ADC-A902-3A436E6870E2}</Project>
+      <Name>Bit</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\KeyboardTest.vcxproj">
       <Project>{F5CF0443-F752-38A6-A776-FE7CE0DC19F5}</Project>
       <Name>KeyboardTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\Quote.vcxproj">
+      <Project>{FFB9B49C-2571-37CB-A7DF-9AF47A9D6CB1}</Project>
+      <Name>Quote</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleGenIterateCall.vcxproj">
+      <Project>{A71F4CD0-1C59-3C06-9E8F-1CF5B4D5CC15}</Project>
+      <Name>SampleGenIterateCall</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleGenNumArgs.vcxproj">
+      <Project>{EA6E33B7-13C2-37FE-B83A-3FF0F7651E4E}</Project>
+      <Name>SampleGenNumArgs</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleGenOneHotEncode.vcxproj">
+      <Project>{196CB1DD-2695-3789-8E4F-60056B6A66D1}</Project>
+      <Name>SampleGenOneHotEncode</Name>
     </ProjectReference>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleIterateCall.vcxproj">
       <Project>{99802B61-9C97-3D1F-B533-4342EE9FD209}</Project>

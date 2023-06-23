@@ -14,11 +14,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{315A82F9-F664-3100-96E0-9FA50D9E501F}</ProjectGuid>
+    <ProjectGuid>{A71F4CD0-1C59-3C06-9E8F-1CF5B4D5CC15}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <Platform>x64</Platform>
-    <ProjectName>SampleNumArgs</ProjectName>
+    <ProjectName>SampleGenIterateCall</ProjectName>
     <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -42,14 +42,14 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SampleNumArgs.dir\Debug\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SampleNumArgs</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SampleGenIterateCall.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SampleGenIterateCall</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SampleNumArgs.dir\Release\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SampleNumArgs</TargetName>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SampleGenIterateCall.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SampleGenIterateCall</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
@@ -92,8 +92,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Debug/SampleNumArgs.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Debug/SampleNumArgs.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Debug/SampleGenIterateCall.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Debug/SampleGenIterateCall.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -138,8 +138,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Release/SampleNumArgs.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Release/SampleNumArgs.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Release/SampleGenIterateCall.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Release/SampleGenIterateCall.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -178,8 +178,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\SampleNumArgs.cpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\NumArgs.hpp" />
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\GenIterateCallMain.cpp" />
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\GenIterateCall.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\ZERO_CHECK.vcxproj">

@@ -3,7 +3,7 @@
 #include <sstream>
 
 #include "WindowsMessageMap.hpp"
-#include "macros.hpp"
+#include <Quote.hpp>
 
 std::unique_ptr< Window::WindowClass > Window::pWindowClass = nullptr;
 

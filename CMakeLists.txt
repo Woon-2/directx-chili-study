@@ -21,6 +21,13 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
         PROPERTY STRINGS "Debug" "Release")
 endif()
 
+if(NOT DEFINED UTILITY_PATH)
+    message(STATUS "setting UTILITY_PATH to '${CMAKE_SOURCE_DIR}/Utility'
+        (default utility library path) as none was specified.")
+    set(UTILITY_PATH "${CMAKE_SOURCE_DIR}/Utility" CACHE STRING
+        "set the utility library path." FORCE)
+endif()
+
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
     message(STATUS "setting CMAKE_INSTALL_PREFIX to
         ${CMAKE_CURRENT_SOURCE_DIR}/install(default install prefix)
@@ -29,7 +36,7 @@ if(NOT DEFINED CMAKE_INSTALL_PREFIX)
         "Set path to install.")
 endif()
 
-project(DirectX_Study VERSION 2023.06.05)
+project(DirectX_Study VERSION 2023.06.23)
 
 message(STATUS "configuring DirectX_Study(v${CMAKE_PROJECT_VERSION})...")
 message("Author: @Woon2 (wkdauddns9@gmail.com)")
