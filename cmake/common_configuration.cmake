@@ -36,6 +36,7 @@ function(COMMON_CONFIGURATION targetName)
             /Zc:__cplusplus
             /Zc:preprocessor
             /std:c++latest
+            /wd5103
         )
     endif()
 

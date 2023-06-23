@@ -14,22 +14,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F5CF0443-F752-38A6-A776-FE7CE0DC19F5}</ProjectGuid>
+    <ProjectGuid>{64025C5E-9232-36AB-89D5-0133CEE4BC93}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <Platform>x64</Platform>
-    <ProjectName>KeyboardTest</ProjectName>
+    <ProjectName>OneHotEncode</ProjectName>
     <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -41,15 +41,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">KeyboardTest.dir\Debug\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">KeyboardTest</TargetName>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">OneHotEncode.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">OneHotEncode</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">KeyboardTest.dir\Release\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">KeyboardTest</TargetName>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">OneHotEncode.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">OneHotEncode</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
@@ -60,27 +60,22 @@
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <DisableSpecificWarnings>5103</DisableSpecificWarnings>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <FloatingPointModel>Fast</FloatingPointModel>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <SDLCheck>true</SDLCheck>
       <SupportJustMyCode>false</SupportJustMyCode>
       <UseFullPaths>false</UseFullPaths>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
     </ResourceCompile>
     <Midl>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -94,12 +89,11 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-      <EntryPointSymbol>WinMainCRTStartup</EntryPointSymbol>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Win/Debug/KeyboardTest.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Win/Debug/KeyboardTest.pdb</ProgramDataBaseFile>
-      <SubSystem>Windows</SubSystem>
+      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Debug/OneHotEncode.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Debug/OneHotEncode.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -109,29 +103,24 @@
     <ClCompile>
       <AdditionalOptions>%(AdditionalOptions) /Zc:__cplusplus</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <DisableSpecificWarnings>5103</DisableSpecificWarnings>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <FloatingPointModel>Fast</FloatingPointModel>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <SDLCheck>true</SDLCheck>
       <SupportJustMyCode>false</SupportJustMyCode>
       <UseFullPaths>false</UseFullPaths>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
     </ResourceCompile>
     <Midl>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -145,23 +134,22 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-      <EntryPointSymbol>WinMainCRTStartup</EntryPointSymbol>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Win/Release/KeyboardTest.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Win/Release/KeyboardTest.pdb</ProgramDataBaseFile>
-      <SubSystem>Windows</SubSystem>
+      <ImportLibrary>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Release/OneHotEncode.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/Release/OneHotEncode.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\CMakeLists.txt">
+    <CustomBuild Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\CMakeLists.txt">
       <UseUtf8Encoding>Always</UseUtf8Encoding>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/Win/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/Utility/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/USER/Desktop/footprint of soilder/directx-chili-study" "-BC:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build" --check-stamp-file "C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Win/CMakeFiles/generate.stamp"
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/USER/Desktop/footprint of soilder/directx-chili-study" "-BC:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build" --check-stamp-file "C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -169,12 +157,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\cmake\common_configuration.cmake;C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\cmake\win32app_configuration.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\cmake\common_configuration.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/Win/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/Utility/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/USER/Desktop/footprint of soilder/directx-chili-study" "-BC:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build" --check-stamp-file "C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Win/CMakeFiles/generate.stamp"
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/USER/Desktop/footprint of soilder/directx-chili-study" "-BC:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build" --check-stamp-file "C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/Utility/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -182,23 +170,14 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\cmake\common_configuration.cmake;C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\cmake\win32app_configuration.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\cmake\common_configuration.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\KeyboardTest.cpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.hpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.inl" />
-    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.cpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Keyboard.hpp" />
-    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Keyboard.cpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\KeyboardTestWindow.hpp" />
-    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\KeyboardTestWindow.cpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Woon2Exception.hpp" />
-    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Woon2Exception.cpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\macros.hpp" />
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\OneHotEncodeGeneratorMain.cpp" />
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\OneHotEncodeGenerator.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\ZERO_CHECK.vcxproj">

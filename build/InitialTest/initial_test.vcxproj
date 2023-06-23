@@ -60,6 +60,7 @@
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>5103</DisableSpecificWarnings>
       <ExceptionHandling>Sync</ExceptionHandling>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
@@ -117,6 +118,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile>
       <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/_deps/googletest-src/googletest/include" /external:I "C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/_deps/googletest-src/googletest" /Zc:__cplusplus</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <DisableSpecificWarnings>5103</DisableSpecificWarnings>
       <ExceptionHandling>Sync</ExceptionHandling>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>

@@ -67,3 +67,4 @@ ACTIVATE_GITLOG()
 
 add_subdirectory(InitialTest)
 add_subdirectory(Win)
+add_subdirectory(Utility)

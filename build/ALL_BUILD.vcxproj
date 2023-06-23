@@ -107,9 +107,33 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\GenIterateCall.vcxproj">
+      <Project>{D02AD8E6-604B-379F-A646-498E8AFCC82C}</Project>
+      <Name>GenIterateCall</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\GenNumArgs.vcxproj">
+      <Project>{FB432E10-9B98-3ABD-81F3-A3D38B6DF9DC}</Project>
+      <Name>GenNumArgs</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\GenOneHotEncode.vcxproj">
+      <Project>{898AEB16-B00D-3616-964C-8076821B8655}</Project>
+      <Name>GenOneHotEncode</Name>
+    </ProjectReference>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\KeyboardTest.vcxproj">
       <Project>{F5CF0443-F752-38A6-A776-FE7CE0DC19F5}</Project>
       <Name>KeyboardTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleIterateCall.vcxproj">
+      <Project>{99802B61-9C97-3D1F-B533-4342EE9FD209}</Project>
+      <Name>SampleIterateCall</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleNumArgs.vcxproj">
+      <Project>{315A82F9-F664-3100-96E0-9FA50D9E501F}</Project>
+      <Name>SampleNumArgs</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleOneHotEncode.vcxproj">
+      <Project>{1611FDF5-1267-3658-AA76-B780553E11F0}</Project>
+      <Name>SampleOneHotEncode</Name>
     </ProjectReference>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\Win.vcxproj">
       <Project>{D0B6DED0-3838-3FBF-A71D-417B72B2465A}</Project>
