@@ -119,6 +119,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleEnumUtil.vcxproj">
+      <Project>{3F90D0A6-75B5-3E0F-9AAA-BDC6512C61E9}</Project>
+      <Name>SampleEnumUtil</Name>
+    </ProjectReference>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleGenIterateCall.vcxproj">
       <Project>{A71F4CD0-1C59-3C06-9E8F-1CF5B4D5CC15}</Project>
       <Name>SampleGenIterateCall</Name>
