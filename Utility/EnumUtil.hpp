@@ -21,8 +21,8 @@
     ) 
 
 #define DEFINE_BINARY_OP(Lhs_t, Rhs_t, opSymbol, opFunc)    \
-    auto operator opSymbol (Lhs_t lhs, Rhs_t rhs)   \
-        noexcept( noexcept(opFunc(lhs, rhs)) ) -> decltype( opFunc(lhs, rhs) )  \
+    decltype(auto) operator opSymbol (Lhs_t lhs, Rhs_t rhs)   \
+        noexcept( noexcept(opFunc(lhs, rhs)) )  \
     {   \
         return opFunc( std::forward<Lhs_t>(lhs),    \
             std::forward<Rhs_t>(rhs) ); \
