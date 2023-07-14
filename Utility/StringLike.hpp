@@ -1,12 +1,11 @@
 #ifndef __StringLike
 #define __StringLike
 
+#include "AdditionalConcepts.hpp"
+
 #include <type_traits>
 #include <string>
 #include <string_view>
-
-template <class T, class ... Args>
-concept contains = (std::is_same_v<T, Args> || ...);
 
 template <class>
 struct is_char : std::false_type
