@@ -115,6 +115,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{D0B6DED0-3838-3FBF-A71D-417B72B2465A}</Project>
       <Name>Win</Name>
     </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\WinXX.vcxproj">
+      <Project>{E2EB218C-FF5E-3EB8-824D-234F3D780956}</Project>
+      <Name>WinXX</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
