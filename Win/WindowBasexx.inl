@@ -77,6 +77,24 @@ void WindowTraits<CharT>::regist(HINSTANCE hInst)
 
 template <class CharT>
 requires contains<CharT, char, wchar_t>
+void WindowTraits<CharT>::unregist(HINSTANCE hInst)
+{
+    bool bFine = false;
+
+    if constexpr ( std::is_same_v<CharT, char> ) {
+        bFine = UnregisterClassA( clsName().data(), hInst );
+    }
+    else /* wchar_t */ {
+        bFine = UnregisterClassW( clsName().data(), hInst );
+    }
+
+    if (!bFine) {
+        // error handling
+    }
+}
+
+template <class CharT>
+requires contains<CharT, char, wchar_t>
 HWND WindowTraits<CharT>::create(HINSTANCE hInst)
 {
     return create( hInst, defWndName(), defWndFrame() );
@@ -137,4 +155,53 @@ requires contains<CharT, char, wchar_t>
 void WindowTraits<CharT>::show(HWND hWnd)
 {
     ShowWindow(hWnd, SW_SHOWDEFAULT);
+}
+
+template <class Traits>
+Window<Traits>::Window()
+{
+    if (!bRegist) [[unlikely]] {
+        Traits::regist( getHInst() );
+        bRegist = true;
+    }
+
+    hWnd_ = Traits::create( getHInst() );
+    Traits::show(hWnd_);
+}
+
+template <class Traits>
+template <class ... Args>
+Window<Traits>::Window(Args&& ... args)
+{
+    if (!bRegist) [[unlikely]] {
+        Traits::regist( getHInst() );
+        bRegist = true;
+    }
+
+    hWnd_ = Traits::create( getHInst(), std::forward<Args>(args)... );
+    Traits::show(hWnd_);
+}
+
+template <class Traits>
+void Window<Traits>::setHInst(HINSTANCE hInstance) noexcept
+{
+    hInst = hInstance;
+}
+
+template <class Traits>
+HINSTANCE Window<Traits>::getHInst() noexcept
+{
+    return hInst;
+}
+
+template <class Traits>
+void Window<Traits>::msgLoop()
+{
+    MSG msg;
+    BOOL result;
+
+    while ( ( result = GetMessageW(&msg, nullptr, 0, 0) ) > 0 ) {
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
+    }
 }

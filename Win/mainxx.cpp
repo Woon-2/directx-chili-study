@@ -9,17 +9,10 @@ int CALLBACK WinMain(
     [[maybe_unused]] int nCmdShow
 )
 {
-    WindowTraits<wchar_t>::regist(hInst);
-    auto hWnd = WindowTraits<wchar_t>::create(hInst);
-    WindowTraits<wchar_t>::show(hWnd);
+    Window< WindowTraits<wchar_t> >::setHInst(hInst);
+    Window< WindowTraits<wchar_t> > wnd;
 
-    MSG msg;
-    BOOL result;
-
-    while ( ( result = GetMessageW(&msg, nullptr, 0, 0) ) > 0 ) {
-        TranslateMessage(&msg);
-        DispatchMessageW(&msg);
-    }
+    wnd.msgLoop();
 
     return 0;
 }

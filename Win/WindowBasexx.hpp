@@ -24,6 +24,7 @@ struct WindowTraits
     static constexpr const std::basic_string_view<CharT> defWndName() noexcept;
     static constexpr const WndFrame defWndFrame() noexcept;
     static void regist(HINSTANCE hInst);
+    static void unregist(HINSTANCE hInst);
     static HWND create(HINSTANCE hInst);
     static HWND create(HINSTANCE hInst, StringLike auto&& wndName);
     static HWND create(HINSTANCE hInst, const WndFrame& wndFrame);
@@ -35,9 +36,30 @@ template <class Traits>
 class Window
 {
 public:
+    Window();
+    template <class ... Args>
+    Window(Args&& ... args);
+    Window(const Window&) = delete;
+    Window(Window&&) = delete;
+    Window& operator=(const Window&) = delete;
+    Window& operator=(Window&&) = delete;
+
+    static void setHInst(HINSTANCE hInstance) noexcept;
+    static HINSTANCE getHInst() noexcept;
+
+    static void msgLoop();
 
 private:
+    static bool bRegist;
+    static HINSTANCE hInst;
+    HWND hWnd_;
 };
+
+template <class Traits>
+bool Window<Traits>::bRegist = false;
+
+template <class Traits>
+HINSTANCE Window<Traits>::hInst = nullptr;
 
 #include "WindowBasexx.inl"
 
