@@ -183,6 +183,12 @@ Window<Traits>::Window(Args&& ... args)
 }
 
 template <class Traits>
+Window<Traits>::~Window()
+{
+    DestroyWindow(hWnd_);
+}
+
+template <class Traits>
 void Window<Traits>::setHInst(HINSTANCE hInstance) noexcept
 {
     hInst = hInstance;

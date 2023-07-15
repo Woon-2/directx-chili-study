@@ -37,6 +37,7 @@ class Window
 {
 public:
     Window();
+    ~Window();
     template <class ... Args>
     Window(Args&& ... args);
     Window(const Window&) = delete;
