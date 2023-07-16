@@ -12,6 +12,12 @@
 #define WND_EXCEPT(hr) WindowException(__LINE__, __FILE__, hr)
 #define WND_LAST_EXCEPT() WND_EXCEPT( GetLastError() )
 
+namespace Win32
+{
+
+template <class T>
+concept Win32Char = contains<T, CHAR, WCHAR>;
+
 struct WndFrame
 {
     int x;
@@ -20,8 +26,7 @@ struct WndFrame
     int height;
 };
 
-template <class CharT>
-requires contains<CharT, char, wchar_t>
+template <Win32Char CharT>
 struct BasicWindowTraits
 {
     static constexpr const std::basic_string_view<CharT> clsName() noexcept;
@@ -37,8 +42,7 @@ struct BasicWindowTraits
     static void show(HWND hWnd);
 };
 
-template <class CharT>
-requires contains<CharT, char, wchar_t>
+template <Win32Char CharT>
 struct MainWindowTraits
 {
     static constexpr const std::basic_string_view<CharT> clsName() noexcept;
@@ -53,6 +57,8 @@ template <class Traits>
 class Window
 {
 public:
+    using traits_type = Traits;
+
     Window();
     ~Window();
     template <class ... Args>
@@ -95,6 +101,8 @@ bool Window<Traits>::bRegist = false;
 
 template <class Traits>
 HINSTANCE Window<Traits>::hInst = nullptr;
+
+}   // namespace Win32
 
 #include "WindowBasexx.inl"
 

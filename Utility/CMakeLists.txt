@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(Utility VERSION 2023.06.23 LANGUAGES CXX)
+project(Utility VERSION 2023.07.16 LANGUAGES CXX)
 
 add_executable(SampleGenNumArgs)
 add_executable(SampleGenOneHotEncode)
@@ -10,6 +10,7 @@ add_executable(SampleNumArgs)
 add_executable(SampleOneHotEncode)
 add_executable(SampleIterateCall)
 add_executable(SampleEnumUtil)
+add_executable(SampleInvocable)
 
 target_sources(SampleGenNumArgs PRIVATE GenNumArgsMain.cpp GenNumArgs.hpp)
 target_sources(SampleGenOneHotEncode PRIVATE GenOneHotEncodeMain.cpp GenOneHotEncode.hpp)
@@ -19,6 +20,7 @@ target_sources(SampleEnumUtil PRIVATE SampleEnumUtil.cpp EnumUtil.hpp)
 target_sources(SampleNumArgs PRIVATE SampleNumArgs.cpp NumArgs.hpp)
 target_sources(SampleOneHotEncode PRIVATE SampleOneHotEncode.cpp OneHotEncode.hpp NumArgs.hpp)
 target_sources(SampleIterateCall PRIVATE SampleIterateCall.cpp IterateCall.hpp NumArgs.hpp)
+target_sources(SampleInvocable PRIVATE SampleInvocable.cpp Invocable.hpp)
 
 include(${CMAKE_SOURCE_DIR}/cmake/common_configuration.cmake)
 
@@ -33,6 +35,7 @@ COMMON_CONFIGURATION(SampleNumArgs PRIVATE)
 COMMON_CONFIGURATION(SampleOneHotEncode PRIVATE)
 COMMON_CONFIGURATION(SampleIterateCall PRIVATE)
 COMMON_CONFIGURATION(SampleEnumUtil PRIVATE)
+COMMON_CONFIGURATION(SampleInvocable PRIVATE)
 
 COMMON_CONFIGURATION(Quote INTERFACE)
 COMMON_CONFIGURATION(Bit INTERFACE)

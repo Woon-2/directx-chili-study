@@ -487,3 +487,5 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/cmake,c++,windows,visualstudio,visualstudiocode
 d3d12book/
+.vscode
+build/.vscode

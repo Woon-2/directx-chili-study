@@ -139,6 +139,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{196CB1DD-2695-3789-8E4F-60056B6A66D1}</Project>
       <Name>SampleGenOneHotEncode</Name>
     </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleInvocable.vcxproj">
+      <Project>{C639C1EB-8C1B-39BF-9C20-559BB8B22288}</Project>
+      <Name>SampleInvocable</Name>
+    </ProjectReference>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleIterateCall.vcxproj">
       <Project>{99802B61-9C97-3D1F-B533-4342EE9FD209}</Project>
       <Name>SampleIterateCall</Name>

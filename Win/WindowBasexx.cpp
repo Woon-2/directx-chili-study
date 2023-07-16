@@ -2,6 +2,9 @@
 
 #include <sstream>
 
+namespace Win32
+{
+
 WindowException::WindowException(int lineNum, const char* fileStr,
     HRESULT hr) noexcept
     : Woon2Exception(lineNum, fileStr), hr_(hr)
@@ -57,3 +60,5 @@ const std::string WindowException::errorStr() const noexcept
 {
     return translateErrorCode( errorCode() );
 }
+
+}   // namespace Win32

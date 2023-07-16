@@ -2,7 +2,7 @@
 
 #include <Windows.h>
 
-using MyWindow = Window< BasicWindowTraits<wchar_t> >;
+using MyWindow = Win32::Window< Win32::BasicWindowTraits<WCHAR> >;
 
 int CALLBACK WinMain(
     HINSTANCE hInst,
