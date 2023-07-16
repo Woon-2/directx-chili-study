@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(PWin VERSION 2023.07.14 LANGUAGES CXX)
+project(PWin VERSION 2023.07.16 LANGUAGES CXX)
 
 add_executable(Win)
 add_executable(KeyboardTest)
@@ -14,7 +14,8 @@ target_sources(Win PRIVATE main.cpp WindowBase.hpp WindowBase.inl WindowBase.cpp
 target_sources(KeyboardTest PRIVATE KeyboardTest.cpp WindowBase.hpp WindowBase.inl WindowBase.cpp
     Keyboard.hpp Keyboard.cpp KeyboardTestWindow.hpp KeyboardTestWindow.cpp Woon2Exception.hpp Woon2Exception.cpp)
 
-target_sources(WinXX PRIVATE mainxx.cpp WindowBasexx.hpp WindowBasexx.inl)
+target_sources(WinXX PRIVATE mainxx.cpp WindowBasexx.hpp WindowBasexx.inl WindowBasexx.cpp
+    Woon2Exception.hpp Woon2Exception.cpp)
 
 target_include_directories(Win PRIVATE ${UTILITY_PATH})
 target_include_directories(KeyboardTest PRIVATE ${UTILITY_PATH})

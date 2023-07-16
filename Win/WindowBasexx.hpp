@@ -1,12 +1,16 @@
 #ifndef __Windowxx
 #define __Windowxx
 
+#include "Woon2Exception.hpp"
 #include <Windows.h>
 
 #include <AdditionalConcepts.hpp>
 #include <StringLike.hpp>
 
 #include <string_view>
+
+#define WND_EXCEPT(hr) WindowException(__LINE__, __FILE__, hr)
+#define WND_LAST_EXCEPT() WND_EXCEPT( GetLastError() )
 
 struct WndFrame
 {
@@ -67,6 +71,23 @@ private:
     static bool bRegist;
     static HINSTANCE hInst;
     HWND hWnd_;
+};
+
+class WindowException : public Woon2Exception
+{
+public:
+    WindowException( int lineNum, const char* fileStr, HRESULT hr ) noexcept;
+
+    const char* what() const noexcept override;
+    const char* getType() const noexcept override;
+
+    HRESULT errorCode() const noexcept;
+    const std::string errorStr() const noexcept;
+
+    static const std::string translateErrorCode( HRESULT hr ) noexcept;
+
+private:
+    HRESULT hr_;
 };
 
 template <class Traits>

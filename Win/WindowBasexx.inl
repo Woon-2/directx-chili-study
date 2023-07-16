@@ -70,8 +70,7 @@ void BasicWindowTraits<CharT>::regist(HINSTANCE hInst)
     }
 
     if (!bFine) {
-        MessageBoxA(nullptr, "Fuck", "Woon2 Exception",
-            MB_OK | MB_ICONEXCLAMATION);
+        throw WND_LAST_EXCEPT();
     }
 }
 
@@ -89,7 +88,7 @@ void BasicWindowTraits<CharT>::unregist(HINSTANCE hInst)
     }
 
     if (!bFine) {
-        // error handling
+        throw WND_LAST_EXCEPT();
     }
 }
 
@@ -144,7 +143,7 @@ HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst,
     }
 
     if (!hWnd) {
-        // error handling
+        throw WND_LAST_EXCEPT();
     }
 
     return hWnd;
@@ -201,7 +200,7 @@ void MainWindowTraits<CharT>::regist(HINSTANCE hInst, WNDPROC wndProc)
     }
 
     if (!bFine) {
-        // error handling
+        throw WND_LAST_EXCEPT();
     }
 }
 
@@ -219,7 +218,7 @@ void MainWindowTraits<CharT>::unregist(HINSTANCE hInst)
     }
 
     if (!bFine) {
-        // error handling
+        throw WND_LAST_EXCEPT();
     }
 }
 
@@ -253,7 +252,7 @@ HWND MainWindowTraits<CharT>::create(HINSTANCE hInst,
     }
 
     if (!hWnd) {
-        // error handling
+        throw WND_LAST_EXCEPT();
     }
 
     return hWnd;
@@ -317,8 +316,24 @@ void Window<Traits>::msgLoop()
     MSG msg;
     BOOL result;
 
-    while ( ( result = GetMessageW(&msg, nullptr, 0, 0) ) > 0 ) {
-        TranslateMessage(&msg);
-        DispatchMessageW(&msg);
+    try {
+
+        while ( ( result = GetMessageW(&msg, nullptr, 0, 0) ) > 0 ) {
+            TranslateMessage(&msg);
+            DispatchMessageW(&msg);
+        }
+
+    }
+    catch (const WindowException& e) {
+        MessageBoxA(nullptr, e.what(), "Window Exception",
+            MB_OK | MB_ICONEXCLAMATION);
+    }
+    catch (const std::exception& e) {
+        MessageBoxA(nullptr, e.what(), "Standard Exception",
+            MB_OK | MB_ICONEXCLAMATION);
+    }
+    catch(...) {
+        MessageBoxA(nullptr, "no details available",
+            "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
     }
 }
