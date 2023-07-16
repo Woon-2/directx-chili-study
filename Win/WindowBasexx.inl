@@ -5,7 +5,7 @@
 template <class CharT>
 requires contains<CharT, char, wchar_t>
 constexpr const std::basic_string_view<CharT>
-WindowTraits<CharT>::clsName() noexcept
+BasicWindowTraits<CharT>::clsName() noexcept
 {
     if constexpr ( std::is_same_v<CharT, char> ) {
         return "WT";
@@ -18,7 +18,7 @@ WindowTraits<CharT>::clsName() noexcept
 template <class CharT>
 requires contains<CharT, char, wchar_t>
 constexpr const std::basic_string_view<CharT>
-WindowTraits<CharT>::defWndName() noexcept
+BasicWindowTraits<CharT>::defWndName() noexcept
 {
     if constexpr ( std::is_same_v<CharT, char> ) {
         return "Window";
@@ -30,14 +30,14 @@ WindowTraits<CharT>::defWndName() noexcept
 
 template <class CharT>
 requires contains<CharT, char, wchar_t>
-constexpr const WndFrame WindowTraits<CharT>::defWndFrame() noexcept
+constexpr const WndFrame BasicWindowTraits<CharT>::defWndFrame() noexcept
 {
     return WndFrame{ .x=200, .y=200, .width=800, .height=600 };
 }
 
 template <class CharT>
 requires contains<CharT, char, wchar_t>
-void WindowTraits<CharT>::regist(HINSTANCE hInst)
+void BasicWindowTraits<CharT>::regist(HINSTANCE hInst)
 {
     using WndClass = std::conditional_t< std::is_same_v<CharT, char>,
         WNDCLASSEXA, WNDCLASSEXW >;
@@ -77,7 +77,7 @@ void WindowTraits<CharT>::regist(HINSTANCE hInst)
 
 template <class CharT>
 requires contains<CharT, char, wchar_t>
-void WindowTraits<CharT>::unregist(HINSTANCE hInst)
+void BasicWindowTraits<CharT>::unregist(HINSTANCE hInst)
 {
     bool bFine = false;
 
@@ -95,44 +95,46 @@ void WindowTraits<CharT>::unregist(HINSTANCE hInst)
 
 template <class CharT>
 requires contains<CharT, char, wchar_t>
-HWND WindowTraits<CharT>::create(HINSTANCE hInst)
+HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst)
 {
     return create( hInst, defWndName(), defWndFrame() );
 }
 
 template <class CharT>
 requires contains<CharT, char, wchar_t>
-HWND WindowTraits<CharT>::create(HINSTANCE hInst, StringLike auto&& wndName)
+HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst,
+    std::basic_string_view<CharT> wndName)
 {
     return create( hInst, wndName, defWndFrame() );
 }
 
 template <class CharT>
 requires contains<CharT, char, wchar_t>
-HWND WindowTraits<CharT>::create(HINSTANCE hInst, const WndFrame& wndFrame)
+HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, const WndFrame& wndFrame)
 {
     return create( hInst, defWndName(), wndFrame );
 }
 
 template <class CharT>
 requires contains<CharT, char, wchar_t>
-HWND WindowTraits<CharT>::create(HINSTANCE hInst, StringLike auto&& wndName, const WndFrame& wndFrame)
+HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst,
+    std::basic_string_view<CharT> wndName, const WndFrame& wndFrame)
 {
     #define ARG_LISTS   \
-        0,  \
-        clsName().data(), \
-        std::basic_string_view<CharT>(wndName).data(),   \
-        WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,    \
-        wndFrame.x,   \
-        wndFrame.y,    \
-        wndFrame.width,  \
-        wndFrame.height, \
-        nullptr,    \
-        nullptr,    \
-        hInst,    \
-        nullptr
+        /* .dwExStyle = */ 0, \
+        /* .lpClassName = */ clsName().data(),    \
+        /* .lpWindowName = */ wndName.data(), \
+        /* .dwStyle = */ WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,    \
+        /* .X = */ wndFrame.x,    \
+        /* .Y = */ wndFrame.y,    \
+        /* .nWidth = */ wndFrame.width,   \
+        /* .nHeight = */ wndFrame.height, \
+        /* .hWndParent = */ nullptr,   \
+        /* .hMenu = */ nullptr,    \
+        /* .hInstance = */ hInst, \
+        /* .lpParam = */ nullptr
 
-    HWND hWnd;
+    HWND hWnd = nullptr;
 
     if constexpr ( std::is_same_v<CharT, char> ) {
         hWnd = CreateWindowExA(ARG_LISTS);
@@ -152,7 +154,116 @@ HWND WindowTraits<CharT>::create(HINSTANCE hInst, StringLike auto&& wndName, con
 
 template <class CharT>
 requires contains<CharT, char, wchar_t>
-void WindowTraits<CharT>::show(HWND hWnd)
+void BasicWindowTraits<CharT>::show(HWND hWnd)
+{
+    ShowWindow(hWnd, SW_SHOWDEFAULT);
+}
+
+template <class CharT>
+requires contains<CharT, char, wchar_t>
+constexpr const std::basic_string_view<CharT>
+MainWindowTraits<CharT>::clsName() noexcept
+{
+    if constexpr ( std::is_same_v<CharT, char> ) {
+        return "MW";
+    }
+    else /* wchar_t */ {
+        return L"MW";
+    }
+}
+
+template <class CharT>
+requires contains<CharT, char, wchar_t>
+void MainWindowTraits<CharT>::regist(HINSTANCE hInst, WNDPROC wndProc)
+{
+    using WndClass = std::conditional_t< std::is_same_v<CharT, char>,
+        WNDCLASSEXA, WNDCLASSEXW >;
+
+    WndClass wc = {
+        .cbSize = sizeof(WndClass),
+        .style = CS_OWNDC,
+        .lpfnWndProc = wndProc,
+        .cbClsExtra = 0,
+        .cbWndExtra = sizeof(LPVOID),
+        .hInstance = hInst,
+        .hIcon = nullptr,
+        .hCursor = nullptr,
+        .hbrBackground = nullptr 
+    };
+
+    ATOM bFine{};
+
+    if constexpr ( std::is_same_v<CharT, char> ) {
+        bFine = RegisterClassExA(&wc);
+    }
+    else /* wchar_t */ {
+        bFine = RegisterClassExW(&wc);
+    }
+
+    if (!bFine) {
+        // error handling
+    }
+}
+
+template <class CharT>
+requires contains<CharT, char, wchar_t>
+void MainWindowTraits<CharT>::unregist(HINSTANCE hInst)
+{
+    bool bFine = false;
+
+    if constexpr ( std::is_same_v<CharT, char> ) {
+        bFine = UnregisterClassA( clsName().data(), hInst );
+    }
+    else /* wchar_t */ {
+        bFine = UnregisterClassW( clsName().data(), hInst );
+    }
+
+    if (!bFine) {
+        // error handling
+    }
+}
+
+template <class CharT>
+requires contains<CharT, char, wchar_t>
+HWND MainWindowTraits<CharT>::create(HINSTANCE hInst,
+    std::basic_string_view<CharT> wndName, const WndFrame& wndFrame,
+    LPVOID lpParam)
+{
+    #define ARG_LISTS   \
+        /* .dwExStyle = */ 0, \
+        /* .lpClassName = */ clsName().data(),    \
+        /* .lpWindowName = */ wndName.data(), \
+        /* .dwStyle = */ WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,    \
+        /* .X = */ wndFrame.x,    \
+        /* .Y = */ wndFrame.y,    \
+        /* .nWidth = */ wndFrame.width,   \
+        /* .nHeight = */ wndFrame.height, \
+        /* .hWndParent = */ nullptr,   \
+        /* .hMenu = */ nullptr,    \
+        /* .hInstance = */ hInst, \
+        /* .lpParam = */ lpParam
+
+    HWND hWnd = nullptr;
+
+    if constexpr ( std::is_same_v<CharT, char> ) {
+        hWnd = CreateWindowExA(ARG_LISTS);
+    }
+    else /* wchar_t */ {
+        hWnd = CreateWindowExW(ARG_LISTS);
+    }
+
+    if (!hWnd) {
+        // error handling
+    }
+
+    return hWnd;
+
+    #undef ARG_LISTS
+}
+
+template <class CharT>
+requires contains<CharT, char, wchar_t>
+void MainWindowTraits<CharT>::show(HWND hWnd)
 {
     ShowWindow(hWnd, SW_SHOWDEFAULT);
 }

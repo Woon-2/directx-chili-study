@@ -18,7 +18,7 @@ struct WndFrame
 
 template <class CharT>
 requires contains<CharT, char, wchar_t>
-struct WindowTraits
+struct BasicWindowTraits
 {
     static constexpr const std::basic_string_view<CharT> clsName() noexcept;
     static constexpr const std::basic_string_view<CharT> defWndName() noexcept;
@@ -26,10 +26,23 @@ struct WindowTraits
     static void regist(HINSTANCE hInst);
     static void unregist(HINSTANCE hInst);
     static HWND create(HINSTANCE hInst);
-    static HWND create(HINSTANCE hInst, StringLike auto&& wndName);
+    static HWND create(HINSTANCE hInst, std::basic_string_view<CharT> wndName);
     static HWND create(HINSTANCE hInst, const WndFrame& wndFrame);
-    static HWND create(HINSTANCE hInst, StringLike auto&& wndName, const WndFrame& wndFrame);
+    static HWND create(HINSTANCE hInst, std::basic_string_view<CharT> wndName,
+        const WndFrame& wndFrame);
     static void show(HWND hWnd);
+};
+
+template <class CharT>
+requires contains<CharT, char, wchar_t>
+struct MainWindowTraits
+{
+    static constexpr const std::basic_string_view<CharT> clsName() noexcept;
+    static void regist(HINSTANCE hInst, WNDPROC wndProc);
+    static void unregist(HINSTANCE hInst);
+    static HWND create(HINSTANCE hInst, std::basic_string_view<CharT> wndName,
+        const WndFrame& wndFrame, LPVOID lpParam);
+    static void show(HWND hWnd); 
 };
 
 template <class Traits>

@@ -2,6 +2,8 @@
 
 #include <Windows.h>
 
+using MyWindow = Window< BasicWindowTraits<wchar_t> >;
+
 int CALLBACK WinMain(
     HINSTANCE hInst,
     [[maybe_unused]] HINSTANCE hPrevInst,
@@ -9,8 +11,8 @@ int CALLBACK WinMain(
     [[maybe_unused]] int nCmdShow
 )
 {
-    Window< WindowTraits<wchar_t> >::setHInst(hInst);
-    Window< WindowTraits<wchar_t> > wnd;
+    MyWindow::setHInst(hInst);
+    MyWindow wnd;
 
     wnd.msgLoop();
 
