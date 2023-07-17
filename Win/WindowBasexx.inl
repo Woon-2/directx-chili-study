@@ -27,6 +27,8 @@ Window<Traits>::Window()
         bRegist = true;
     }
 
+    setMsgHandler< BasicMsgHandler< MyType > >();
+
     // enclose this in the Win32 Window,
     // which makes getting Window object from Win32 window handle possible.
     hWnd_ = Traits::create( getHInst(), this );
@@ -55,28 +57,12 @@ Window<Traits>::Window(Args&& ... args)
         bRegist = true;
     }
 
+    setMsgHandler< BasicMsgHandler< MyType > >();
+
     // enclose this in the Win32 Window,
     // which makes getting Window object from Win32 window handle possible.
     hWnd_ = Traits::create( getHInst(), this, std::forward<Args>(args)... );
     Traits::show(hWnd_);
-}
-
-template <class Traits>
-Window<Traits>::~Window()
-{
-    DestroyWindow(hWnd_);
-}
-
-template <class Traits>
-void Window<Traits>::setHInst(HINSTANCE hInstance) noexcept
-{
-    hInst = hInstance;
-}
-
-template <class Traits>
-HINSTANCE Window<Traits>::getHInst() noexcept
-{
-    return hInst;
 }
 
 template <class Traits>
@@ -150,9 +136,75 @@ template <class Traits>
 LRESULT Window<Traits>::wndProcCallHandler(HWND hWnd, UINT msg,
     WPARAM wParam, LPARAM lParam)
 {
-    return std::is_same_v<MyChar, CHAR>
-        ? DefWindowProcA(hWnd, msg, wParam, lParam)
-        : DefWindowProcW(hWnd, msg, wParam, lParam);
+    // fetch ptr to window stored for WinAPI-managed user data
+    MyType* pWnd = nullptr;
+
+    if constexpr ( std::is_same_v<MyChar, CHAR> ) {
+        pWnd = reinterpret_cast<MyType*>(
+            GetWindowLongPtrA(hWnd, GWLP_USERDATA)
+        );
+    }
+    else /* WCHAR */ {
+        pWnd = reinterpret_cast<MyType*>(
+            GetWindowLongPtrW(hWnd, GWLP_USERDATA)
+        );
+    }
+
+    if (!pWnd) [[unlikely]] {
+        throw WND_LAST_EXCEPT();
+    }
+
+    if ( !pWnd->nativeHandle() || !pWnd->pHandleMsg_ ) [[unlikely]] {
+        return std::is_same_v<MyChar, CHAR> ? 
+            DefWindowProcA(hWnd, msg, wParam, lParam)
+            : DefWindowProcW(hWnd, msg, wParam, lParam);
+    }
+
+    // call the window's message handler
+    return ( *(pWnd->pHandleMsg_) )( Message{ msg, wParam, lParam } );
+}
+
+template <class Wnd>
+LRESULT BasicMsgHandler<Wnd>::operator()(const Message& msg) // overriden
+{
+    LRESULT result{};
+
+    try {
+        switch (msg.type) {
+        case WM_CLOSE:
+            PostQuitMessage(0);
+            break;
+        default: break;
+        }
+
+        result = std::is_same_v<typename Wnd::MyChar, CHAR> ?
+            DefWindowProcA( window().nativeHandle(), msg.type,
+                msg.wParam, msg.lParam
+            )
+            : DefWindowProcW( window().nativeHandle(), msg.type,
+                msg.wParam, msg.lParam
+            );
+
+        if (result < 0) [[unlikely]] {
+            // error handling
+        }
+
+        return result;
+    }
+    catch (const WindowException& e) {
+        MessageBoxA(nullptr, e.what(), "Window Exception",
+            MB_OK | MB_ICONEXCLAMATION);
+    }
+    catch (const std::exception& e) {
+        MessageBoxA(nullptr, e.what(), "Standard Exception",
+            MB_OK | MB_ICONEXCLAMATION);
+    }
+    catch(...) {
+        MessageBoxA(nullptr, "no details available",
+            "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+    }
+
+    return result;
 }
 
 template <Win32Char CharT>
@@ -215,7 +267,7 @@ void BasicWindowTraits<CharT>::regist(HINSTANCE hInst)
         bFine = RegisterClassExW(&wc);
     }
 
-    if (!bFine) {
+    if (!bFine) [[unlikely]] {
         throw WND_LAST_EXCEPT();
     }
 }
@@ -232,7 +284,7 @@ void BasicWindowTraits<CharT>::unregist(HINSTANCE hInst)
         bFine = UnregisterClassW( clsName().data(), hInst );
     }
 
-    if (!bFine) {
+    if (!bFine) [[unlikely]] {
         throw WND_LAST_EXCEPT();
     }
 }
@@ -287,19 +339,13 @@ HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
         hWnd = CreateWindowExW(ARG_LISTS);
     }
 
-    if (!hWnd) {
+    if (!hWnd) [[unlikely]] {
         throw WND_LAST_EXCEPT();
     }
 
     return hWnd;
 
     #undef ARG_LISTS
-}
-
-template <Win32Char CharT>
-void BasicWindowTraits<CharT>::show(HWND hWnd)
-{
-    ShowWindow(hWnd, SW_SHOWDEFAULT);
 }
 
 template <Win32Char CharT>
@@ -341,7 +387,7 @@ void MainWindowTraits<CharT>::regist(HINSTANCE hInst)
         bFine = RegisterClassExW(&wc);
     }
 
-    if (!bFine) {
+    if (!bFine) [[unlikely]] {
         throw WND_LAST_EXCEPT();
     }
 }
@@ -358,7 +404,7 @@ void MainWindowTraits<CharT>::unregist(HINSTANCE hInst)
         bFine = UnregisterClassW( clsName().data(), hInst );
     }
 
-    if (!bFine) {
+    if (!bFine) [[unlikely]] {
         throw WND_LAST_EXCEPT();
     }
 }
@@ -390,19 +436,13 @@ HWND MainWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
         hWnd = CreateWindowExW(ARG_LISTS);
     }
 
-    if (!hWnd) {
+    if (!hWnd) [[unlikely]] {
         throw WND_LAST_EXCEPT();
     }
 
     return hWnd;
 
     #undef ARG_LISTS
-}
-
-template <Win32Char CharT>
-void MainWindowTraits<CharT>::show(HWND hWnd)
-{
-    ShowWindow(hWnd, SW_SHOWDEFAULT);
 }
 
 }   // namespace Win32

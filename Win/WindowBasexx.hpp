@@ -1,13 +1,15 @@
 #ifndef __Windowxx
 #define __Windowxx
 
-#include "Woon2Exception.hpp"
 #include <Windows.h>
 
-#include <AdditionalConcepts.hpp>
-#include <StringLike.hpp>
-
+#include <string>
 #include <string_view>
+#include <memory>
+
+#include <AdditionalConcepts.hpp>
+
+#include "Woon2Exception.hpp"
 
 #define WND_EXCEPT(hr) WindowException(__LINE__, __FILE__, hr)
 #define WND_LAST_EXCEPT() WND_EXCEPT( GetLastError() )
@@ -26,17 +28,52 @@ struct WndFrame
     int height;
 };
 
+struct Message
+{
+    UINT type;
+    WPARAM wParam;
+    LPARAM lParam;
+};
+
+template <class Wnd>
+class MsgHandler
+{
+public:
+    using MyWindow = Wnd;
+
+    MsgHandler(Wnd& wnd) noexcept
+        : window_(wnd)
+    {}
+    MsgHandler(const MsgHandler&) = delete;
+    MsgHandler(MsgHandler&&) = delete;
+    MsgHandler& operator=(const MsgHandler&) = delete;
+    MsgHandler& operator=(MsgHandler&&) = delete;
+    virtual ~MsgHandler() {}
+
+    virtual LRESULT operator()(const Message& msg) = 0;
+
+protected:
+    const Wnd& window() const noexcept { return window_; }
+    Wnd& window() noexcept { return window_; }
+
+private:
+    Wnd& window_;
+};
+
+
 template <class Traits>
 class Window
 {
 public:
     friend Traits;
 
+    using MyType = Window<Traits>;
+    using MyHandler = MsgHandler< Window<Traits> >;
     using MyTraits = Traits;
     using MyChar = Traits::MyChar;
 
     Window();
-    ~Window();
+    ~Window() { DestroyWindow(hWnd_); }
     template <class ... Args>
     Window(Args&& ... args);
     Window(const Window&) = delete;
@@ -44,10 +81,13 @@ public:
     Window& operator=(const Window&) = delete;
     Window& operator=(Window&&) = delete;
 
-    static void setHInst(HINSTANCE hInstance) noexcept;
-    static HINSTANCE getHInst() noexcept;
-
+    static void setHInst(HINSTANCE hInstance) noexcept { hInst = hInstance; }
+    static HINSTANCE getHInst() noexcept { return hInst; }
     static void msgLoop();
+
+    HWND nativeHandle() noexcept { return hWnd_; }
+    template <class MH>
+    void setMsgHandler() { pHandleMsg_.reset( new MH(*this) ); }
 
 private:
     static LRESULT CALLBACK wndProcSetupHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -55,7 +95,22 @@ private:
 
     static bool bRegist;
     static HINSTANCE hInst;
+
+    std::unique_ptr<MyHandler> pHandleMsg_;
     HWND hWnd_;
+};
+
+template <class Wnd>
+class BasicMsgHandler : public MsgHandler<Wnd>
+{
+public:
+    using MsgHandler<Wnd>::window;
+
+    BasicMsgHandler(Wnd& wnd)
+        : MsgHandler<Wnd>(wnd)
+    {}
+
+    LRESULT operator()(const Message& msg) override;
 };
 
 template <Win32Char CharT>
@@ -74,7 +129,7 @@ struct BasicWindowTraits
     static HWND create(HINSTANCE hInst, MyWindow* pWnd, const WndFrame& wndFrame);
     static HWND create(HINSTANCE hInst, MyWindow* pWnd, std::basic_string_view<CharT> wndName,
         const WndFrame& wndFrame);
-    static void show(HWND hWnd);
+    static void show(HWND hWnd) { ShowWindow(hWnd, SW_SHOWDEFAULT); }
 };
 
 template <Win32Char CharT>
@@ -87,7 +142,7 @@ struct MainWindowTraits
     static void unregist(HINSTANCE hInst);
     static HWND create(HINSTANCE hInst, MyWindow* pWnd,
         std::basic_string_view<CharT> wndName, const WndFrame& wndFrame);
-    static void show(HWND hWnd); 
+    static void show(HWND hWnd) { ShowWindow(hWnd, SW_SHOWDEFAULT); }
 };
 
 class WindowException : public Woon2Exception

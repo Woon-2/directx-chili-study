@@ -32,7 +32,7 @@ const std::string WindowException::translateErrorCode(
     return errorStr;
 }
 
-const char* WindowException::what() const noexcept
+const char* WindowException::what() const noexcept  // overriden
 {
     std::ostringstream oss{};
 
@@ -46,7 +46,7 @@ const char* WindowException::what() const noexcept
     return whatBuffer_.c_str();
 }
 
-const char* WindowException::getType() const noexcept
+const char* WindowException::getType() const noexcept // overriden
 {
     return "Window Exception";
 }
@@ -61,4 +61,4 @@ const std::string WindowException::errorStr() const noexcept
     return translateErrorCode( errorCode() );
 }
 
-}   // namespace Win32
+} // namespace Win32
