@@ -26,33 +26,6 @@ struct WndFrame
     int height;
 };
 
-template <Win32Char CharT>
-struct BasicWindowTraits
-{
-    static constexpr const std::basic_string_view<CharT> clsName() noexcept;
-    static constexpr const std::basic_string_view<CharT> defWndName() noexcept;
-    static constexpr const WndFrame defWndFrame() noexcept;
-    static void regist(HINSTANCE hInst);
-    static void unregist(HINSTANCE hInst);
-    static HWND create(HINSTANCE hInst);
-    static HWND create(HINSTANCE hInst, std::basic_string_view<CharT> wndName);
-    static HWND create(HINSTANCE hInst, const WndFrame& wndFrame);
-    static HWND create(HINSTANCE hInst, std::basic_string_view<CharT> wndName,
-        const WndFrame& wndFrame);
-    static void show(HWND hWnd);
-};
-
-template <Win32Char CharT>
-struct MainWindowTraits
-{
-    static constexpr const std::basic_string_view<CharT> clsName() noexcept;
-    static void regist(HINSTANCE hInst, WNDPROC wndProc);
-    static void unregist(HINSTANCE hInst);
-    static HWND create(HINSTANCE hInst, std::basic_string_view<CharT> wndName,
-        const WndFrame& wndFrame, LPVOID lpParam);
-    static void show(HWND hWnd); 
-};
-
 template <class Traits>
 class Window
 {
@@ -77,6 +50,37 @@ private:
     static bool bRegist;
     static HINSTANCE hInst;
     HWND hWnd_;
+};
+
+template <Win32Char CharT>
+struct BasicWindowTraits
+{
+    using MyWindow = Window< BasicWindowTraits >;
+
+    static constexpr const std::basic_string_view<CharT> clsName() noexcept;
+    static constexpr const std::basic_string_view<CharT> defWndName() noexcept;
+    static constexpr const WndFrame defWndFrame() noexcept;
+    static void regist(HINSTANCE hInst);
+    static void unregist(HINSTANCE hInst);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd, std::basic_string_view<CharT> wndName);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd, const WndFrame& wndFrame);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd, std::basic_string_view<CharT> wndName,
+        const WndFrame& wndFrame);
+    static void show(HWND hWnd);
+};
+
+template <Win32Char CharT>
+struct MainWindowTraits
+{
+    using MyWindow = Window< MainWindowTraits >;
+
+    static constexpr const std::basic_string_view<CharT> clsName() noexcept;
+    static void regist(HINSTANCE hInst);
+    static void unregist(HINSTANCE hInst);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd,
+        std::basic_string_view<CharT> wndName, const WndFrame& wndFrame);
+    static void show(HWND hWnd); 
 };
 
 class WindowException : public Woon2Exception
