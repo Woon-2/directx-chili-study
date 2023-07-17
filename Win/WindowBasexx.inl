@@ -27,6 +27,8 @@ Window<Traits>::Window()
         bRegist = true;
     }
 
+    // enclose this in the Win32 Window,
+    // which makes getting Window object from Win32 window handle possible.
     hWnd_ = Traits::create( getHInst(), this );
     Traits::show(hWnd_);
 }
@@ -53,6 +55,8 @@ Window<Traits>::Window(Args&& ... args)
         bRegist = true;
     }
 
+    // enclose this in the Win32 Window,
+    // which makes getting Window object from Win32 window handle possible.
     hWnd_ = Traits::create( getHInst(), this, std::forward<Args>(args)... );
     Traits::show(hWnd_);
 }
@@ -103,6 +107,54 @@ void Window<Traits>::msgLoop()
     }
 }
 
+template <class Traits>
+LRESULT Window<Traits>::wndProcSetupHandler(HWND hWnd, UINT msg,
+    WPARAM wParam, LPARAM lParam)
+{
+    if (msg != WM_NCCREATE) {
+        return std::is_same_v<MyChar, CHAR>
+            ? DefWindowProcA(hWnd, msg, wParam, lParam)
+            : DefWindowProcW(hWnd, msg, wParam, lParam);
+    }
+
+    using CreateStruct = std::conditional_t< std::is_same_v<MyChar, CHAR>,
+        CREATESTRUCTA, CREATESTRUCTW >;
+
+    // extract ptr to window from creation data
+    const auto pCreate = reinterpret_cast< const CreateStruct* >( lParam );
+    auto pWnd = static_cast< Window<Traits>* >( pCreate->lpCreateParams );
+
+    // make WinAPI-managed user data to store the ptr to window
+    SetWindowLongPtr( hWnd, GWLP_USERDATA,
+        reinterpret_cast<LONG_PTR>( pWnd ) );
+
+    // setup is done,
+    // substitute message WndProc with regular one.
+    if constexpr ( std::is_same_v<MyChar, CHAR> ) {
+        SetWindowLongPtrA( hWnd, GWLP_WNDPROC,
+            reinterpret_cast<LONG_PTR>(wndProcCallHandler)
+        );
+    }
+    else /* WCHAR */ {
+        SetWindowLongPtrW( hWnd, GWLP_WNDPROC,
+            reinterpret_cast<LONG_PTR>(wndProcCallHandler)
+        );
+    }
+
+    return std::is_same_v<MyChar, CHAR>
+        ? DefWindowProcA(hWnd, msg, wParam, lParam)
+        : DefWindowProcW(hWnd, msg, wParam, lParam); 
+}
+
+template <class Traits>
+LRESULT Window<Traits>::wndProcCallHandler(HWND hWnd, UINT msg,
+    WPARAM wParam, LPARAM lParam)
+{
+    return std::is_same_v<MyChar, CHAR>
+        ? DefWindowProcA(hWnd, msg, wParam, lParam)
+        : DefWindowProcW(hWnd, msg, wParam, lParam);
+}
+
 template <Win32Char CharT>
 constexpr const std::basic_string_view<CharT>
 BasicWindowTraits<CharT>::clsName() noexcept
@@ -142,10 +194,7 @@ void BasicWindowTraits<CharT>::regist(HINSTANCE hInst)
     WndClass wc = {
         .cbSize = sizeof(WndClass),
         .style = CS_OWNDC,
-        .lpfnWndProc = (std::is_same_v<CharT, CHAR> ?
-            DefWindowProcA :
-            DefWindowProcW
-        ),
+        .lpfnWndProc = MyWindow::wndProcSetupHandler,
         .cbClsExtra = 0,
         .cbWndExtra = sizeof( LPVOID ),
         .hInstance = hInst,
@@ -212,6 +261,9 @@ template <Win32Char CharT>
 HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
     std::basic_string_view<CharT> wndName, const WndFrame& wndFrame)
 {
+    // additionally store pointer to Window,
+    // which makes getting Window object from Win32 window handle possible.
+
     #define ARG_LISTS   \
         /* .dwExStyle = */ 0, \
         /* .lpClassName = */ clsName().data(),    \
@@ -271,10 +323,7 @@ void MainWindowTraits<CharT>::regist(HINSTANCE hInst)
     WndClass wc = {
         .cbSize = sizeof(WndClass),
         .style = CS_OWNDC,
-        .lpfnWndProc = (std::is_same_v<CharT, CHAR> ?
-            DefWindowProcA :
-            DefWindowProcW
-        ),
+        .lpfnWndProc = MyWindow::wndProcSetupHandler,
         .cbClsExtra = 0,
         .cbWndExtra = sizeof(LPVOID),
         .hInstance = hInst,

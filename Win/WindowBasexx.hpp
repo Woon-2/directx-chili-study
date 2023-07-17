@@ -30,7 +30,10 @@ template <class Traits>
 class Window
 {
 public:
-    using traits_type = Traits;
+    friend Traits;
+
+    using MyTraits = Traits;
+    using MyChar = Traits::MyChar;
 
     Window();
     ~Window();
@@ -47,6 +50,9 @@ public:
     static void msgLoop();
 
 private:
+    static LRESULT CALLBACK wndProcSetupHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK wndProcCallHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
     static bool bRegist;
     static HINSTANCE hInst;
     HWND hWnd_;
@@ -56,6 +62,7 @@ template <Win32Char CharT>
 struct BasicWindowTraits
 {
     using MyWindow = Window< BasicWindowTraits >;
+    using MyChar = CharT;
 
     static constexpr const std::basic_string_view<CharT> clsName() noexcept;
     static constexpr const std::basic_string_view<CharT> defWndName() noexcept;
