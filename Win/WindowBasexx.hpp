@@ -71,6 +71,7 @@ public:
     using MyHandler = MsgHandler< Window<Traits> >;
     using MyTraits = Traits;
     using MyChar = Traits::MyChar;
+    using MyString = std::basic_string_view<MyChar>;
 
     Window();
     ~Window() { DestroyWindow(hWnd_); }
@@ -81,21 +82,33 @@ public:
     Window& operator=(const Window&) = delete;
     Window& operator=(Window&&) = delete;
 
-    static void setHInst(HINSTANCE hInstance) noexcept { hInst = hInstance; }
+    static void setHInst(HINSTANCE hInstance) noexcept
+    { hInst = hInstance; }
     static HINSTANCE getHInst() noexcept { return hInst; }
     static void msgLoop();
 
     HWND nativeHandle() noexcept { return hWnd_; }
     template <class MH>
     void setMsgHandler() { pHandleMsg_.reset( new MH(*this) ); }
+    const MyString& getTitle() const noexcept { return title_; }
+    void setTitle(MyString title)
+    {
+        title_ = std::move(title);
+        setNativeTitle( getTitle().data() );
+    }
 
 private:
-    static LRESULT CALLBACK wndProcSetupHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-    static LRESULT CALLBACK wndProcCallHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK wndProcSetupHandler(HWND hWnd, UINT msg,
+        WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK wndProcCallHandler(HWND hWnd, UINT msg,
+        WPARAM wParam, LPARAM lParam);
+
+    void setNativeTitle(const MyChar* title);
 
     static bool bRegist;
     static HINSTANCE hInst;
 
+    MyString title_;
     std::unique_ptr<MyHandler> pHandleMsg_;
     HWND hWnd_;
 };
@@ -105,6 +118,7 @@ class BasicMsgHandler : public MsgHandler<Wnd>
 {
 public:
     using MsgHandler<Wnd>::window;
+    using MyChar = typename Wnd::MyChar;
 
     BasicMsgHandler(Wnd& wnd)
         : MsgHandler<Wnd>(wnd)
@@ -118,16 +132,20 @@ struct BasicWindowTraits
 {
     using MyWindow = Window< BasicWindowTraits >;
     using MyChar = CharT;
+    using MyString = std::basic_string_view<MyChar>;
 
-    static constexpr const std::basic_string_view<CharT> clsName() noexcept;
-    static constexpr const std::basic_string_view<CharT> defWndName() noexcept;
+    static constexpr const MyString
+        clsName() noexcept;
+    static constexpr const MyString
+        defWndName() noexcept;
     static constexpr const WndFrame defWndFrame() noexcept;
     static void regist(HINSTANCE hInst);
     static void unregist(HINSTANCE hInst);
     static HWND create(HINSTANCE hInst, MyWindow* pWnd);
-    static HWND create(HINSTANCE hInst, MyWindow* pWnd, std::basic_string_view<CharT> wndName);
-    static HWND create(HINSTANCE hInst, MyWindow* pWnd, const WndFrame& wndFrame);
-    static HWND create(HINSTANCE hInst, MyWindow* pWnd, std::basic_string_view<CharT> wndName,
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd, MyString wndName);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd,
+        const WndFrame& wndFrame);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd, MyString wndName,
         const WndFrame& wndFrame);
     static void show(HWND hWnd) { ShowWindow(hWnd, SW_SHOWDEFAULT); }
 };
@@ -136,19 +154,23 @@ template <Win32Char CharT>
 struct MainWindowTraits
 {
     using MyWindow = Window< MainWindowTraits >;
+    using MyChar = CharT;
+    using MyString = std::basic_string_view<MyChar>;
 
-    static constexpr const std::basic_string_view<CharT> clsName() noexcept;
+    static constexpr const MyString
+        clsName() noexcept;
     static void regist(HINSTANCE hInst);
     static void unregist(HINSTANCE hInst);
     static HWND create(HINSTANCE hInst, MyWindow* pWnd,
-        std::basic_string_view<CharT> wndName, const WndFrame& wndFrame);
+        MyString wndName, const WndFrame& wndFrame);
     static void show(HWND hWnd) { ShowWindow(hWnd, SW_SHOWDEFAULT); }
 };
 
 class WindowException : public Woon2Exception
 {
 public:
-    WindowException( int lineNum, const char* fileStr, HRESULT hr ) noexcept;
+    WindowException( int lineNum, const char* fileStr,
+        HRESULT hr ) noexcept;
 
     const char* what() const noexcept override;
     const char* getType() const noexcept override;
@@ -156,7 +178,8 @@ public:
     HRESULT errorCode() const noexcept;
     const std::string errorStr() const noexcept;
 
-    static const std::string translateErrorCode( HRESULT hr ) noexcept;
+    static const std::string
+        translateErrorCode( HRESULT hr ) noexcept;
 
 private:
     HRESULT hr_;

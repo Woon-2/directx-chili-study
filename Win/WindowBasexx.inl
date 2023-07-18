@@ -110,26 +110,22 @@ LRESULT Window<Traits>::wndProcSetupHandler(HWND hWnd, UINT msg,
     const auto pCreate = reinterpret_cast< const CreateStruct* >( lParam );
     auto pWnd = static_cast< Window<Traits>* >( pCreate->lpCreateParams );
 
+    constexpr auto& setWindowLongPtr = std::is_same_v<MyChar, CHAR> ?
+        SetWindowLongPtrA : SetWindowLongPtrW;
+
     // make WinAPI-managed user data to store the ptr to window
-    SetWindowLongPtr( hWnd, GWLP_USERDATA,
+    setWindowLongPtr( hWnd, GWLP_USERDATA,
         reinterpret_cast<LONG_PTR>( pWnd ) );
 
     // setup is done,
     // substitute message WndProc with regular one.
-    if constexpr ( std::is_same_v<MyChar, CHAR> ) {
-        SetWindowLongPtrA( hWnd, GWLP_WNDPROC,
-            reinterpret_cast<LONG_PTR>(wndProcCallHandler)
-        );
-    }
-    else /* WCHAR */ {
-        SetWindowLongPtrW( hWnd, GWLP_WNDPROC,
-            reinterpret_cast<LONG_PTR>(wndProcCallHandler)
-        );
-    }
+    setWindowLongPtr( hWnd, GWLP_WNDPROC,
+        reinterpret_cast<LONG_PTR>(wndProcCallHandler) );
 
-    return std::is_same_v<MyChar, CHAR>
-        ? DefWindowProcA(hWnd, msg, wParam, lParam)
-        : DefWindowProcW(hWnd, msg, wParam, lParam); 
+    constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
+        DefWindowProcA : DefWindowProcW;
+
+    return defWindowProc(hWnd, msg, wParam, lParam); 
 }
 
 template <class Traits>
@@ -139,29 +135,42 @@ LRESULT Window<Traits>::wndProcCallHandler(HWND hWnd, UINT msg,
     // fetch ptr to window stored for WinAPI-managed user data
     MyType* pWnd = nullptr;
 
-    if constexpr ( std::is_same_v<MyChar, CHAR> ) {
-        pWnd = reinterpret_cast<MyType*>(
-            GetWindowLongPtrA(hWnd, GWLP_USERDATA)
-        );
-    }
-    else /* WCHAR */ {
-        pWnd = reinterpret_cast<MyType*>(
-            GetWindowLongPtrW(hWnd, GWLP_USERDATA)
-        );
-    }
+    constexpr auto& getWindowLongPtr = std::is_same_v<MyChar, CHAR> ?
+        GetWindowLongPtrA : GetWindowLongPtrW;
+
+    pWnd = reinterpret_cast<MyType*>(
+        getWindowLongPtr(hWnd, GWLP_USERDATA)
+    );
 
     if (!pWnd) [[unlikely]] {
         throw WND_LAST_EXCEPT();
     }
 
     if ( !pWnd->nativeHandle() || !pWnd->pHandleMsg_ ) [[unlikely]] {
-        return std::is_same_v<MyChar, CHAR> ? 
-            DefWindowProcA(hWnd, msg, wParam, lParam)
-            : DefWindowProcW(hWnd, msg, wParam, lParam);
+        constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
+            DefWindowProcA : DefWindowProcW;
+        return defWindowProc(hWnd, msg, wParam, lParam);
     }
 
     // call the window's message handler
     return ( *(pWnd->pHandleMsg_) )( Message{ msg, wParam, lParam } );
+}
+
+template <class Traits>
+void Window<Traits>::setNativeTitle(const MyChar* title)
+{
+    bool bFine = false;
+    
+    if constexpr ( std::is_same_v<MyChar, CHAR> ) {
+        bFine = SetWindowTextA( nativeHandle(), title );
+    }
+    else /* WCHAR */ {
+        bFine = SetWindowTextW( nativeHandle(), title );
+    }
+
+    if (!bFine) {
+        throw WND_LAST_EXCEPT();
+    }
 }
 
 template <class Wnd>
@@ -169,21 +178,32 @@ LRESULT BasicMsgHandler<Wnd>::operator()(const Message& msg) // overriden
 {
     LRESULT result{};
 
+    constexpr auto& defWindProc = std::is_same_v<MyChar, CHAR> ?
+        DefWindowProcA : DefWindowProcW;
+
     try {
         switch (msg.type) {
         case WM_CLOSE:
             PostQuitMessage(0);
             break;
+
+        case WM_KEYDOWN:
+        case WM_SYSKEYDOWN:
+            if (msg.wParam == VK_SPACE) {
+                if constexpr ( std::is_same_v<MyChar, CHAR> ) {
+                    window().setTitle("SPACE");
+                }
+                else /* WCHAR */ {
+                    window().setTitle(L"SPACE");
+                }
+            }
+            break;
+
         default: break;
         }
 
-        result = std::is_same_v<typename Wnd::MyChar, CHAR> ?
-            DefWindowProcA( window().nativeHandle(), msg.type,
-                msg.wParam, msg.lParam
-            )
-            : DefWindowProcW( window().nativeHandle(), msg.type,
-                msg.wParam, msg.lParam
-            );
+        result = defWindProc( window().nativeHandle(), msg.type,
+            msg.wParam, msg.lParam );
 
         if (result < 0) [[unlikely]] {
             // error handling
@@ -208,8 +228,8 @@ LRESULT BasicMsgHandler<Wnd>::operator()(const Message& msg) // overriden
 }
 
 template <Win32Char CharT>
-constexpr const std::basic_string_view<CharT>
-BasicWindowTraits<CharT>::clsName() noexcept
+constexpr const BasicWindowTraits<CharT>::MyString
+    BasicWindowTraits<CharT>::clsName() noexcept
 {
     if constexpr ( std::is_same_v<CharT, CHAR> ) {
         return "WT";
@@ -220,8 +240,8 @@ BasicWindowTraits<CharT>::clsName() noexcept
 }
 
 template <Win32Char CharT>
-constexpr const std::basic_string_view<CharT>
-BasicWindowTraits<CharT>::defWndName() noexcept
+constexpr const BasicWindowTraits<CharT>::MyString
+    BasicWindowTraits<CharT>::defWndName() noexcept
 {
     if constexpr ( std::is_same_v<CharT, CHAR> ) {
         return "Window";
@@ -297,9 +317,9 @@ HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd)
 
 template <Win32Char CharT>
 HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
-    std::basic_string_view<CharT> wndName)
+    MyString wndName)
 {
-    return create( hInst, pWnd, wndName, defWndFrame() );
+    return create( hInst, pWnd, std::move(wndName), defWndFrame() );
 }
 
 template <Win32Char CharT>
@@ -311,7 +331,7 @@ HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
 
 template <Win32Char CharT>
 HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
-    std::basic_string_view<CharT> wndName, const WndFrame& wndFrame)
+    MyString wndName, const WndFrame& wndFrame)
 {
     // additionally store pointer to Window,
     // which makes getting Window object from Win32 window handle possible.
@@ -349,7 +369,7 @@ HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
 }
 
 template <Win32Char CharT>
-constexpr const std::basic_string_view<CharT>
+constexpr const MainWindowTraits<CharT>::MyString
 MainWindowTraits<CharT>::clsName() noexcept
 {
     if constexpr ( std::is_same_v<CharT, CHAR> ) {
@@ -411,7 +431,7 @@ void MainWindowTraits<CharT>::unregist(HINSTANCE hInst)
 
 template <Win32Char CharT>
 HWND MainWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
-    std::basic_string_view<CharT> wndName, const WndFrame& wndFrame)
+    MyString wndName, const WndFrame& wndFrame)
 {
     #define ARG_LISTS   \
         /* .dwExStyle = */ 0, \
