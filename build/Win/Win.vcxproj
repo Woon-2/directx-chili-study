@@ -77,11 +77,11 @@
       <UseFullPaths>false</UseFullPaths>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -128,13 +128,13 @@
       <UseFullPaths>false</UseFullPaths>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;RESOURCE_PATH=C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/resource;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;UNICODE;_UNICODE;WIN32_LEAN_AND_MEAN;NOGDICAPMASKS;NOSYSMETRICS;NOMENUS;NOICONS;NOSYSCOMMANDS;NORASTEROPS;OEMRESOURCE;NOATOM;NOCLIPBOARD;NOCOLOR;NOCTLMGR;NODRAWTEXT;NOKERNEL;NONLS;NOMEMMGR;NOMETAFILE;NOOPENFILE;NOSCROLL;NOSERVICE;NOSOUND;NOTEXTMETRIC;NOWH;NOCOMM;NOKANJI;NOHELP;NOPROFILER;NODEFERWINDOWPOS;NOMCX;NORPC;NOPROXYSTUB;NOIMAGE;NOTAPE;NOMINMAX;STRICT;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -193,17 +193,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\main.cpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.hpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.inl" />
-    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowBase.cpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Window.hpp" />
     <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Window.cpp" />
-    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowsMessageMap.cpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\WindowsMessageMap.hpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Woon2Exception.hpp" />
-    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Woon2Exception.cpp" />
-    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Keyboard.hpp" />
-    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Keyboard.cpp" />
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Window.hpp" />
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Win\Window.inl" />
+    <ClCompile Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\Woon2Exception.cpp" />
+    <ClInclude Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\Utility\Woon2Exception.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\ZERO_CHECK.vcxproj">

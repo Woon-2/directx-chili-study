@@ -1,4 +1,4 @@
-#include "WindowBasexx.hpp"
+#include "Window.hpp"
 
 #include <type_traits>
 
@@ -168,18 +168,6 @@ LRESULT BasicMsgHandler<Wnd>::operator()(const Message& msg) // overriden
             PostQuitMessage(0);
             break;
 
-        case WM_KEYDOWN:
-        case WM_SYSKEYDOWN:
-            if (msg.wParam == VK_SPACE) {
-                if constexpr ( std::is_same_v<MyChar, CHAR> ) {
-                    window().setTitle("SPACE");
-                }
-                else /* WCHAR */ {
-                    window().setTitle(L"SPACE");
-                }
-            }
-            break;
-
         default: break;
         }
 
@@ -187,7 +175,7 @@ LRESULT BasicMsgHandler<Wnd>::operator()(const Message& msg) // overriden
             msg.wParam, msg.lParam );
 
         if (result < 0) [[unlikely]] {
-            // error handling
+            throw WND_LAST_EXCEPT();
         }
 
         return result;

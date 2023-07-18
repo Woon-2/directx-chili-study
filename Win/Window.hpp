@@ -1,66 +1,212 @@
 #ifndef __Window
 #define __Window
 
-#include "WindowBase.hpp"
+#include <Windows.h>
 
 #include <string>
+#include <string_view>
 #include <memory>
 
-#include "Keyboard.hpp"
+#include <AdditionalConcepts.hpp>
+#include <Woon2Exception.hpp>
 
-class Window : public WindowBase<Window, wchar_t>
+#define WND_EXCEPT(hr) WindowException(__LINE__, __FILE__, hr)
+#define WND_LAST_EXCEPT() WND_EXCEPT( GetLastError() )
+
+namespace Win32
 {
-private:
-    class WindowClass;
 
+class WindowException : public Woon2Exception
+{
 public:
-    friend class WindowBase;
+    WindowException( int lineNum, const char* fileStr,
+        HRESULT hr ) noexcept;
 
-    Window(const RECT& rect, const wchar_t* name);
-    Window(int left, int top, int width, int height, const wchar_t* name);
-    Window(int width, int height, const wchar_t* name);
-    Window(const RECT& rect, const std::wstring& name);
-    Window(int left, int top, int width, int height, const std::wstring& name);
-    Window(int width, int height, const std::wstring& name);
+    const char* what() const noexcept override;
+    const char* getType() const noexcept override;
 
-    ~Window();
+    HRESULT errorCode() const noexcept;
+    const std::string errorStr() const noexcept;
+
+    static const std::string
+        translateErrorCode( HRESULT hr ) noexcept;
+
+private:
+    HRESULT hr_;
+};
+
+template <class T>
+concept Win32Char = contains<T, CHAR, WCHAR>;
+
+struct WndFrame
+{
+    int x;
+    int y;
+    int width;
+    int height;
+};
+
+struct Message
+{
+    UINT type;
+    WPARAM wParam;
+    LPARAM lParam;
+};
+
+template <class Wnd>
+class MsgHandler
+{
+public:
+    using MyWindow = Wnd;
+
+    MsgHandler(Wnd& wnd) noexcept
+        : window_(wnd)
+    {}
+    MsgHandler(const MsgHandler&) = delete;
+    MsgHandler(MsgHandler&&) = delete;
+    MsgHandler& operator=(const MsgHandler&) = delete;
+    MsgHandler& operator=(MsgHandler&&) = delete;
+    virtual ~MsgHandler() {}
+
+    virtual LRESULT operator()(const Message& msg) = 0;
+
+protected:
+    const Wnd& window() const noexcept { return window_; }
+    Wnd& window() noexcept { return window_; }
+
+private:
+    Wnd& window_;
+};
+
+
+template <class Traits>
+class Window
+{
+public:
+    friend Traits;
+
+    using MyType = Window<Traits>;
+    using MyHandler = MsgHandler< Window<Traits> >;
+    using MyTraits = Traits;
+    using MyChar = Traits::MyChar;
+    using MyString = std::basic_string_view<MyChar>;
+
+    Window();
+    ~Window() { DestroyWindow(hWnd_); }
+    template <class ... Args>
+    Window(Args&& ... args);
     Window(const Window&) = delete;
+    Window(Window&&) = delete;
     Window& operator=(const Window&) = delete;
+    Window& operator=(Window&&) = delete;
 
-    HWND get() const noexcept;
-    void setTitle(const std::wstring& title);
-    void setTitle(std::wstring&& title) noexcept;
-    const std::wstring& getTitle() const noexcept;
+    static void setHInst(HINSTANCE hInstance) noexcept
+    { hInst = hInstance; }
+    static HINSTANCE getHInst() noexcept { return hInst; }
+    static void msgLoop();
 
-    Keyboard kbd;
+    HWND nativeHandle() noexcept { return hWnd_; }
+    template <class MH>
+    void setMsgHandler() { pHandleMsg_.reset( new MH(*this) ); }
+    const MyString& getTitle() const noexcept { return title_; }
+    void setTitle(MyString title)
+    {
+        title_ = std::move(title);
+        setNativeTitle( getTitle().data() );
+    }
 
 private:
-    static std::unique_ptr<WindowClass> pWindowClass;
+    static LRESULT CALLBACK wndProcSetupHandler(HWND hWnd, UINT msg,
+        WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK wndProcCallHandler(HWND hWnd, UINT msg,
+        WPARAM wParam, LPARAM lParam);
 
-    static void initWindowClass();
-    LRESULT handleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
+    void setNativeTitle(const MyChar* title)
+    {
+        bool bFine = false;
 
-    RECT region_;
+        if constexpr ( std::is_same_v<MyChar, CHAR> ) {
+            bFine = SetWindowTextA( nativeHandle(), title );
+        }
+        else /* WCHAR */ {
+            bFine = SetWindowTextW( nativeHandle(), title );
+        }
+
+        if (!bFine) [[unlikely]] {
+            throw WND_LAST_EXCEPT();
+        }
+    }
+    
+
+    static bool bRegist;
+    static HINSTANCE hInst;
+
+    MyString title_;
+    std::unique_ptr<MyHandler> pHandleMsg_;
     HWND hWnd_;
-    std::wstring title_;
 };
 
-class Window::WindowClass
+template <class Wnd>
+class BasicMsgHandler : public MsgHandler<Wnd>
 {
 public:
-    WindowClass(const wchar_t* name);
-    WindowClass(const std::wstring& name);
-    ~WindowClass();
-    WindowClass(const WindowClass&) = delete;
-    WindowClass& operator=(const WindowClass&) = delete;
+    using MsgHandler<Wnd>::window;
+    using MyChar = typename Wnd::MyChar;
 
-    HINSTANCE getInst() const;
-    const std::wstring& getName() const;
+    BasicMsgHandler(Wnd& wnd)
+        : MsgHandler<Wnd>(wnd)
+    {}
 
-private:
-    std::wstring name_;
-    HINSTANCE hInst_;
-
+    LRESULT operator()(const Message& msg) override;
 };
 
-#endif // __Window
+template <Win32Char CharT>
+struct BasicWindowTraits
+{
+    using MyWindow = Window< BasicWindowTraits >;
+    using MyChar = CharT;
+    using MyString = std::basic_string_view<MyChar>;
+
+    static constexpr const MyString
+        clsName() noexcept;
+    static constexpr const MyString
+        defWndName() noexcept;
+    static constexpr const WndFrame defWndFrame() noexcept;
+    static void regist(HINSTANCE hInst);
+    static void unregist(HINSTANCE hInst);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd, MyString wndName);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd,
+        const WndFrame& wndFrame);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd, MyString wndName,
+        const WndFrame& wndFrame);
+    static void show(HWND hWnd) { ShowWindow(hWnd, SW_SHOWDEFAULT); }
+};
+
+template <Win32Char CharT>
+struct MainWindowTraits
+{
+    using MyWindow = Window< MainWindowTraits >;
+    using MyChar = CharT;
+    using MyString = std::basic_string_view<MyChar>;
+
+    static constexpr const MyString
+        clsName() noexcept;
+    static void regist(HINSTANCE hInst);
+    static void unregist(HINSTANCE hInst);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd,
+        MyString wndName, const WndFrame& wndFrame);
+    static void show(HWND hWnd) { ShowWindow(hWnd, SW_SHOWDEFAULT); }
+};
+
+template <class Traits>
+bool Window<Traits>::bRegist = false;
+
+template <class Traits>
+HINSTANCE Window<Traits>::hInst = nullptr;
+
+}   // namespace Win32
+
+#include "Window.inl"
+
+#endif  // __Window

@@ -107,17 +107,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\KeyboardTest.vcxproj">
-      <Project>{F5CF0443-F752-38A6-A776-FE7CE0DC19F5}</Project>
-      <Name>KeyboardTest</Name>
-    </ProjectReference>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\Win.vcxproj">
       <Project>{D0B6DED0-3838-3FBF-A71D-417B72B2465A}</Project>
       <Name>Win</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\WinXX.vcxproj">
-      <Project>{E2EB218C-FF5E-3EB8-824D-234F3D780956}</Project>
-      <Name>WinXX</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
