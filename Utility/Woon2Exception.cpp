@@ -11,33 +11,33 @@ Woon2Exception::Woon2Exception( int lineNum,
 const char* Woon2Exception::what() const noexcept
 {
     auto oss = std::ostringstream();
-    oss << getType() << '\n'
-        << getMetaStr() << '\n';
+    oss << type() << '\n'
+        << metaStr() << '\n';
     whatBuffer_ = oss.str();
     return whatBuffer_.c_str();
 }
 
-const char* Woon2Exception::getType() const noexcept
+const char* Woon2Exception::type() const noexcept
 {
     return "Woon2 Exception";
 }
 
 int Woon2Exception::
-getLineNum() const noexcept
+lineNum() const noexcept
 {
     return lineNum_;
 }
 
-const std::string&Woon2Exception::getFileStr() const noexcept
+const std::string& Woon2Exception::fileStr() const noexcept
 {
     return fileStr_;
 }
 
-std::string Woon2Exception::getMetaStr() const noexcept
+std::string Woon2Exception::metaStr() const noexcept
 {
     auto oss = std::ostringstream();
     
-    oss << "[File] " << fileStr_ << '\n'
-        << "[Line] " << lineNum_ << '\n';
+    oss << "[File] " << fileStr() << '\n'
+        << "[Line] " << lineNum() << '\n';
     return oss.str();
 }

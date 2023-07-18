@@ -23,7 +23,7 @@ public:
         HRESULT hr ) noexcept;
 
     const char* what() const noexcept override;
-    const char* getType() const noexcept override;
+    const char* type() const noexcept override;
 
     HRESULT errorCode() const noexcept;
     const std::string errorStr() const noexcept;

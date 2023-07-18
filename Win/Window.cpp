@@ -36,17 +36,17 @@ const char* WindowException::what() const noexcept  // overriden
 {
     std::ostringstream oss{};
 
-    oss << getType() << '\n';
+    oss << type() << '\n';
 
     oss << "[Error Code] " << errorCode() << '\n'
         << "[Description] " << errorStr() << '\n'
-        << this->getMetaStr() << '\n';
+        << this->metaStr() << '\n';
 
     whatBuffer_ = oss.str();
     return whatBuffer_.c_str();
 }
 
-const char* WindowException::getType() const noexcept // overriden
+const char* WindowException::type() const noexcept // overriden
 {
     return "Window Exception";
 }

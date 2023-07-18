@@ -9,10 +9,10 @@ class Woon2Exception : public std::exception
 public:
     Woon2Exception( int lineNum, const char* fileStr ) noexcept;
     const char* what() const noexcept override;
-    virtual const char* getType() const noexcept;
-    int getLineNum() const noexcept;
-    const std::string& getFileStr() const noexcept;
-    std::string getMetaStr() const noexcept;
+    virtual const char* type() const noexcept;
+    int lineNum() const noexcept;
+    const std::string& fileStr() const noexcept;
+    std::string metaStr() const noexcept;
 
 private:
     int lineNum_;
