@@ -9,6 +9,7 @@
 
 #include <AdditionalConcepts.hpp>
 #include <Woon2Exception.hpp>
+#include <Invocable.hpp>
 
 #define WND_EXCEPT(hr) WindowException(__LINE__, __FILE__, hr)
 #define WND_LAST_EXCEPT() WND_EXCEPT( GetLastError() )
@@ -92,7 +93,18 @@ public:
     using MyString = std::basic_string_view<MyChar>;
 
     Window();
-    ~Window() { DestroyWindow(hWnd_); }
+    ~Window()
+    { 
+        static_assert(
+            is_invocation_valid(
+                []() -> decltype( Traits::destroy( nativeHandle() ) ){}
+            ),
+            "destructor of Window isn't valid. "
+            "invocation of Traits::destroy( nativeHandle() ) must be valid."
+        );
+
+        Traits::destroy( nativeHandle() );
+    }
     template <class ... Args>
     Window(Args&& ... args);
     Window(const Window&) = delete;
@@ -113,6 +125,19 @@ public:
     {
         title_ = std::move(title);
         setNativeTitle( getTitle().data() );
+    }
+    void show(int nCmdShow)
+    {
+        static_assert(
+            is_invocation_valid(
+                []() -> decltype( Traits::show( nativeHandle(), 0 ) ){}, 0
+            ),
+            "call of Window::show isn't valid. "
+            "invocation of Traits::show( nativeHandle(), "
+            "nCmdShow ) must be valid."
+        );
+
+        Traits::show( nativeHandle(), nCmdShow );
     }
 
 private:
@@ -136,7 +161,6 @@ private:
             throw WND_LAST_EXCEPT();
         }
     }
-    
 
     static bool bRegist;
     static HINSTANCE hInst;
@@ -180,7 +204,22 @@ struct BasicWindowTraits
         const WndFrame& wndFrame);
     static HWND create(HINSTANCE hInst, MyWindow* pWnd, MyString wndName,
         const WndFrame& wndFrame);
-    static void show(HWND hWnd) { ShowWindow(hWnd, SW_SHOWDEFAULT); }
+    static void destroy(HWND hWnd)
+    {
+        auto bFine = DestroyWindow(hWnd);
+
+        if (!bFine) {
+            throw WND_LAST_EXCEPT();
+        }
+    }
+    static void show(HWND hWnd)
+    {
+        auto bFine = ShowWindow(hWnd, SW_SHOWDEFAULT);
+
+        if (!bFine) {
+            throw WND_LAST_EXCEPT();
+        }
+    }
 };
 
 template <Win32Char CharT>
@@ -196,7 +235,22 @@ struct MainWindowTraits
     static void unregist(HINSTANCE hInst);
     static HWND create(HINSTANCE hInst, MyWindow* pWnd,
         MyString wndName, const WndFrame& wndFrame);
-    static void show(HWND hWnd) { ShowWindow(hWnd, SW_SHOWDEFAULT); }
+    static void destroy(HWND hWnd)
+    {
+        auto bFine = DestroyWindow(hWnd);
+
+        if (!bFine) {
+            throw WND_LAST_EXCEPT();
+        }
+    }
+    static void show(HWND hWnd)
+    {
+        auto bFine = ShowWindow(hWnd, SW_SHOWDEFAULT);
+
+        if (!bFine) {
+            throw WND_LAST_EXCEPT();
+        }
+    }
 };
 
 template <class Traits>
