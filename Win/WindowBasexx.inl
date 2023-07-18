@@ -97,10 +97,11 @@ template <class Traits>
 LRESULT Window<Traits>::wndProcSetupHandler(HWND hWnd, UINT msg,
     WPARAM wParam, LPARAM lParam)
 {
+    constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
+        DefWindowProcA : DefWindowProcW;
+
     if (msg != WM_NCCREATE) {
-        return std::is_same_v<MyChar, CHAR>
-            ? DefWindowProcA(hWnd, msg, wParam, lParam)
-            : DefWindowProcW(hWnd, msg, wParam, lParam);
+        return defWindowProc(hWnd, msg, wParam, lParam);
     }
 
     using CreateStruct = std::conditional_t< std::is_same_v<MyChar, CHAR>,
@@ -121,9 +122,6 @@ LRESULT Window<Traits>::wndProcSetupHandler(HWND hWnd, UINT msg,
     // substitute message WndProc with regular one.
     setWindowLongPtr( hWnd, GWLP_WNDPROC,
         reinterpret_cast<LONG_PTR>(wndProcCallHandler) );
-
-    constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
-        DefWindowProcA : DefWindowProcW;
 
     return defWindowProc(hWnd, msg, wParam, lParam); 
 }
@@ -160,13 +158,11 @@ template <class Traits>
 void Window<Traits>::setNativeTitle(const MyChar* title)
 {
     bool bFine = false;
+
+    constexpr auto& setWindowText = std::is_same_v<MyChar, CHAR> ?
+        SetWindowTextA : SetWindowTextW;
     
-    if constexpr ( std::is_same_v<MyChar, CHAR> ) {
-        bFine = SetWindowTextA( nativeHandle(), title );
-    }
-    else /* WCHAR */ {
-        bFine = SetWindowTextW( nativeHandle(), title );
-    }
+    bFine = setWindowText( nativeHandle(), title );
 
     if (!bFine) {
         throw WND_LAST_EXCEPT();
