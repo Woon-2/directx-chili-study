@@ -17,6 +17,25 @@
 namespace Win32
 {
 
+class WindowException : public Woon2Exception
+{
+public:
+    WindowException( int lineNum, const char* fileStr,
+        HRESULT hr ) noexcept;
+
+    const char* what() const noexcept override;
+    const char* getType() const noexcept override;
+
+    HRESULT errorCode() const noexcept;
+    const std::string errorStr() const noexcept;
+
+    static const std::string
+        translateErrorCode( HRESULT hr ) noexcept;
+
+private:
+    HRESULT hr_;
+};
+
 template <class T>
 concept Win32Char = contains<T, CHAR, WCHAR>;
 
@@ -103,7 +122,22 @@ private:
     static LRESULT CALLBACK wndProcCallHandler(HWND hWnd, UINT msg,
         WPARAM wParam, LPARAM lParam);
 
-    void setNativeTitle(const MyChar* title);
+    void setNativeTitle(const MyChar* title)
+    {
+        bool bFine = false;
+
+        if constexpr ( std::is_same_v<MyChar, CHAR> ) {
+            bFine = SetWindowTextA( nativeHandle(), title );
+        }
+        else /* WCHAR */ {
+            bFine = SetWindowTextW( nativeHandle(), title );
+        }
+
+        if (!bFine) [[unlikely]] {
+            throw WND_LAST_EXCEPT();
+        }
+    }
+    
 
     static bool bRegist;
     static HINSTANCE hInst;
@@ -164,25 +198,6 @@ struct MainWindowTraits
     static HWND create(HINSTANCE hInst, MyWindow* pWnd,
         MyString wndName, const WndFrame& wndFrame);
     static void show(HWND hWnd) { ShowWindow(hWnd, SW_SHOWDEFAULT); }
-};
-
-class WindowException : public Woon2Exception
-{
-public:
-    WindowException( int lineNum, const char* fileStr,
-        HRESULT hr ) noexcept;
-
-    const char* what() const noexcept override;
-    const char* getType() const noexcept override;
-
-    HRESULT errorCode() const noexcept;
-    const std::string errorStr() const noexcept;
-
-    static const std::string
-        translateErrorCode( HRESULT hr ) noexcept;
-
-private:
-    HRESULT hr_;
 };
 
 template <class Traits>

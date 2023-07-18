@@ -154,21 +154,6 @@ LRESULT Window<Traits>::wndProcCallHandler(HWND hWnd, UINT msg,
     return ( *(pWnd->pHandleMsg_) )( Message{ msg, wParam, lParam } );
 }
 
-template <class Traits>
-void Window<Traits>::setNativeTitle(const MyChar* title)
-{
-    bool bFine = false;
-
-    constexpr auto& setWindowText = std::is_same_v<MyChar, CHAR> ?
-        SetWindowTextA : SetWindowTextW;
-    
-    bFine = setWindowText( nativeHandle(), title );
-
-    if (!bFine) {
-        throw WND_LAST_EXCEPT();
-    }
-}
-
 template <class Wnd>
 LRESULT BasicMsgHandler<Wnd>::operator()(const Message& msg) // overriden
 {
