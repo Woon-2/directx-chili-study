@@ -30,7 +30,7 @@ Window<Traits>::Window()
     // enclose this in the Win32 Window,
     // which makes getting Window object from Win32 window handle possible.
     hWnd_ = Traits::create( getHInst(), this );
-    Traits::show(hWnd_);
+    show(SW_SHOWDEFAULT);
 }
 
 template <class Traits>
@@ -60,7 +60,7 @@ Window<Traits>::Window(Args&& ... args)
     // enclose this in the Win32 Window,
     // which makes getting Window object from Win32 window handle possible.
     hWnd_ = Traits::create( getHInst(), this, std::forward<Args>(args)... );
-    Traits::show(hWnd_);
+    show(SW_SHOWDEFAULT);
 }
 
 template <class Traits>

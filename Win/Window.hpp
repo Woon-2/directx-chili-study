@@ -130,7 +130,7 @@ public:
     {
         static_assert(
             is_invocation_valid(
-                []() -> decltype( Traits::show( nativeHandle(), 0 ) ){}, 0
+                []() -> decltype( Traits::show( nativeHandle(), 0 ) ){}
             ),
             "call of Window::show isn't valid. "
             "invocation of Traits::show( nativeHandle(), "
@@ -212,9 +212,9 @@ struct BasicWindowTraits
             throw WND_LAST_EXCEPT();
         }
     }
-    static void show(HWND hWnd)
+    static void show(HWND hWnd, int nCmdShow)
     {
-        auto bFine = ShowWindow(hWnd, SW_SHOWDEFAULT);
+        auto bFine = ShowWindow(hWnd, nCmdShow);
 
         if (!bFine) {
             throw WND_LAST_EXCEPT();
@@ -243,9 +243,9 @@ struct MainWindowTraits
             throw WND_LAST_EXCEPT();
         }
     }
-    static void show(HWND hWnd)
+    static void show(HWND hWnd, int nCmdShow)
     {
-        auto bFine = ShowWindow(hWnd, SW_SHOWDEFAULT);
+        auto bFine = ShowWindow(hWnd, nCmdShow);
 
         if (!bFine) {
             throw WND_LAST_EXCEPT();
