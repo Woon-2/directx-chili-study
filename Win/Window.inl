@@ -8,18 +8,10 @@ namespace Win32
 template <class Traits>
 Window<Traits>::Window()
 {
-    static_assert(
-        std::is_same_v< void, decltype( Traits::regist( getHInst() ) ) >
-        && std::is_same_v< HWND, decltype( Traits::create( getHInst(), this ) ) >,
-        // is_invocation_valid(
-        //     []() -> decltype( Traits::regist( getHInst() ) ){}
-        // )
-        // || is_invocation_valid(
-        //     []() -> decltype( Traits::create( getHInst(), this ) ){}
-        // ),
+    static_assert( __canCallDefaultConstructor<>(),
         "default constructor call of Window isn't valid. "
         "invocations of Traits::regist( getHInst() ) and "
-        "Traits::create( getHInst(), this ) must be valid."
+        "Traits::create( getHInst(), this, std::forward<Args>(args)... ) must be valid."
     );
 
     if (!bRegist) [[unlikely]] {
@@ -39,19 +31,8 @@ template <class Traits>
 template <class ... Args>
 Window<Traits>::Window(Args&& ... args)
 {
-    static_assert(
-        std::is_same_v< void, decltype( Traits::regist( getHInst() ) ) >
-        && std::is_same_v< HWND, decltype(
-            Traits::create( getHInst(), this, std::forward<Args>(args)... )
-        ) >,
-        // is_invocation_valid(
-        //     []() -> decltype( Traits::regist( getHInst() ) ){}
-        // )
-        // || is_invocation_valid(
-        //     []() -> decltype( Traits::create( getHInst(), this,
-        //         std::forward<Args>(args)... ) ){}
-        // ),
-        "default constructor call of Window isn't valid. "
+    static_assert( __canCallPFConstructor<Args...>(),
+        "perferct forwarding constructor call of Window isn't valid. "
         "invocations of Traits::regist( getHInst() ) and "
         "Traits::create( getHInst(), this, std::forward<Args>(args)... ) must be valid."
     );

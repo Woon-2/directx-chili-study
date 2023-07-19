@@ -95,10 +95,7 @@ public:
     Window();
     ~Window()
     { 
-        static_assert(
-            is_invocation_valid(
-                []() -> decltype( Traits::destroy( nativeHandle() ) ){}
-            ),
+        static_assert( __canCallDestroy<>(),
             "destructor of Window isn't valid. "
             "invocation of Traits::destroy( nativeHandle() ) must be valid."
         );
@@ -128,10 +125,7 @@ public:
     }
     void show(int nCmdShow)
     {
-        static_assert(
-            is_invocation_valid(
-                []() -> decltype( Traits::show( nativeHandle(), 0 ) ){}
-            ),
+        static_assert( __canCallShow<>(),
             "call of Window::show isn't valid. "
             "invocation of Traits::show( nativeHandle(), "
             "nCmdShow ) must be valid."
@@ -145,6 +139,40 @@ private:
         WPARAM wParam, LPARAM lParam);
     static LRESULT CALLBACK wndProcCallHandler(HWND hWnd, UINT msg,
         WPARAM wParam, LPARAM lParam);
+
+    template <class T = MyType>
+    requires requires (T&& t) {
+        T::MyTraits::regist( t.getHInst() );
+        T::MyTraits::create( t.getHInst(), &t );
+    }
+    static consteval bool __canCallDefaultConstructor() { return true; }
+    template <class T = MyType>
+    static consteval bool __canCallDefaultConstructor() { return false; }
+
+    template <class ... Args, std::size_t N = 0, class T = MyType>
+    requires requires (T&& t, Args&& ... args) {
+        T::MyTraits::regist( t.getHInst() );
+        T::MyTraits::create( t.getHInst(), &t, std::forward<Args>(args)... );
+    }
+    static consteval bool __canCallPFConstructor() { return true; }
+    template <class ... Args, std::size_t N = 0, class T = MyType>
+    static consteval bool __canCallPFConstructor() { return false; }
+
+    template <class T = MyType>
+    requires requires (T&& t) {
+        T::MyTraits::show( t.nativeHandle(), 0 );
+    }
+    static consteval bool __canCallShow() { return true; }
+    template <class T = MyType>
+    static consteval bool __canCallShow() { return false; }
+
+    template <class T = MyType>
+    requires requires (T&& t) {
+        T::MyTraits::destroy( t.nativeHandle() );
+    }
+    static consteval bool __canCallDestroy() { return true; }
+    template <class T = MyType>
+    static consteval bool __canCallDestroy() { return false; }
 
     void setNativeTitle(const MyChar* title)
     {

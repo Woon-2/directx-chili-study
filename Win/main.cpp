@@ -2,7 +2,7 @@
 
 #include <Windows.h>
 
-using MyWindow = Win32::Window< Win32::MainWindowTraits<WCHAR> >;
+using MyWindow = Win32::Window< Win32::BasicWindowTraits<WCHAR> >;
 
 int CALLBACK WinMain(
     HINSTANCE hInst,
@@ -12,7 +12,7 @@ int CALLBACK WinMain(
 )
 {
     MyWindow::setHInst(hInst);
-    MyWindow wnd(L"Fuck", Win32::WndFrame{200, 200, 400, 300});
+    MyWindow wnd;
 
     wnd.msgLoop();
 
