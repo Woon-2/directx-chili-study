@@ -9,12 +9,14 @@ template <class Traits>
 Window<Traits>::Window()
 {
     static_assert(
-        is_invocation_valid(
-            []() -> decltype( Traits::regist( getHInst() ) ){}
-        )
-        || is_invocation_valid(
-            []() -> decltype( Traits::create( getHInst(), this ) ){}
-        ),
+        std::is_same_v< void, decltype( Traits::regist( getHInst() ) ) >
+        && std::is_same_v< HWND, decltype( Traits::create( getHInst(), this ) ) >,
+        // is_invocation_valid(
+        //     []() -> decltype( Traits::regist( getHInst() ) ){}
+        // )
+        // || is_invocation_valid(
+        //     []() -> decltype( Traits::create( getHInst(), this ) ){}
+        // ),
         "default constructor call of Window isn't valid. "
         "invocations of Traits::regist( getHInst() ) and "
         "Traits::create( getHInst(), this ) must be valid."
@@ -38,13 +40,17 @@ template <class ... Args>
 Window<Traits>::Window(Args&& ... args)
 {
     static_assert(
-        is_invocation_valid(
-            []() -> decltype( Traits::regist( getHInst() ) ){}
-        )
-        || is_invocation_valid(
-            []() -> decltype( Traits::create( getHInst(), this,
-                std::forward<Args>(args)... ) ){}
-        ),
+        std::is_same_v< void, decltype( Traits::regist( getHInst() ) ) >
+        && std::is_same_v< HWND, decltype(
+            Traits::create( getHInst(), this, std::forward<Args>(args)... )
+        ) >,
+        // is_invocation_valid(
+        //     []() -> decltype( Traits::regist( getHInst() ) ){}
+        // )
+        // || is_invocation_valid(
+        //     []() -> decltype( Traits::create( getHInst(), this,
+        //         std::forward<Args>(args)... ) ){}
+        // ),
         "default constructor call of Window isn't valid. "
         "invocations of Traits::regist( getHInst() ) and "
         "Traits::create( getHInst(), this, std::forward<Args>(args)... ) must be valid."
@@ -362,7 +368,10 @@ void MainWindowTraits<CharT>::regist(HINSTANCE hInst)
         .hInstance = hInst,
         .hIcon = nullptr,
         .hCursor = nullptr,
-        .hbrBackground = nullptr 
+        .hbrBackground = nullptr,
+        .lpszMenuName = nullptr,
+        .lpszClassName = clsName().data(),
+        .hIconSm = nullptr
     };
 
     ATOM bFine{};

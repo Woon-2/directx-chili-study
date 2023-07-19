@@ -212,14 +212,7 @@ struct BasicWindowTraits
             throw WND_LAST_EXCEPT();
         }
     }
-    static void show(HWND hWnd, int nCmdShow)
-    {
-        auto bFine = ShowWindow(hWnd, nCmdShow);
-
-        if (!bFine) {
-            throw WND_LAST_EXCEPT();
-        }
-    }
+    static void show(HWND hWnd, int nCmdShow) { ShowWindow(hWnd, nCmdShow); }
 };
 
 template <Win32Char CharT>
@@ -243,14 +236,7 @@ struct MainWindowTraits
             throw WND_LAST_EXCEPT();
         }
     }
-    static void show(HWND hWnd, int nCmdShow)
-    {
-        auto bFine = ShowWindow(hWnd, nCmdShow);
-
-        if (!bFine) {
-            throw WND_LAST_EXCEPT();
-        }
-    }
+    static void show(HWND hWnd, int nCmdShow) { ShowWindow(hWnd, nCmdShow); }
 };
 
 template <class Traits>
