@@ -61,7 +61,7 @@ concept canRegist = requires (Args&& ... args) {
 
 template <class Traits, class ... Args>
 concept canCreate = requires (Args&& ... args) {
-    Traits::create( std::forward<Args>(args)... );
+    { Traits::create( std::forward<Args>(args)... ) } -> std::same_as<HWND>;
 };
 
 template <class Traits, class ... Args>
