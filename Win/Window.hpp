@@ -196,15 +196,34 @@ public:
 template <Win32Char CharT>
 struct BasicWindowTraits
 {
+public:
     using MyWindow = Window< BasicWindowTraits >;
     using MyChar = CharT;
     using MyString = std::basic_string_view<MyChar>;
 
-    static constexpr const MyString
-        clsName() noexcept;
-    static constexpr const MyString
-        defWndName() noexcept;
-    static constexpr const WndFrame defWndFrame() noexcept;
+    static constexpr const MyString clsName() noexcept
+    {
+        if constexpr ( std::is_same_v<MyChar, CHAR> ) {
+            return "WT";
+        }
+        else /* WCHAR */ {
+            return L"WT";
+        }
+    }
+    static constexpr const MyString defWndName() noexcept
+    {
+        if constexpr ( std::is_same_v<MyChar, CHAR> ) {
+            return "Window";
+        }
+        else /* WCHAR */ {
+            return L"Window";
+        }
+    }
+    static constexpr const WndFrame defWndFrame() noexcept
+    {
+        return WndFrame{ .x=200, .y=200, .width=800, .height=600 };
+    }
+
     static void regist(HINSTANCE hInst);
     static void unregist(HINSTANCE hInst);
     static HWND create(HINSTANCE hInst, MyWindow* pWnd);

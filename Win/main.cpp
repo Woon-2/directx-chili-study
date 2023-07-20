@@ -131,7 +131,7 @@ HWND MainWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
 
 }   // namespace Win32
 
-using MyWindow = Win32::Window< Win32::MainWindowTraits<WCHAR> >;
+using MyWindow = Win32::Window< Win32::BasicWindowTraits<WCHAR> >;
 
 int CALLBACK WinMain(
     HINSTANCE hInst,
@@ -141,7 +141,7 @@ int CALLBACK WinMain(
 )
 {
     MyWindow::setHInst(hInst);
-    MyWindow wnd(L"Yeah", Win32::WndFrame{100, 100, 400, 300});
+    MyWindow wnd;
 
     wnd.msgLoop();
 

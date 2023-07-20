@@ -156,39 +156,9 @@ LRESULT BasicMsgHandler<Wnd>::operator()(const Message& msg) // overriden
 }
 
 template <Win32Char CharT>
-constexpr const BasicWindowTraits<CharT>::MyString
-    BasicWindowTraits<CharT>::clsName() noexcept
-{
-    if constexpr ( std::is_same_v<CharT, CHAR> ) {
-        return "WT";
-    }
-    else /* WCHAR */ {
-        return L"WT";
-    }
-}
-
-template <Win32Char CharT>
-constexpr const BasicWindowTraits<CharT>::MyString
-    BasicWindowTraits<CharT>::defWndName() noexcept
-{
-    if constexpr ( std::is_same_v<CharT, CHAR> ) {
-        return "Window";
-    }
-    else /* WCHAR */ {
-        return L"Window";
-    }
-}
-
-template <Win32Char CharT>
-constexpr const WndFrame BasicWindowTraits<CharT>::defWndFrame() noexcept
-{
-    return WndFrame{ .x=200, .y=200, .width=800, .height=600 };
-}
-
-template <Win32Char CharT>
 void BasicWindowTraits<CharT>::regist(HINSTANCE hInst)
 {
-    using WndClass = std::conditional_t< std::is_same_v<CharT, CHAR>,
+    using WndClass = std::conditional_t< std::is_same_v<MyChar, CHAR>,
         WNDCLASSEXA, WNDCLASSEXW >;
 
     WndClass wc = {
@@ -208,7 +178,7 @@ void BasicWindowTraits<CharT>::regist(HINSTANCE hInst)
     
     ATOM bFine{};
 
-    if constexpr ( std::is_same_v<CharT, CHAR> ) {
+    if constexpr ( std::is_same_v<MyChar, CHAR> ) {
         bFine = RegisterClassExA(&wc);
     }
     else /* WCHAR */ {
@@ -225,7 +195,7 @@ void BasicWindowTraits<CharT>::unregist(HINSTANCE hInst)
 {
     bool bFine = false;
 
-    if constexpr ( std::is_same_v<CharT, CHAR> ) {
+    if constexpr ( std::is_same_v<MyChar, CHAR> ) {
         bFine = UnregisterClassA( clsName().data(), hInst );
     }
     else /* WCHAR */ {
@@ -280,7 +250,7 @@ HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
 
     HWND hWnd = nullptr;
 
-    if constexpr ( std::is_same_v<CharT, CHAR> ) {
+    if constexpr ( std::is_same_v<MyChar, CHAR> ) {
         hWnd = CreateWindowExA(ARG_LISTS);
     }
     else /* WCHAR */ {
