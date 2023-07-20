@@ -79,6 +79,7 @@
         "bitset": "cpp",
         "queue": "cpp",
         "ranges": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "string_view": "cpp"
     }
 }

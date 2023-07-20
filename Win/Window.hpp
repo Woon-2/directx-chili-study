@@ -6,10 +6,10 @@
 #include <string>
 #include <string_view>
 #include <memory>
+#include <concepts>
 
 #include <AdditionalConcepts.hpp>
 #include <Woon2Exception.hpp>
-#include <Invocable.hpp>
 
 #define WND_EXCEPT(hr) WindowException(__LINE__, __FILE__, hr)
 #define WND_LAST_EXCEPT() WND_EXCEPT( GetLastError() )
