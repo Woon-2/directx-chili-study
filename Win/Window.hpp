@@ -54,6 +54,31 @@ struct Message
     LPARAM lParam;
 };
 
+template <class Traits, class ... Args>
+concept canRegist = requires (Args&& ... args) {
+    Traits::regist( std::forward<Args>(args)... );
+};
+
+template <class Traits, class ... Args>
+concept canCreate = requires (Args&& ... args) {
+    Traits::create( std::forward<Args>(args)... );
+};
+
+template <class Traits, class ... Args>
+concept canShow = requires (Args&& ... args) {
+    Traits::show( std::forward<Args>(args)... );
+};
+
+template <class Traits, class ... Args>
+concept canDestroy = requires (Args&& ... args) {
+    Traits::destroy( std::forward<Args>(args)... );
+};
+
+template <class Traits, class ... Args>
+concept canUnregist = requires (Args&& ... args) {
+    Traits::unregist( std::forward<Args>(args)... );
+};
+
 template <class Wnd>
 class MsgHandler
 {
@@ -79,33 +104,29 @@ private:
     Wnd& window_;
 };
 
-
 template <class Traits>
 class Window
 {
 public:
-    friend Traits;
-
     using MyType = Window<Traits>;
     using MyHandler = MsgHandler< Window<Traits> >;
     using MyTraits = Traits;
     using MyChar = Traits::MyChar;
     using MyString = std::basic_string_view<MyChar>;
 
-    Window();
-    ~Window()
-    { 
-        static_assert( __canCallDestroy<>(),
-            "destructor of Window isn't valid. "
-            "invocation of Traits::destroy( nativeHandle() ) must be valid."
-        );
+    friend MyTraits;
 
+    Window() requires false;
+    ~Window() requires canDestroy<Traits, HWND>
+    { 
         Traits::destroy( nativeHandle() );
     }
     template <class ... Args>
+    requires canRegist<Traits, HINSTANCE>
+        && canCreate<Traits, HINSTANCE, Window<Traits>*, Args...>
     Window(Args&& ... args);
-    Window(const Window&) = delete;
-    Window(Window&&) = delete;
+    Window(const Window&) requires false;
+    Window(Window&&) requires false;
     Window& operator=(const Window&) = delete;
     Window& operator=(Window&&) = delete;
 
@@ -123,14 +144,8 @@ public:
         title_ = std::move(title);
         setNativeTitle( getTitle().data() );
     }
-    void show(int nCmdShow)
+    void show(int nCmdShow) requires canShow<Traits, HWND, int>
     {
-        static_assert( __canCallShow<>(),
-            "call of Window::show isn't valid. "
-            "invocation of Traits::show( nativeHandle(), "
-            "nCmdShow ) must be valid."
-        );
-
         Traits::show( nativeHandle(), nCmdShow );
     }
 
@@ -139,40 +154,6 @@ private:
         WPARAM wParam, LPARAM lParam);
     static LRESULT CALLBACK wndProcCallHandler(HWND hWnd, UINT msg,
         WPARAM wParam, LPARAM lParam);
-
-    template <class T = MyType>
-    requires requires (T&& t) {
-        T::MyTraits::regist( t.getHInst() );
-        T::MyTraits::create( t.getHInst(), &t );
-    }
-    static consteval bool __canCallDefaultConstructor() { return true; }
-    template <class T = MyType>
-    static consteval bool __canCallDefaultConstructor() { return false; }
-
-    template <class ... Args, std::size_t N = 0, class T = MyType>
-    requires requires (T&& t, Args&& ... args) {
-        T::MyTraits::regist( t.getHInst() );
-        T::MyTraits::create( t.getHInst(), &t, std::forward<Args>(args)... );
-    }
-    static consteval bool __canCallPFConstructor() { return true; }
-    template <class ... Args, std::size_t N = 0, class T = MyType>
-    static consteval bool __canCallPFConstructor() { return false; }
-
-    template <class T = MyType>
-    requires requires (T&& t) {
-        T::MyTraits::show( t.nativeHandle(), 0 );
-    }
-    static consteval bool __canCallShow() { return true; }
-    template <class T = MyType>
-    static consteval bool __canCallShow() { return false; }
-
-    template <class T = MyType>
-    requires requires (T&& t) {
-        T::MyTraits::destroy( t.nativeHandle() );
-    }
-    static consteval bool __canCallDestroy() { return true; }
-    template <class T = MyType>
-    static consteval bool __canCallDestroy() { return false; }
 
     void setNativeTitle(const MyChar* title)
     {
@@ -232,30 +213,6 @@ struct BasicWindowTraits
         const WndFrame& wndFrame);
     static HWND create(HINSTANCE hInst, MyWindow* pWnd, MyString wndName,
         const WndFrame& wndFrame);
-    static void destroy(HWND hWnd)
-    {
-        auto bFine = DestroyWindow(hWnd);
-
-        if (!bFine) {
-            throw WND_LAST_EXCEPT();
-        }
-    }
-    static void show(HWND hWnd, int nCmdShow) { ShowWindow(hWnd, nCmdShow); }
-};
-
-template <Win32Char CharT>
-struct MainWindowTraits
-{
-    using MyWindow = Window< MainWindowTraits >;
-    using MyChar = CharT;
-    using MyString = std::basic_string_view<MyChar>;
-
-    static constexpr const MyString
-        clsName() noexcept;
-    static void regist(HINSTANCE hInst);
-    static void unregist(HINSTANCE hInst);
-    static HWND create(HINSTANCE hInst, MyWindow* pWnd,
-        MyString wndName, const WndFrame& wndFrame);
     static void destroy(HWND hWnd)
     {
         auto bFine = DestroyWindow(hWnd);

@@ -6,37 +6,11 @@ namespace Win32
 {
 
 template <class Traits>
-Window<Traits>::Window()
-{
-    static_assert( __canCallDefaultConstructor<>(),
-        "default constructor call of Window isn't valid. "
-        "invocations of Traits::regist( getHInst() ) and "
-        "Traits::create( getHInst(), this, std::forward<Args>(args)... ) must be valid."
-    );
-
-    if (!bRegist) [[unlikely]] {
-        Traits::regist( getHInst() );
-        bRegist = true;
-    }
-
-    setMsgHandler< BasicMsgHandler< MyType > >();
-
-    // enclose this in the Win32 Window,
-    // which makes getting Window object from Win32 window handle possible.
-    hWnd_ = Traits::create( getHInst(), this );
-    show(SW_SHOWDEFAULT);
-}
-
-template <class Traits>
 template <class ... Args>
+requires canRegist< Traits, HINSTANCE >
+    && canCreate< Traits, HINSTANCE, Window<Traits>*, Args... >
 Window<Traits>::Window(Args&& ... args)
 {
-    static_assert( __canCallPFConstructor<Args...>(),
-        "perferct forwarding constructor call of Window isn't valid. "
-        "invocations of Traits::regist( getHInst() ) and "
-        "Traits::create( getHInst(), this, std::forward<Args>(args)... ) must be valid."
-    );
-
     if (!bRegist) [[unlikely]] {
         Traits::regist( getHInst() );
         bRegist = true;
@@ -290,106 +264,6 @@ HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
     // additionally store pointer to Window,
     // which makes getting Window object from Win32 window handle possible.
 
-    #define ARG_LISTS   \
-        /* .dwExStyle = */ 0, \
-        /* .lpClassName = */ clsName().data(),    \
-        /* .lpWindowName = */ wndName.data(), \
-        /* .dwStyle = */ WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,    \
-        /* .X = */ wndFrame.x,    \
-        /* .Y = */ wndFrame.y,    \
-        /* .nWidth = */ wndFrame.width,   \
-        /* .nHeight = */ wndFrame.height, \
-        /* .hWndParent = */ nullptr,   \
-        /* .hMenu = */ nullptr,    \
-        /* .hInstance = */ hInst, \
-        /* .lpParam = */ pWnd
-
-    HWND hWnd = nullptr;
-
-    if constexpr ( std::is_same_v<CharT, CHAR> ) {
-        hWnd = CreateWindowExA(ARG_LISTS);
-    }
-    else /* WCHAR */ {
-        hWnd = CreateWindowExW(ARG_LISTS);
-    }
-
-    if (!hWnd) [[unlikely]] {
-        throw WND_LAST_EXCEPT();
-    }
-
-    return hWnd;
-
-    #undef ARG_LISTS
-}
-
-template <Win32Char CharT>
-constexpr const MainWindowTraits<CharT>::MyString
-MainWindowTraits<CharT>::clsName() noexcept
-{
-    if constexpr ( std::is_same_v<CharT, CHAR> ) {
-        return "MW";
-    }
-    else /* WCHAR */ {
-        return L"MW";
-    }
-}
-
-template <Win32Char CharT>
-void MainWindowTraits<CharT>::regist(HINSTANCE hInst)
-{
-    using WndClass = std::conditional_t< std::is_same_v<CharT, CHAR>,
-        WNDCLASSEXA, WNDCLASSEXW >;
-
-    WndClass wc = {
-        .cbSize = sizeof(WndClass),
-        .style = CS_OWNDC,
-        .lpfnWndProc = MyWindow::wndProcSetupHandler,
-        .cbClsExtra = 0,
-        .cbWndExtra = sizeof(LPVOID),
-        .hInstance = hInst,
-        .hIcon = nullptr,
-        .hCursor = nullptr,
-        .hbrBackground = nullptr,
-        .lpszMenuName = nullptr,
-        .lpszClassName = clsName().data(),
-        .hIconSm = nullptr
-    };
-
-    ATOM bFine{};
-
-    if constexpr ( std::is_same_v<CharT, CHAR> ) {
-        bFine = RegisterClassExA(&wc);
-    }
-    else /* WCHAR */ {
-        bFine = RegisterClassExW(&wc);
-    }
-
-    if (!bFine) [[unlikely]] {
-        throw WND_LAST_EXCEPT();
-    }
-}
-
-template <Win32Char CharT>
-void MainWindowTraits<CharT>::unregist(HINSTANCE hInst)
-{
-    bool bFine = false;
-
-    if constexpr ( std::is_same_v<CharT, CHAR> ) {
-        bFine = UnregisterClassA( clsName().data(), hInst );
-    }
-    else /* WCHAR */ {
-        bFine = UnregisterClassW( clsName().data(), hInst );
-    }
-
-    if (!bFine) [[unlikely]] {
-        throw WND_LAST_EXCEPT();
-    }
-}
-
-template <Win32Char CharT>
-HWND MainWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
-    MyString wndName, const WndFrame& wndFrame)
-{
     #define ARG_LISTS   \
         /* .dwExStyle = */ 0, \
         /* .lpClassName = */ clsName().data(),    \
