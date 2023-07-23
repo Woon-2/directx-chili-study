@@ -151,6 +151,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{D0B6DED0-3838-3FBF-A71D-417B72B2465A}</Project>
       <Name>Win</Name>
     </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Win\WinMsgMap.vcxproj">
+      <Project>{0076A743-3168-3B97-A222-8171393E67A1}</Project>
+      <Name>WinMsgMap</Name>
+    </ProjectReference>
     <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\_deps\googletest-build\googlemock\gmock.vcxproj">
       <Project>{10908256-0A3E-3528-BB33-C1D5DD7AE738}</Project>
       <Name>gmock</Name>

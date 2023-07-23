@@ -1,6 +1,7 @@
 #include "Window.hpp"
 
 #include <type_traits>
+#include <cassert>
 
 namespace Win32
 {
@@ -56,10 +57,9 @@ template <class Traits>
 LRESULT Window<Traits>::wndProcSetupHandler(HWND hWnd, UINT msg,
     WPARAM wParam, LPARAM lParam)
 {
-    constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
-        DefWindowProcA : DefWindowProcW;
-
-    if (msg != WM_NCCREATE) {
+    if (msg != WM_CREATE) {
+        constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
+            DefWindowProcA : DefWindowProcW;
         return defWindowProc(hWnd, msg, wParam, lParam);
     }
 
@@ -68,21 +68,26 @@ LRESULT Window<Traits>::wndProcSetupHandler(HWND hWnd, UINT msg,
 
     // extract ptr to window from creation data
     const auto pCreate = reinterpret_cast< const CreateStruct* >( lParam );
-    auto pWnd = static_cast< Window<Traits>* >( pCreate->lpCreateParams );
+    assert(pCreate != nullptr);
+
+    auto pWnd = static_cast< MyType* >( pCreate->lpCreateParams );
+    assert(pWnd != nullptr);
 
     constexpr auto& setWindowLongPtr = std::is_same_v<MyChar, CHAR> ?
         SetWindowLongPtrA : SetWindowLongPtrW;
 
     // make WinAPI-managed user data to store the ptr to window
     setWindowLongPtr( hWnd, GWLP_USERDATA,
-        reinterpret_cast<LONG_PTR>( pWnd ) );
+        reinterpret_cast<LONG_PTR>( pWnd )
+    );
 
     // setup is done,
     // substitute message WndProc with regular one.
     setWindowLongPtr( hWnd, GWLP_WNDPROC,
-        reinterpret_cast<LONG_PTR>(wndProcCallHandler) );
+        reinterpret_cast<LONG_PTR>( wndProcCallHandler )
+    );
 
-    return defWindowProc(hWnd, msg, wParam, lParam); 
+    return wndProcCallHandler(hWnd, msg, wParam, lParam); 
 }
 
 template <class Traits>
@@ -99,15 +104,8 @@ LRESULT Window<Traits>::wndProcCallHandler(HWND hWnd, UINT msg,
         getWindowLongPtr(hWnd, GWLP_USERDATA)
     );
 
-    if (!pWnd) [[unlikely]] {
-        throw WND_LAST_EXCEPT();
-    }
-
-    if ( !pWnd->nativeHandle() || !pWnd->pHandleMsg_ ) [[unlikely]] {
-        constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
-            DefWindowProcA : DefWindowProcW;
-        return defWindowProc(hWnd, msg, wParam, lParam);
-    }
+    assert(hWnd != nullptr);
+    assert(pWnd->nativeHandle() == hWnd);
 
     // call the window's message handler
     return ( *(pWnd->pHandleMsg_) )( Message{ msg, wParam, lParam } );
