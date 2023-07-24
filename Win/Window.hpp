@@ -180,9 +180,9 @@ public:
     }
 
 private:
-    static LRESULT CALLBACK wndProcSetupHandler(HWND hWnd, UINT msg,
+    static LRESULT CALLBACK wndProcSetupHandler(HWND hWnd, UINT type,
         WPARAM wParam, LPARAM lParam);
-    static LRESULT CALLBACK wndProcCallHandler(HWND hWnd, UINT msg,
+    static LRESULT CALLBACK wndProcCallHandler(HWND hWnd, UINT type,
         WPARAM wParam, LPARAM lParam);
 
     void setNativeTitle(const MyChar* title)

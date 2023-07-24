@@ -86,14 +86,14 @@ void Window<Traits>::msgLoop()
 }
 
 template <class Traits>
-LRESULT Window<Traits>::wndProcSetupHandler(HWND hWnd, UINT msg,
+LRESULT Window<Traits>::wndProcSetupHandler(HWND hWnd, UINT type,
     WPARAM wParam, LPARAM lParam)
 {
     constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
         DefWindowProcA : DefWindowProcW;
 
-    if (msg != WM_CREATE) {
-        return defWindowProc(hWnd, msg, wParam, lParam);
+    if (type != WM_CREATE) {
+        return defWindowProc(hWnd, type, wParam, lParam);
     }
 
     using CreateStruct = std::conditional_t< std::is_same_v<MyChar, CHAR>,
@@ -120,7 +120,7 @@ LRESULT Window<Traits>::wndProcSetupHandler(HWND hWnd, UINT msg,
         reinterpret_cast<LONG_PTR>( wndProcCallHandler )
     );
 
-    return defWindowProc(hWnd, msg, wParam, lParam); 
+    return defWindowProc(hWnd, type, wParam, lParam); 
 }
 
 template <class Traits>
@@ -158,7 +158,7 @@ LRESULT Window<Traits>::wndProcCallHandler(HWND hWnd, UINT type,
     constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
         DefWindowProcA : DefWindowProcW;
 
-    return defWindowProc(hWnd, msg, wParam, lParam);
+    return defWindowProc(hWnd, type, wParam, lParam);
 }
 
 template <Win32Char CharT>
