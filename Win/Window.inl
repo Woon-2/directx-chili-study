@@ -2,22 +2,56 @@
 
 #include <type_traits>
 #include <cassert>
+#include <ranges>
+#include <algorithm>
 
 namespace Win32
 {
+
+template <class Wnd>
+std::optional<LRESULT> BasicMsgHandler<Wnd>::
+    operator()(const Message& msg) // overriden
+{
+    std::optional<LRESULT> result{};
+
+    try {
+        switch (msg.type) {
+        case WM_CLOSE:
+            PostQuitMessage(0);
+            return 0;
+
+        default: return {};
+        }
+    }
+    catch (const WindowException& e) {
+        MessageBoxA(nullptr, e.what(), "Window Exception",
+            MB_OK | MB_ICONEXCLAMATION);
+    }
+    catch (const std::exception& e) {
+        MessageBoxA(nullptr, e.what(), "Standard Exception",
+            MB_OK | MB_ICONEXCLAMATION);
+    }
+    catch(...) {
+        MessageBoxA(nullptr, "no details available",
+            "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+    }
+
+    return result;
+}
 
 template <class Traits>
 template <class ... Args>
 requires canRegist< Traits, HINSTANCE >
     && canCreate< Traits, HINSTANCE, Window<Traits>*, Args... >
 Window<Traits>::Window(Args&& ... args)
+    : title_{},
+    msgHandlers_{},
+    hWnd_{nullptr}
 {
     if (!bRegist) [[unlikely]] {
         Traits::regist( getHInst() );
         bRegist = true;
     }
-
-    setMsgHandler< BasicMsgHandler< MyType > >();
 
     // enclose this in the Win32 Window,
     // which makes getting Window object from Win32 window handle possible.
@@ -57,9 +91,10 @@ template <class Traits>
 LRESULT Window<Traits>::wndProcSetupHandler(HWND hWnd, UINT msg,
     WPARAM wParam, LPARAM lParam)
 {
+    constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
+        DefWindowProcA : DefWindowProcW;
+
     if (msg != WM_CREATE) {
-        constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
-            DefWindowProcA : DefWindowProcW;
         return defWindowProc(hWnd, msg, wParam, lParam);
     }
 
@@ -87,7 +122,11 @@ LRESULT Window<Traits>::wndProcSetupHandler(HWND hWnd, UINT msg,
         reinterpret_cast<LONG_PTR>( wndProcCallHandler )
     );
 
-    return wndProcCallHandler(hWnd, msg, wParam, lParam); 
+    // as WM_CREATE message is popped in this window procedure,
+    // post another WM_CREATE message for Window's message handler
+    // to handle WM_CREATE message.
+
+    return defWindowProc(hWnd, msg, wParam, lParam); 
 }
 
 template <class Traits>
@@ -107,50 +146,24 @@ LRESULT Window<Traits>::wndProcCallHandler(HWND hWnd, UINT msg,
     assert(hWnd != nullptr);
     assert(pWnd->nativeHandle() == hWnd);
 
-    // call the window's message handler
-    return ( *(pWnd->pHandleMsg_) )( Message{ msg, wParam, lParam } );
-}
+    // call the window's message handler chain
+    // until the message is handled. 
+    std::optional<LRESULT> res{};
 
-template <class Wnd>
-LRESULT BasicMsgHandler<Wnd>::operator()(const Message& msg) // overriden
-{
-    LRESULT result{};
+    auto bHandled = std::ranges::any_of( pWnd->msgHandlers(),
+        [&](auto& pHandleMsg) {
+            res = (*pHandleMsg)( Message{ msg, wParam, lParam } );
+            return res.has_value();
+        }
+    );
+    if (bHandled) {
+        return res.value();
+    }
 
-    constexpr auto& defWindProc = std::is_same_v<MyChar, CHAR> ?
+    constexpr auto& defWindowProc = std::is_same_v<MyChar, CHAR> ?
         DefWindowProcA : DefWindowProcW;
 
-    try {
-        switch (msg.type) {
-        case WM_CLOSE:
-            PostQuitMessage(0);
-            break;
-
-        default: break;
-        }
-
-        result = defWindProc( window().nativeHandle(), msg.type,
-            msg.wParam, msg.lParam );
-
-        if (result < 0) [[unlikely]] {
-            throw WND_LAST_EXCEPT();
-        }
-
-        return result;
-    }
-    catch (const WindowException& e) {
-        MessageBoxA(nullptr, e.what(), "Window Exception",
-            MB_OK | MB_ICONEXCLAMATION);
-    }
-    catch (const std::exception& e) {
-        MessageBoxA(nullptr, e.what(), "Standard Exception",
-            MB_OK | MB_ICONEXCLAMATION);
-    }
-    catch(...) {
-        MessageBoxA(nullptr, "no details available",
-            "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
-    }
-
-    return result;
+    return defWindowProc(hWnd, msg, wParam, lParam);
 }
 
 template <Win32Char CharT>

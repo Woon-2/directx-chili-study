@@ -7,6 +7,8 @@
 #include <string_view>
 #include <memory>
 #include <concepts>
+#include <list>
+#include <optional>
 
 #include <AdditionalConcepts.hpp>
 #include <Woon2Exception.hpp>
@@ -94,7 +96,7 @@ public:
     MsgHandler& operator=(MsgHandler&&) = delete;
     virtual ~MsgHandler() {}
 
-    virtual LRESULT operator()(const Message& msg) = 0;
+    virtual std::optional<LRESULT> operator()(const Message& msg) = 0;
 
 protected:
     const Wnd& window() const noexcept { return window_; }
@@ -102,6 +104,20 @@ protected:
 
 private:
     Wnd& window_;
+};
+
+template <class Wnd>
+class BasicMsgHandler : public MsgHandler<Wnd>
+{
+public:
+    using MsgHandler<Wnd>::window;
+    using MyChar = typename Wnd::MyChar;
+
+    BasicMsgHandler(Wnd& wnd)
+        : MsgHandler<Wnd>(wnd)
+    {}
+
+    std::optional<LRESULT> operator()(const Message& msg) override;
 };
 
 template <class Traits>
@@ -119,7 +135,21 @@ public:
     Window() requires false;
     ~Window() requires canDestroy<Traits, HWND>
     { 
-        Traits::destroy( nativeHandle() );
+        try {
+            Traits::destroy( nativeHandle() );
+        }
+        catch (const WindowException& e) {
+            MessageBoxA(nullptr, e.what(), "Window Exception",
+                MB_OK | MB_ICONEXCLAMATION);
+        }
+        catch (const std::exception& e) {
+            MessageBoxA(nullptr, e.what(), "Standard Exception",
+                MB_OK | MB_ICONEXCLAMATION);
+        }
+        catch(...) {
+            MessageBoxA(nullptr, "no details available",
+                "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+        }
     }
     template <class ... Args>
     requires canRegist<Traits, HINSTANCE>
@@ -136,8 +166,8 @@ public:
     static void msgLoop();
 
     HWND nativeHandle() noexcept { return hWnd_; }
-    template <class MH>
-    void setMsgHandler() { pHandleMsg_.reset( new MH(*this) ); }
+    auto& msgHandlers() noexcept { return msgHandlers_; }
+    const auto& msgHandlers() const noexcept { return msgHandlers_; }
     const MyString& getTitle() const noexcept { return title_; }
     void setTitle(MyString title)
     {
@@ -175,22 +205,8 @@ private:
     static HINSTANCE hInst;
 
     MyString title_;
-    std::unique_ptr<MyHandler> pHandleMsg_;
+    std::list< std::shared_ptr<MyHandler> > msgHandlers_;
     HWND hWnd_;
-};
-
-template <class Wnd>
-class BasicMsgHandler : public MsgHandler<Wnd>
-{
-public:
-    using MsgHandler<Wnd>::window;
-    using MyChar = typename Wnd::MyChar;
-
-    BasicMsgHandler(Wnd& wnd)
-        : MsgHandler<Wnd>(wnd)
-    {}
-
-    LRESULT operator()(const Message& msg) override;
 };
 
 template <Win32Char CharT>
