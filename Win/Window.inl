@@ -42,9 +42,7 @@ template <class ... Args>
 requires canRegist< Traits, HINSTANCE >
     && canCreate< Traits, HINSTANCE, Window<Traits>*, Args... >
 Window<Traits>::Window(Args&& ... args)
-    : title_{},
-    msgHandlers_{},
-    hWnd_{nullptr}
+    : title_{}, msgHandlers_{}, hWnd_{nullptr}
 {
     if (!bRegist) [[unlikely]] {
         Traits::regist( getHInst() );
