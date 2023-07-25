@@ -205,7 +205,7 @@ private:
     static HINSTANCE hInst;
 
     MyString title_;
-    std::list< std::shared_ptr<MyHandler> > msgHandlers_;
+    std::list< std::unique_ptr<MyHandler> > msgHandlers_;
     HWND hWnd_;
 };
 

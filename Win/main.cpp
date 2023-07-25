@@ -143,7 +143,7 @@ int CALLBACK WinMain(
     MyWindow::setHInst(hInst);
     MyWindow wnd;
     wnd.msgHandlers().push_back(
-        std::make_shared< Win32::BasicMsgHandler<MyWindow> >(wnd) 
+        std::make_unique< Win32::BasicMsgHandler<MyWindow> >(wnd) 
     );
 
     wnd.msgLoop();
