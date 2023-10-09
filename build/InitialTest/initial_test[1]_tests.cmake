@@ -1,5 +1,0 @@
-add_test([=[HelloTest.Hello]=]  [==[C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/InitialTest/Release/initial_test.exe]==] [==[--gtest_filter=HelloTest.Hello]==] --gtest_also_run_disabled_tests)
-set_tests_properties([=[HelloTest.Hello]=]  PROPERTIES WORKING_DIRECTORY [==[C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/InitialTest]==] SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
-add_test([=[Termination.Termination]=]  [==[C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/InitialTest/Release/initial_test.exe]==] [==[--gtest_filter=Termination.Termination]==] --gtest_also_run_disabled_tests)
-set_tests_properties([=[Termination.Termination]=]  PROPERTIES WORKING_DIRECTORY [==[C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/build/InitialTest]==] SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
-set(  initial_test_TESTS HelloTest.Hello Termination.Termination)
