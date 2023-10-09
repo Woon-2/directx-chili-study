@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(Utility VERSION 2023.10.09 LANGUAGES CXX)
-
-add_subdirectory(clp)
-
 # top level configuration
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
@@ -44,6 +40,10 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     endif()
 
 endif()  # top level configuration
+
+project(Utility VERSION 2023.10.09 LANGUAGES CXX)
+
+add_subdirectory(clp)
 
 function(auto_configure TARGET_NAME ACCESS_MODIFIER)
     target_compile_features("${TARGET_NAME}" PRIVATE cxx_std_20)
