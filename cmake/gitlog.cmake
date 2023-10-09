@@ -1,8 +1,4 @@
 function(ACTIVATE_GITLOG)
-    if(DEFINED CACHE{GITLOG_INCLUDED})
-        return()
-    endif()
-
     if(NOT DEFINED GIT_FOUND)
         find_package(Git)
     endif()
@@ -24,6 +20,4 @@ function(ACTIVATE_GITLOG)
         # note: do not wrap the COMMAND with ""
         COMMAND ${GIT_EXECUTABLE} log --pretty=reference -6
     )
-
-    option(GITLOG_INCLUDED "set to ON if gitlog has been included at least once." ON)
 endfunction()

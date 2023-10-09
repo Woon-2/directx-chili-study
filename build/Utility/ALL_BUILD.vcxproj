@@ -80,7 +80,7 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\cmake\common_configuration.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/Utility/CMakeLists.txt</Message>
@@ -93,7 +93,7 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\cmake\common_configuration.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
     </CustomBuild>
@@ -107,45 +107,15 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\Bit.vcxproj">
-      <Project>{1E48DE30-55E7-3ADC-A902-3A436E6870E2}</Project>
-      <Name>Bit</Name>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\GenIterateCall.vcxproj">
+      <Project>{D02AD8E6-604B-379F-A646-498E8AFCC82C}</Project>
+      <Name>GenIterateCall</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\clp\gclp.vcxproj">
+      <Project>{911001C0-F902-3FCD-8AA0-52DF7F291C66}</Project>
+      <Name>gclp</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\Quote.vcxproj">
-      <Project>{FFB9B49C-2571-37CB-A7DF-9AF47A9D6CB1}</Project>
-      <Name>Quote</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleEnumUtil.vcxproj">
-      <Project>{3F90D0A6-75B5-3E0F-9AAA-BDC6512C61E9}</Project>
-      <Name>SampleEnumUtil</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleGenIterateCall.vcxproj">
-      <Project>{A71F4CD0-1C59-3C06-9E8F-1CF5B4D5CC15}</Project>
-      <Name>SampleGenIterateCall</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleGenNumArgs.vcxproj">
-      <Project>{EA6E33B7-13C2-37FE-B83A-3FF0F7651E4E}</Project>
-      <Name>SampleGenNumArgs</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleGenOneHotEncode.vcxproj">
-      <Project>{196CB1DD-2695-3789-8E4F-60056B6A66D1}</Project>
-      <Name>SampleGenOneHotEncode</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleIterateCall.vcxproj">
-      <Project>{99802B61-9C97-3D1F-B533-4342EE9FD209}</Project>
-      <Name>SampleIterateCall</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleNumArgs.vcxproj">
-      <Project>{315A82F9-F664-3100-96E0-9FA50D9E501F}</Project>
-      <Name>SampleNumArgs</Name>
-    </ProjectReference>
-    <ProjectReference Include="C:\Users\USER\Desktop\footprint of soilder\directx-chili-study\build\Utility\SampleOneHotEncode.vcxproj">
-      <Project>{1611FDF5-1267-3658-AA76-B780553E11F0}</Project>
-      <Name>SampleOneHotEncode</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

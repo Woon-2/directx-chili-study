@@ -3,11 +3,15 @@
 
 #include <iostream>
 
-void genNumArgsMacro(std::ostream& os, std::size_t n)
+void genNumArgsMacros(std::ostream& os, std::size_t n)
 {
     if (!n) {
         return;
     }
+
+    // header guard open
+	os << "#ifndef __MAC_NUMARGS\n";
+	os << "#define __MAC_NUMARGS\n";
 
     // __EXTRACT_NUMARGS arranges number of varadic args + n
     // arguments in descending order.
@@ -31,6 +35,9 @@ void genNumArgsMacro(std::ostream& os, std::size_t n)
         os << idxN << ", ";
     }
     os << "0)\n";
+
+	// header guard close
+	os << "#endif	// __MAC_NUMARGS";
 }
 
 #endif  // __GenNumArgs

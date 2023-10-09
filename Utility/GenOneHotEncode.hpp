@@ -4,12 +4,16 @@
 #include <iostream>
 #include <string_view>
 
-void __genOneHotEncodeMacros(std::ostream& os, std::size_t bitWidth,
+void genOneHotEncodeMacros(std::ostream& os, std::size_t bitWidth,
     std::string_view suffix)
 {
     if (!bitWidth) {
         return;
     }
+
+    // header guard open
+	os << "#ifndef __MAC_ONEHOT_ENCODE\n";
+	os << "#define __MAC_ONEHOT_ENCODE\n";
     
     // only __ONEOT_ENCODE1 does real encoding,
     // other __ONEHOT_ENCODENs are just
@@ -59,6 +63,9 @@ void __genOneHotEncodeMacros(std::ostream& os, std::size_t bitWidth,
         << "__ONEHOT_ENCODE_FORWARD_NUMARGS("
         << "NUMARGS(__VA_ARGS__), "
         << "__VA_ARGS__)\n";
+
+    // header guard close
+	os << "#endif	// __MAC_ONEHOT_ENCODE";
 }
 
 #endif  // __GenOneHotEncode

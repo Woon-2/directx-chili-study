@@ -10,6 +10,10 @@ void genIterateCallMacros(std::ostream& os,
         return;
     }
 
+    // header guard open
+    os << "#ifndef __MAC_ITERATE_CALL\n";
+    os << "#define __MAC_ITERATE_CALL\n";
+
     // __ITERATE_CALL N(callble, arg1, arg2, arg3, ..., argN)
     // expands to callable(arg1),
     // __ITERATE_CALL N-1(callable, arg2, arg3, arg4, ..., argN)
@@ -44,6 +48,9 @@ void genIterateCallMacros(std::ostream& os,
     os << "#define ITERATE_CALL(callable, ...) "
         << "__ITERATE_CALL_FORWARD_NUMARGS(callable, "
         << "NUMARGS(__VA_ARGS__), __VA_ARGS__)\n";
+
+    // header guard close
+    os << "#endif	// __MAC_ITERATE_CALL";
 }
 
 #endif  // __GenIterateCall
