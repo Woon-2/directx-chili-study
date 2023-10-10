@@ -56,7 +56,7 @@ message("Author: @Woon2 (wkdauddns9@gmail.com)")
 include(gitlog)
 add_gitlog(8)
 
-# add_subdirectory(Win)
+add_subdirectory(Win)
 add_subdirectory(Utility)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     add_subdirectory(Test)

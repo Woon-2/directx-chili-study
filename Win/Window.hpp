@@ -10,8 +10,8 @@
 #include <list>
 #include <optional>
 
-#include <AdditionalConcepts.hpp>
-#include <Woon2Exception.hpp>
+#include "AdditionalConcepts.hpp"
+#include "Woon2Exception.hpp"
 
 #define WND_EXCEPT(hr) WindowException(__LINE__, __FILE__, hr)
 #define WND_LAST_EXCEPT() WND_EXCEPT( GetLastError() )

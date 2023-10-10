@@ -50,23 +50,37 @@ message("Author: @Woon2 (wkdauddns9@gmail.com)")
 
 # header only libraries
 
-add_library(enum_util INTERFACE EnumUtil.hpp)
-add_library(iterate_call INTERFACE IterateCall.hpp)
-add_library(num_args INTERFACE NumArgs.hpp)
-add_library(onehot_encode INTERFACE OneHotEncode.hpp)
-add_library(literal INTERFACE Literal.hpp)
-add_library(string_like INTERFACE StringLike.hpp)
+function(add_library_target TARGET_NAME ACCESS_MODIFIER SOURCES)
+    if (ACCESS_MODIFIER STREQUAL INTERFACE)
+        add_library(${TARGET_NAME} INTERFACE "${SOURCES}")
+    else()
+        add_library(${TARGET_NAME} "${SOURCES}")
+    endif()
+
+    target_include_directories(${TARGET_NAME} ${ACCESS_MODIFIER} ${CMAKE_CURRENT_SOURCE_DIR})
+    add_library(Utility::${TARGET_NAME} ALIAS ${TARGET_NAME})
+endfunction()
+
+add_library_target(enum_util INTERFACE EnumUtil.hpp)
+add_library_target(iterate_call INTERFACE IterateCall.hpp)
+add_library_target(num_args INTERFACE NumArgs.hpp)
+add_library_target(onehot_encode INTERFACE OneHotEncode.hpp)
+add_library_target(literal INTERFACE Literal.hpp)
+add_library_target(aconcepts INTERFACE AdditionalConcepts.hpp)
+add_library_target(string_like INTERFACE StringLike.hpp)
 
 target_compile_features(enum_util INTERFACE cxx_std_20)
 target_compile_features(literal INTERFACE cxx_std_17)
+target_compile_features(aconcepts INTERFACE cxx_std_20)
 target_compile_features(string_like INTERFACE cxx_std_20)
 
 target_link_libraries(iterate_call INTERFACE num_args)
 target_link_libraries(onehot_encode INTERFACE num_args)
+target_link_libraries(string_like INTERFACE aconcepts)
 
 # concrete libraries
 
-add_library(woon2_exception Woon2Exception.cpp Woon2Exception.hpp)
+add_library_target(woon2_exception PRIVATE "Woon2Exception.cpp;Woon2Exception.hpp")
 
 # See below link for msvc options
 # https://learn.microsoft.com/en-us/cpp/build/reference/compiler-options?view=msvc-170
