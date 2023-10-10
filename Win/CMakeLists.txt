@@ -2,24 +2,14 @@ cmake_minimum_required(VERSION 3.18)
 
 project(PWin VERSION 2023.07.23 LANGUAGES CXX)
 
-add_executable(Win)
+add_library(Win)
 add_library(WinMsgMap)
 
-target_sources(Win PRIVATE main.cpp Window.cpp Window.hpp Window.inl
-    WindowsMessageMap.hpp WindowsMessageMap.cpp
-)
-target_sources(WinMsgMap PRIVATE WindowsMessageMap.hpp WindowsMessageMap.cpp)
-
-# add_dependencies(Win woon2_exception)
-target_link_libraries(Win
-PRIVATE
-    Utility::woon2_exception
-    Utility::aconcepts
-    Utility::string_like
-)
+target_sources(Win PUBLIC Window.cpp Window.hpp Window.inl)
+target_sources(WinMsgMap PUBLIC WindowsMessageMap.hpp WindowsMessageMap.cpp)
 
 function(auto_configure TARGET_NAME ACCESS_MODIFIER)
-    target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
+    target_compile_features(${TARGET_NAME} ${ACCESS_MODIFIER} cxx_std_20)
 
     # See below link for msvc options
     # https://learn.microsoft.com/en-us/cpp/build/reference/compiler-options?view=msvc-170
@@ -128,5 +118,15 @@ function(auto_configure TARGET_NAME ACCESS_MODIFIER)
 
 endfunction()
 
-auto_configure(Win PRIVATE)
-auto_configure(WinMsgMap PRIVATE)
+auto_configure(Win PUBLIC)
+auto_configure(WinMsgMap PUBLIC)
+
+target_link_libraries(Win
+PUBLIC
+    Utility::woon2_exception
+    Utility::aconcepts
+    Utility::string_like
+    WinMsgMap
+)
+
+add_library(Win::Win ALIAS Win)
