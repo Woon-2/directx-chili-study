@@ -6,72 +6,58 @@
 
 cmake_minimum_required(VERSION 3.18)
 
-if(NOT DEFINED CMAKE_CONFIGURATION_TYPES)
-    message(STATUS "setting CMAKE_CONFIGURATION_TYPES to 'Debug;Release'
-        (default configuration types) as none was specified.")
-    set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING
-        "Set the project configuration types." FORCE)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+
+    if (NOT DEFINED CMAKE_CONFIGURATION_TYPES)
+        set(DEFAULT_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo;MinSizeRel")
+
+        message(STATUS "Setting configuration types to ${DEFAULT_CONFIGURATION_TYPES}
+            as none was specified."
+        )
+        set(CMAKE_CONFIGURATION_TYPES ${DEFAULT_CONFIGURATION_TYPES} CACHE STRING
+            "Specify available build types."
+        )
+    endif()
+
+    if(NOT DEFINED CMAKE_BUILD_TYPE)
+        set(DEFAULT_BUILD_TYPE "Release")
+        
+        message(STATUS "Settting build type to ${DEFAULT_BUILD_TYPE}
+            as none was specified."
+        )
+        set(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE STRING
+            "Choose the type of build."
+        )
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+            "${CMAKE_CONFIGURATION_TYPES}"
+        )
+    endif()
+
+    if (NOT DEFINED CMAKE_INSTALL_PREFIX)
+        set(DEFAULT_INSTALL_PATH "${CMAKE_SOURCE_DIR}/install")
+
+        message(STATUS "Setting install path to ${DEFAULT_INSTALL_PATH}
+            as none was specified."
+        )
+        set (CMAKE_INSTALL_PREFIX "${DEFAULT_INSTALL_PATH}" CACHE PATH
+            "Specify the path to install this project"
+        )
+    endif()
+
 endif()
 
-if(NOT DEFINED CMAKE_BUILD_TYPE)
-    message(STATUS "setting CMAKE_BUILD_TYPE to Release(default build type)
-        as none was specified.")
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the build type." FORCE)
-    set_property(CACHE CMAKE_BUILD_TYPE
-        PROPERTY STRINGS "Debug" "Release")
-endif()
+project(DirectX_Study VERSION 2023.10.09)
 
-if(NOT DEFINED UTILITY_PATH)
-    message(STATUS "setting UTILITY_PATH to '${CMAKE_SOURCE_DIR}/Utility'
-        (default utility library path) as none was specified.")
-    set(UTILITY_PATH "${CMAKE_SOURCE_DIR}/Utility" CACHE STRING
-        "set the utility library path." FORCE)
-endif()
-
-if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-    message(STATUS "setting CMAKE_INSTALL_PREFIX to
-        ${CMAKE_CURRENT_SOURCE_DIR}/install(default install prefix)
-        as none was specified.")
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE FILEPATH
-        "Set path to install.")
-endif()
-
-project(DirectX_Study VERSION 2023.06.23)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 message(STATUS "configuring DirectX_Study(v${CMAKE_PROJECT_VERSION})...")
 message("Author: @Woon2 (wkdauddns9@gmail.com)")
 
-# Find and setup google test
-message(STATUS "finding GTest...")
+include(gitlog)
+add_gitlog(8)
 
-find_package(GTest)
-
-if(Gtest_FOUND)
-    message(STATUS "GTest - Found.")
-else()
-    message(STATUS "GTest - Not found.")
-    message(STATUS "Downloading GTest from github...")
-
-    set(GTEST_COMMIT_HASH "cb455a71fb23303e37ce8ee5b1cde6a2c18f66a5" CACHE
-        STRING "set git commit hash for specific version of google test." FORCE)
-    
-    include(FetchContent)
-    FetchContent_Declare(
-        googletest
-        URL "https://github.com/google/googletest/archive/${GTEST_COMMIT_HASH}.zip"
-    )
-
-    message(STATUS "GTest (${GTEST_COMMIT_HASH}) Downloaded.")
-
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-    FetchContent_MakeAvailable(googletest)
-endif()
-
-include("${CMAKE_SOURCE_DIR}/cmake/gitlog.cmake")
-ACTIVATE_GITLOG()
-
-add_subdirectory(InitialTest)
-add_subdirectory(Win)
+# add_subdirectory(Win)
 add_subdirectory(Utility)
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    add_subdirectory(Test)
+endif()
