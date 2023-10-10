@@ -40,16 +40,14 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(PWin VERSION 2023.10.10 LANGUAGES CXX)
+project(POngoing VERSION 2023.10.10 LANGUAGES CXX)
 
-message(STATUS "configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
-message("Author: @Woon2 (wkdauddns9@gmail.com)")
+message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
+message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
 
-add_library(Win)
-add_library(WinMsgMap)
+add_executable(chili)
 
-target_sources(Win PUBLIC Window.cpp Window.hpp Window.inl)
-target_sources(WinMsgMap PUBLIC WindowsMessageMap.hpp WindowsMessageMap.cpp)
+target_sources(chili PRIVATE main.cpp ChiliWindow.hpp ChiliWindow.cpp)
 
 function(auto_configure TARGET_NAME ACCESS_MODIFIER)
     target_compile_features(${TARGET_NAME} ${ACCESS_MODIFIER} cxx_std_20)
@@ -66,7 +64,7 @@ function(auto_configure TARGET_NAME ACCESS_MODIFIER)
             /Zc:preprocessor
             /Zc:__cplusplus
             /sdl-
-            /wd5105
+            /fp:fast
         )
 
     # See below link for gcc options
@@ -160,22 +158,12 @@ function(auto_configure TARGET_NAME ACCESS_MODIFIER)
         )
     endif()
 
-    target_include_directories(${TARGET_NAME}
-    ${ACCESS_MODIFIER}
-        "${CMAKE_CURRENT_SOURCE_DIR}"
-    )
-
 endfunction()
 
-auto_configure(Win PUBLIC)
-auto_configure(WinMsgMap PUBLIC)
+auto_configure(chili PRIVATE)
 
-target_link_libraries(Win
-PUBLIC
-    Utility::woon2_exception
-    Utility::aconcepts
-    Utility::string_like
-    WinMsgMap
+target_link_libraries(chili
+PRIVATE
+    Win::win
+    Utility::literal
 )
-
-add_library(Win::win ALIAS Win)

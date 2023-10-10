@@ -40,12 +40,12 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project (PUtility VERSION 2023.10.09
+project (PUtility VERSION 2023.10.10
     DESCRIPTION "Project for devloper-utility functionalities"
     LANGUAGES CXX
 )
 
-message(STATUS "configuring PUtility(v${CMAKE_PROJECT_VERSION})...")
+message(STATUS "configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message("Author: @Woon2 (wkdauddns9@gmail.com)")
 
 # header only libraries
