@@ -219,7 +219,7 @@ HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd)
 
 template <Win32Char CharT>
 HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
-    MyString wndName)
+    MyStringView wndName)
 {
     return create( hInst, pWnd, std::move(wndName), defWndFrame() );
 }
@@ -233,7 +233,7 @@ HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
 
 template <Win32Char CharT>
 HWND BasicWindowTraits<CharT>::create(HINSTANCE hInst, MyWindow* pWnd,
-    MyString wndName, const WndFrame& wndFrame)
+    MyStringView wndName, const WndFrame& wndFrame)
 {
     // additionally store pointer to Window,
     // which makes getting Window object from Win32 window handle possible.

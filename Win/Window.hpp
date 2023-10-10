@@ -128,7 +128,7 @@ public:
     using MyHandler = MsgHandler< Window<Traits> >;
     using MyTraits = Traits;
     using MyChar = Traits::MyChar;
-    using MyString = std::basic_string_view<MyChar>;
+    using MyStringView = std::basic_string_view<MyChar>;
 
     friend MyTraits;
 
@@ -168,8 +168,8 @@ public:
     HWND nativeHandle() noexcept { return hWnd_; }
     auto& msgHandlers() noexcept { return msgHandlers_; }
     const auto& msgHandlers() const noexcept { return msgHandlers_; }
-    const MyString& getTitle() const noexcept { return title_; }
-    void setTitle(MyString title)
+    const MyStringView& getTitle() const noexcept { return title_; }
+    void setTitle(MyStringView title)
     {
         title_ = std::move(title);
         setNativeTitle( getTitle().data() );
@@ -204,7 +204,7 @@ private:
     static bool bRegist;
     static HINSTANCE hInst;
 
-    MyString title_;
+    MyStringView title_;
     std::list< std::unique_ptr<MyHandler> > msgHandlers_;
     HWND hWnd_;
 };
@@ -215,9 +215,9 @@ struct BasicWindowTraits
 public:
     using MyWindow = Window< BasicWindowTraits >;
     using MyChar = CharT;
-    using MyString = std::basic_string_view<MyChar>;
+    using MyStringView = std::basic_string_view<MyChar>;
 
-    static constexpr const MyString clsName() noexcept
+    static constexpr const MyStringView clsName() noexcept
     {
         if constexpr ( std::is_same_v<MyChar, CHAR> ) {
             return "WT";
@@ -226,7 +226,7 @@ public:
             return L"WT";
         }
     }
-    static constexpr const MyString defWndName() noexcept
+    static constexpr const MyStringView defWndName() noexcept
     {
         if constexpr ( std::is_same_v<MyChar, CHAR> ) {
             return "Window";
@@ -243,10 +243,10 @@ public:
     static void regist(HINSTANCE hInst);
     static void unregist(HINSTANCE hInst);
     static HWND create(HINSTANCE hInst, MyWindow* pWnd);
-    static HWND create(HINSTANCE hInst, MyWindow* pWnd, MyString wndName);
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd, MyStringView wndName);
     static HWND create(HINSTANCE hInst, MyWindow* pWnd,
         const WndFrame& wndFrame);
-    static HWND create(HINSTANCE hInst, MyWindow* pWnd, MyString wndName,
+    static HWND create(HINSTANCE hInst, MyWindow* pWnd, MyStringView wndName,
         const WndFrame& wndFrame);
     static void destroy(HWND hWnd)
     {
