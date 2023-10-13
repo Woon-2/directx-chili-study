@@ -167,7 +167,7 @@ public:
                 break;
             }
         }
-        catch (const WindowException& e) {
+        catch (const Win32::WindowException& e) {
             MessageBoxA(nullptr, e.what(), "Window Exception",
                 MB_OK | MB_ICONEXCLAMATION);
         }
