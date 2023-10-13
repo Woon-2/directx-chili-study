@@ -166,4 +166,5 @@ target_link_libraries(chili
 PRIVATE
     Win::win
     Utility::literal
+    Resource::resource
 )
