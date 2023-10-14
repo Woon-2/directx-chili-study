@@ -74,20 +74,20 @@ public:
                 MyKbdMsgAPI::onKeyPressed(
                     kbd_, static_cast<MyVK>(msg.wParam)
                 );
-                break;
+                return 0;
 
             case WM_KEYUP:
             case WM_SYSKEYUP:
                 MyKbdMsgAPI::onKeyReleased(
                     kbd_, static_cast<MyVK>(msg.wParam)
                 );
-                break;
+                return 0;
 
             case WM_CHAR:
                 MyKbdMsgAPI::onChar(
                     kbd_, static_cast<MyChar>(msg.wParam)
                 );
-                break;
+                return 0;
 
             default:
                 break;
