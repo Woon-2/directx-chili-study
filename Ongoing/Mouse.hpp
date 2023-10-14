@@ -30,8 +30,8 @@ public:
         Event() noexcept
             : type_(), pos_{0, 0} {}
 
-        Event(Type type, Point pos) noexcept
-            : type_(type), pos_(pos) {}
+        Event(Type typeVal, Point posVal) noexcept
+            : type_(typeVal), pos_(posVal) {}
 
         bool leftPressed() const noexcept {
             return valid()
@@ -65,6 +65,10 @@ public:
 
         bool valid() const noexcept {
             return type_.has_value();
+        }
+
+        Type type() const noexcept {
+            return type_;
         }
 
         const Point pos() const noexcept {

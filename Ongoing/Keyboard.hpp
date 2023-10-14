@@ -26,8 +26,8 @@ public:
         Event() noexcept
             : type_(), keycode_(0u) {}
 
-        Event(Type type, VK keycode) noexcept
-            : type_(type), keycode_(keycode) {}
+        Event(Type typeVal, VK keycodeVal) noexcept
+            : type_(typeVal), keycode_(keycodeVal) {}
 
         bool pressed() const noexcept {
             return valid()
@@ -41,6 +41,10 @@ public:
 
         bool valid() const noexcept {
             return type_.has_value();
+        }
+
+        Type type() const noexcept {
+            return type_;
         }
 
         VK keycode() const noexcept {
