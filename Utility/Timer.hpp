@@ -4,7 +4,7 @@
 #include <chrono>
 #include <ratio>
 
-template <class Rep, class Period = std::milli>
+template < class Rep, class Period = std::ratio<1> >
 class Timer {
 public:
     using time_point = std::chrono::steady_clock::time_point;
