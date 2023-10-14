@@ -145,6 +145,8 @@ struct ChiliWindowTraits {
             throw WND_LAST_EXCEPT();
         }
 
+        pWnd->setFrame(wndFrame);
+
         return hWnd;
 
         #undef ARG_LISTS
