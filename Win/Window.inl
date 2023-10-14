@@ -84,8 +84,7 @@ void Window<Traits>::msgLoop()
 }
 
 template <class Traits>
-[[maybe_unused]] std::optional<int>
-    Window<Traits>::processMessages()
+std::optional<int> Window<Traits>::processMessages()
 {
     MSG msg;
 

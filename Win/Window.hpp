@@ -169,7 +169,7 @@ public:
     { hInst = hInstance; }
     static HINSTANCE getHInst() noexcept { return hInst; }
     void msgLoop();
-    [[maybe_unused]] std::optional<int> processMessages();
+    std::optional<int> processMessages();
 
     HWND nativeHandle() noexcept { return hWnd_; }
     auto& msgHandlers() noexcept { return msgHandlers_; }
