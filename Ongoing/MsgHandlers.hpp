@@ -186,7 +186,23 @@ public:
 
             switch (msg.type) {
             case WM_MOUSEMOVE:
-                MyMouseMsgAPI::onMouseMove(mouse_, pt);
+                if ( insideClient(pt) ) {
+                    MyMouseMsgAPI::onMouseMove(mouse_, pt);
+
+                    if ( !mouse_.inWindow() ) {
+                        SetCapture( window().nativeHandle() );
+                        MyMouseMsgAPI::onEnter(mouse_, pt);
+                    }
+                }
+                else {
+                    if ( msg.wParam & (MK_LBUTTON | MK_RBUTTON) ) {
+                        MyMouseMsgAPI::onMouseMove(mouse_, pt);
+                    }
+                    else {
+                        ReleaseCapture();
+                        MyMouseMsgAPI::onLeave(mouse_, pt);
+                    }
+                }
                 return 0;
 
             case WM_LBUTTONDOWN:
@@ -241,13 +257,21 @@ public:
 private:
     static Mouse::Point makePoint(LPARAM lParam) {
         return Mouse::Point{
-            static_cast<int>(
-                (static_cast<unsigned int>(lParam) >> 16) & 0xffff
-            ),
-            static_cast<int>(
+            static_cast<short>(
                 (static_cast<unsigned int>(lParam)) & 0xffff
+            ),
+            static_cast<short>(
+                (static_cast<unsigned int>(lParam) >> 16) & 0xffff
             )
         };
+    }
+
+    bool insideClient(Mouse::Point pt) noexcept {
+        auto client = window().client();
+
+        return pt.x >= client.x && pt.y >= client.y
+            && pt.x <= client.x + client.width
+            && pt.y <= client.y + client.height;
     }
 
     MyMouse mouse_;

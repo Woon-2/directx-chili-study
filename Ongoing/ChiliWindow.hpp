@@ -145,7 +145,7 @@ struct ChiliWindowTraits {
             throw WND_LAST_EXCEPT();
         }
 
-        pWnd->setFrame(wndFrame);
+        pWnd->setClient(wndFrame);
 
         return hWnd;
 

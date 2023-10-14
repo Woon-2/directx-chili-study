@@ -24,7 +24,9 @@ public:
             MRelease,
             WheelUp,
             WheelDown,
-            Move
+            Move,
+            Enter,
+            Leave
         };
 
         Event() noexcept
@@ -78,6 +80,16 @@ public:
                 && type_.value() == Type::WheelDown;
         }
 
+        bool entered() const noexcept {
+            return valid()
+                && type_.value() == Type::Enter;
+        }
+
+        bool leaved() const noexcept {
+            return valid()
+                && type_.value() == Type::Leave;
+        }
+
         bool valid() const noexcept {
             return type_.has_value();
         }
@@ -97,7 +109,8 @@ public:
 
     Mouse(std::size_t bufferSize = 32ull, int wheelThresholdVal = 120)
         : buf_(), bufSize_(bufferSize),
-        wheelThreshold_(wheelThresholdVal), wheelDelta_() {};
+        wheelThreshold_(wheelThresholdVal), wheelDelta_(),
+        bInWindow_(false) {};
 
     Mouse(const Mouse&) = delete;
     Mouse& operator=(const Mouse&) = delete;
@@ -134,6 +147,10 @@ public:
 
     int wheelThreshold() const noexcept {
         return wheelThreshold_;
+    }
+
+    bool inWindow() const noexcept {
+        return bInWindow_;
     }
 
 private:
@@ -173,7 +190,6 @@ private:
     }
 
     void onMouseWheel(Point pos, int wheelDelta) {
-
         wheelDelta_ += wheelDelta;
         
         auto nWheelStep = static_cast<int>(
@@ -195,6 +211,18 @@ private:
         trimBuf();
     }
 
+    void onEnter(Point pos) {
+        buf_.emplace( Event::Type::Enter, pos );
+        trimBuf();
+        bInWindow_ = true;
+    }
+
+    void onLeave(Point pos) {
+        buf_.emplace( Event::Type::Leave, pos );
+        trimBuf();
+        bInWindow_ = false;
+    }
+
     void trimBuf() noexcept {
         while (buf_.size() > bufSize()) {
             buf_.pop();
@@ -205,6 +233,7 @@ private:
     std::size_t bufSize_;
     int wheelThreshold_;
     int wheelDelta_;
+    bool bInWindow_;
 };
 
 class MouseMsgAPI {
@@ -244,6 +273,14 @@ private:
         Mouse& mouse, Mouse::Point pos, int wheelDelta
     ) {
         mouse.onMouseWheel(pos, wheelDelta);
+    }
+
+    static void onEnter(Mouse& mouse, Mouse::Point pos) {
+        mouse.onEnter(pos);
+    }
+
+    static void onLeave(Mouse& mouse, Mouse::Point pos) {
+        mouse.onLeave(pos);
     }
 };
 
