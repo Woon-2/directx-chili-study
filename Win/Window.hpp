@@ -128,6 +128,7 @@ public:
     using MyHandler = MsgHandler< Window<Traits> >;
     using MyTraits = Traits;
     using MyChar = Traits::MyChar;
+    using MyString = std::basic_string<MyChar>;
     using MyStringView = std::basic_string_view<MyChar>;
 
     friend MyTraits;
@@ -168,11 +169,16 @@ public:
     HWND nativeHandle() noexcept { return hWnd_; }
     auto& msgHandlers() noexcept { return msgHandlers_; }
     const auto& msgHandlers() const noexcept { return msgHandlers_; }
-    const MyStringView& getTitle() const noexcept { return title_; }
-    void setTitle(MyStringView title)
+    MyStringView title() const noexcept { return title_; }
+    void setTitle(const MyString& windowTitle)
     {
-        title_ = std::move(title);
-        setNativeTitle( getTitle().data() );
+        title_ = windowTitle;
+        setNativeTitle( title().data() );
+    }
+    void setTitle(MyString&& windowTitle)
+    {
+        title_ = std::move(windowTitle);
+        setNativeTitle( title().data() );
     }
     void show(int nCmdShow) requires canShow<Traits, HWND, int>
     {
@@ -204,7 +210,7 @@ private:
     static bool bRegist;
     static HINSTANCE hInst;
 
-    MyStringView title_;
+    MyString title_;
     std::list< std::unique_ptr<MyHandler> > msgHandlers_;
     HWND hWnd_;
 };
@@ -215,6 +221,7 @@ struct BasicWindowTraits
 public:
     using MyWindow = Window< BasicWindowTraits >;
     using MyChar = CharT;
+    using MyString = std::basic_string<MyChar>;
     using MyStringView = std::basic_string_view<MyChar>;
 
     static constexpr const MyStringView clsName() noexcept
