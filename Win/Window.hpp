@@ -188,15 +188,19 @@ public:
     {
         Traits::show( nativeHandle(), nCmdShow );
     }
-    void setFrame(const WndFrame& windowFrame)
+    void setClient(const WndFrame& windowClient)
     {
-        frame_ = windowFrame;
+        frame_ = windowClient;
+        auto tmp = static_cast<RECT>(frame_);
+
+        if ( !AdjustWindowRect(&tmp,
+                WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+                false
+            )) {  
+            throw WND_LAST_EXCEPT();
+        }
     }
-    void setFrame(WndFrame&& windowFrame)
-    {
-        frame_ = std::move(windowFrame);
-    }
-    const WndFrame& frame() const noexcept
+    const WndFrame& client() const noexcept
     {
         return frame_;
     }
