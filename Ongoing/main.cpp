@@ -18,7 +18,11 @@ int CALLBACK WinMain(
     });
 
     wnd.msgHandlers().push_back(
-        std::make_unique< Win32::BasicMsgHandler<ChiliWindow> >(wnd)
+        std::make_unique< BasicChiliMsgHandler<ChiliWindow> >(wnd)
+    );
+
+    wnd.msgHandlers().push_back(
+        std::make_unique< KbdMsgHandler<ChiliWindow> >(wnd)
     );
 
     wnd.msgLoop();
