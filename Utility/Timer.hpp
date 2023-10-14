@@ -10,6 +10,8 @@ public:
     using time_point = std::chrono::steady_clock::time_point;
     using clock = std::chrono::steady_clock;
     using duration = std::chrono::duration<Rep, Period>;
+    using rep = Rep;
+    using period = Period;
 
     Timer() noexcept {
         last_ = clock::now();
