@@ -25,6 +25,10 @@ int CALLBACK WinMain(
         std::make_unique< KbdMsgHandler<ChiliWindow> >(wnd)
     );
 
+    wnd.msgHandlers().push_back(
+        std::make_unique< MouseMsgHandler<ChiliWindow> >(wnd)
+    );
+
     wnd.msgLoop();
 
     return 0;

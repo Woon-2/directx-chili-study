@@ -3,6 +3,7 @@
 
 #include "ChiliWindow.hpp"
 #include "Keyboard.hpp"
+#include "Mouse.hpp"
 
 template <class Wnd>
 class BasicChiliMsgHandler : public Win32::MsgHandler<Wnd>{
@@ -113,6 +114,94 @@ public:
     }
 private:
     MyKeyboard kbd_;
+};
+
+template <class Wnd>
+class MouseMsgHandler : public Win32::MsgHandler<Wnd>{
+public:
+    using Win32::MsgHandler<Wnd>::window;
+    using MyWindow = Wnd;
+    using MyChar = typename MyWindow::MyChar;
+    using MyMouse = Mouse;
+    using MyMouseMsgAPI = MouseMsgAPI;
+    using MyString = std::basic_string<MyChar>;
+
+    MouseMsgHandler(MyWindow& wnd) noexcept
+        : Win32::MsgHandler<MyWindow>(wnd), mouse_() {}
+
+    std::optional<LRESULT> operator()(
+        const Win32::Message& msg
+    ) override {
+        try {
+            auto pt = makePoint(msg.lParam);
+
+            switch (msg.type) {
+            case WM_MOUSEMOVE:
+                MyMouseMsgAPI::onMouseMove(mouse_, pt);
+                return 0;
+
+            case WM_LBUTTONDOWN:
+                MyMouseMsgAPI::onLeftPressed(mouse_, pt);
+                return 0;
+
+            case WM_LBUTTONUP:
+                MyMouseMsgAPI::onLeftReleased(mouse_, pt);
+                return 0;
+
+            case WM_RBUTTONDOWN:
+                MyMouseMsgAPI::onRightPressed(mouse_, pt);
+                return 0;
+
+            case WM_RBUTTONUP:
+                MyMouseMsgAPI::onRightReleased(mouse_, pt);
+                return 0;
+
+            case WM_MBUTTONDOWN:
+                MyMouseMsgAPI::onMidPressed(mouse_, pt);
+                return 0;
+
+            case WM_MBUTTONUP:
+                MyMouseMsgAPI::onMidReleased(mouse_, pt);
+                return 0;
+
+            case WM_MOUSEWHEEL:
+                MyMouseMsgAPI::onMouseWheel(mouse_, pt,
+                    GET_WHEEL_DELTA_WPARAM(msg.wParam)
+                );
+                return 0;
+
+            default:
+                break;
+            }
+        }
+        catch (const Win32::WindowException& e) {
+            MessageBoxA(nullptr, e.what(), "Window Exception",
+                MB_OK | MB_ICONEXCLAMATION);
+        }
+        catch (const std::exception& e) {
+            MessageBoxA(nullptr, e.what(), "Standard Exception",
+                MB_OK | MB_ICONEXCLAMATION);
+        }
+        catch(...) {
+            MessageBoxA(nullptr, "no details available",
+                "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+        }
+
+        return {};
+    }
+private:
+    static Mouse::Point makePoint(LPARAM lParam) {
+        return Mouse::Point{
+            static_cast<int>(
+                (static_cast<unsigned int>(lParam) >> 16) & 0xffff
+            ),
+            static_cast<int>(
+                (static_cast<unsigned int>(lParam)) & 0xffff
+            )
+        };
+    }
+
+    MyMouse mouse_;
 };
 
 #endif // __ChiliMsgHandlers
