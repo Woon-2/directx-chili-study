@@ -188,7 +188,18 @@ public:
     {
         Traits::show( nativeHandle(), nCmdShow );
     }
-
+    void setFrame(const WndFrame& windowFrame)
+    {
+        frame_ = windowFrame;
+    }
+    void setFrame(WndFrame&& windowFrame)
+    {
+        frame_ = std::move(windowFrame);
+    }
+    const WndFrame& frame() const noexcept
+    {
+        return frame_;
+    }
 private:
     static LRESULT CALLBACK wndProcSetupHandler(HWND hWnd, UINT type,
         WPARAM wParam, LPARAM lParam);
@@ -215,6 +226,7 @@ private:
     static HINSTANCE hInst;
 
     MyString title_;
+    WndFrame frame_;
     std::list< std::unique_ptr<MyHandler> > msgHandlers_;
     HWND hWnd_;
 };
