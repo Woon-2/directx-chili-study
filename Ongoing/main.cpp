@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "ChiliWindow.hpp"
+#include "MsgHandlers.hpp"
 
 int CALLBACK WinMain(
     HINSTANCE hInst,
