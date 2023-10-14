@@ -43,7 +43,7 @@ public:
             return type_.has_value();
         }
 
-        Type type() const noexcept {
+        std::optional<Type> type() const {
             return type_;
         }
 

@@ -33,6 +33,11 @@ public:
         Event(Type typeVal, Point posVal) noexcept
             : type_(typeVal), pos_(posVal) {}
 
+        bool moved() const noexcept {
+            return valid()
+                && type_.value() == Type::Move;
+        }
+
         bool leftPressed() const noexcept {
             return valid()
                 && type_.value() == Type::LPress;
@@ -63,11 +68,21 @@ public:
                 && type_.value() == Type::MRelease;
         }
 
+        bool WheelUped() const noexcept {
+            return valid()
+                && type_.value() == Type::WheelUp;
+        }
+
+        bool WheelDowned() const noexcept {
+            return valid()
+                && type_.value() == Type::WheelDown;
+        }
+
         bool valid() const noexcept {
             return type_.has_value();
         }
 
-        Type type() const noexcept {
+        std::optional<Type> type() const {
             return type_;
         }
 
