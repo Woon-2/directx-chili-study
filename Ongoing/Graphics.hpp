@@ -4,6 +4,26 @@
 #include "ChiliWindow.hpp"
 #include <d3d11.h>
 
+#include "Woon2Exception.hpp"
+
+#define NO_GFX_EXCEPT() NoGfxException(__LINE__, __FILE__)
+#define GFX_DEVICE_REMOVED_EXCEPT(hr) DeviceRemovedException(__LINE__, __FILE__, hr)
+
+class NoGfxException : public Woon2Exception {
+public:
+    using Woon2Exception::Woon2Exception;
+    const char* type() const noexcept override;
+private:
+};
+
+class DeviceRemovedException : public Win32::WindowException {
+public:
+    using Win32::WindowException::WindowException;
+    const char* type() const noexcept override;
+
+private:
+};
+
 template <class Wnd>
 class Graphics {
 public:
@@ -12,6 +32,8 @@ public:
     Graphics(MyWindow& wnd)
         : wnd_(wnd), pDevice_(nullptr), pSwap_(nullptr),
         pContext_(nullptr), pTarget_(nullptr) {
+        try {
+
         auto sd = DXGI_SWAP_CHAIN_DESC{
             .BufferDesc = DXGI_MODE_DESC{
                 .Width = 0,
@@ -37,7 +59,7 @@ public:
         };
 
         // create device and front/back buffers, swap chain, and rendering context
-        D3D11CreateDeviceAndSwapChain(
+        WND_THROW_FAILED( D3D11CreateDeviceAndSwapChain(
             /* pAdapter = */ nullptr,
             /* DriverType = */ D3D_DRIVER_TYPE_HARDWARE,
             /* Software = */ nullptr,
@@ -50,17 +72,37 @@ public:
             /* ppDevice = */ &pDevice_,
             /* pFeatureLevel = */ nullptr,
             /* ppImmediateContext = */ &pContext_
-        );
+        ) );
 
+        // TODO: must use RAII
         ID3D11Resource* pBackBuffer = nullptr;
-        pSwap_->GetBuffer( 0, __uuidof(ID3D11Resource),
-            reinterpret_cast<void**>(&pBackBuffer)
+        WND_THROW_FAILED(
+            pSwap_->GetBuffer( 0, __uuidof(ID3D11Resource),
+                reinterpret_cast<void**>(&pBackBuffer)
+            )
         );
-        pDevice_->CreateRenderTargetView(
-            pBackBuffer,
-            nullptr,
-            &pTarget_
+        WND_THROW_FAILED(
+            pDevice_->CreateRenderTargetView(
+                pBackBuffer,
+                nullptr,
+                &pTarget_
+            )
         );
+        pBackBuffer->Release();
+
+        }
+        catch (const Win32::WindowException& e) {
+            MessageBoxA(nullptr, e.what(), "Window Exception",
+                MB_OK | MB_ICONEXCLAMATION);
+        }
+        catch (const std::exception& e) {
+            MessageBoxA(nullptr, e.what(), "Standard Exception",
+                MB_OK | MB_ICONEXCLAMATION);
+        }
+        catch(...) {
+            MessageBoxA(nullptr, "no details available",
+                "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+        }
     }
 
     ~Graphics() {
@@ -74,7 +116,14 @@ public:
     Graphics& operator=(const Graphics&) = delete;
 
     void render() {
-        pSwap_->Present(2u, 0u);
+        if ( auto hr = pSwap_->Present(2u, 0u); hr < 0 ) {
+            if (hr == DXGI_ERROR_DEVICE_REMOVED) {
+                throw GFX_DEVICE_REMOVED_EXCEPT(hr);
+            }
+            else {
+                throw WND_EXCEPT(hr);
+            }
+        }
     }
 
     void clear( float r, float g, float b ) {
