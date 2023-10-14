@@ -3,22 +3,26 @@
 
 #include "ChiliWindow.hpp"
 #include "MsgHandlers.hpp"
+#include "Graphics.hpp"
 
 #include <memory>
 
 class App {
 public:
+    using MyWindow = ChiliWindow;
+
     App(const Win32::WndFrame& client
         = {.x=200, .y=200, .width=800, .height=600}
-    ) : wnd_("ChiliWindow", client) {
+    ) : wnd_("ChiliWindow", client),
+        gfx_(wnd_) {
         wnd_.msgHandlers().push_front(
-            std::make_unique< BasicChiliMsgHandler<ChiliWindow> >(wnd_)
+            std::make_unique< BasicChiliMsgHandler<MyWindow> >(wnd_)
         );
         wnd_.msgHandlers().push_front(
-            std::make_unique< KbdMsgHandler<ChiliWindow> >(wnd_)
+            std::make_unique< KbdMsgHandler<MyWindow> >(wnd_)
         );
         wnd_.msgHandlers().push_front(
-            std::make_unique< MouseMsgHandler<ChiliWindow> >(wnd_)
+            std::make_unique< MouseMsgHandler<MyWindow> >(wnd_)
         );
     }
 
@@ -34,7 +38,8 @@ public:
         ChiliWindow::setHInst(hInst);
     }
 private: 
-    ChiliWindow wnd_;
+    MyWindow wnd_;
+    Graphics<MyWindow> gfx_;
 };
 
 #endif  // __APP

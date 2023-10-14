@@ -48,7 +48,7 @@ message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
 add_executable(chili)
 
 target_sources(chili PRIVATE main.cpp ChiliWindow.hpp ChiliWindow.cpp MsgHandlers.hpp
-    Keyboard.hpp Mouse.hpp App.hpp
+    Keyboard.hpp Mouse.hpp App.hpp Graphics.hpp
 )
 
 function(auto_configure TARGET_NAME ACCESS_MODIFIER)
@@ -169,4 +169,5 @@ PRIVATE
     Win::win
     Utility::literal
     Resource::resource
+    d3d11.lib
 )
