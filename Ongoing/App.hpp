@@ -31,11 +31,16 @@ public:
             if (auto returnCode = wnd_.processMessages()) {
                 return returnCode.value();
             }
+            render();
         }
     }
 
     static void setHInst(HINSTANCE hInst) {
         ChiliWindow::setHInst(hInst);
+    }
+
+    void render() {
+        gfx_.render();
     }
 private: 
     MyWindow wnd_;

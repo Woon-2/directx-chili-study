@@ -61,6 +61,10 @@ public:
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
 
+    void render() {
+        pSwap_->Present(2u, 0u);
+    }
+
 private:
     static void releaseCOM(IUnknown* com) {
         if (com) {
