@@ -21,7 +21,16 @@ public:
         try {
             switch (msg.type) {
             case WM_CLOSE:
-                PostQuitMessage(0);
+                if constexpr (std::is_same_v<MyChar, CHAR>) {
+                    PostMessageA(window().nativeHandle(),
+                        WM_QUIT, 0, 0
+                    );
+                }
+                else /* WCHAR */ {
+                    PostMessageW(window().nativeHandle(),
+                        WM_QUIT, 0, 0
+                    );
+                }
                 return 0;
 
             default:

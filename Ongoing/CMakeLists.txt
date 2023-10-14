@@ -48,7 +48,7 @@ message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
 add_executable(chili)
 
 target_sources(chili PRIVATE main.cpp ChiliWindow.hpp ChiliWindow.cpp MsgHandlers.hpp
-    Keyboard.hpp Mouse.hpp
+    Keyboard.hpp Mouse.hpp App.hpp
 )
 
 function(auto_configure TARGET_NAME ACCESS_MODIFIER)
