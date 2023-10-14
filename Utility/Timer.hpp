@@ -21,7 +21,7 @@ public:
         const auto old = last_;
         last_ = clock::now();
         const auto elapsed
-            = std::chrono::duration_cast<duration>(last - old);
+            = std::chrono::duration_cast<duration>(last_ - old);
         return elapsed.count();
     }
 
