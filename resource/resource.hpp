@@ -3,6 +3,6 @@
 
 #include <filesystem>
 
-const auto resource_path = std::filesystem::path("C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/Resource");
+const auto resourcePath = std::filesystem::path("C:/Users/USER/Desktop/footprint of soilder/directx-chili-study/Resource");
 
 #endif

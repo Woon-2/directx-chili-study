@@ -1,7 +1,7 @@
 set(RESOURCE_PATH "${CMAKE_CURRENT_LIST_DIR}" CACHE PATH
     "Write path of root directory in which all resource files reside")
 
-configure_file("${CMAKE_CURRENT_LIST_DIR}/resource.hpp.in" "${CMAKE_CURRENT_LIST_DIR}/resource.hpp" @ONLY)
+configure_file("${CMAKE_CURRENT_LIST_DIR}/Resource.hpp.in" "${CMAKE_CURRENT_LIST_DIR}/Resource.hpp" @ONLY)
 
 add_library(resource INTERFACE resource.hpp)
 target_compile_features(resource INTERFACE cxx_std_17)
