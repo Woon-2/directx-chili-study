@@ -136,6 +136,15 @@ struct ChiliWindowTraits {
             throw WND_LAST_EXCEPT();
         }
 
+        auto tmp = static_cast<RECT>(wndFrame);
+
+        if ( !AdjustWindowRect(&tmp,
+                WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+                false
+            )) {  
+            throw WND_LAST_EXCEPT();
+        }
+
         return hWnd;
 
         #undef ARG_LISTS
