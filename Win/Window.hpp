@@ -13,6 +13,10 @@
 #include "AdditionalConcepts.hpp"
 #include "Woon2Exception.hpp"
 
+#define WND_THROW_FAILED(hrcall)    \
+    if ( HRESULT hr = (hrcall); hr < 0 ) { \
+        throw Win32::WindowException(__LINE__, __FILE__, hr)    \
+    }
 #define WND_EXCEPT(hr) Win32::WindowException(__LINE__, __FILE__, hr)
 #define WND_LAST_EXCEPT() WND_EXCEPT( GetLastError() )
 
