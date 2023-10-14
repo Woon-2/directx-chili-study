@@ -7,6 +7,7 @@
 
 #include "Literal.hpp"
 #include "Window.hpp"
+#include "resource.hpp"
 
 namespace Win32 {
 
@@ -41,12 +42,22 @@ struct ChiliWindowTraits {
             .cbClsExtra = 0,
             .cbWndExtra = sizeof(LPVOID),
             .hInstance = hInst,
-            .hIcon = nullptr,
+            .hIcon = static_cast<HICON>(
+                LoadImage( hInst,
+                    (resourcePath/"icon.ico").c_str(),
+                    IMAGE_ICON, 32, 32, LR_LOADFROMFILE
+                )
+            ),
             .hCursor = nullptr,
             .hbrBackground = nullptr,
             .lpszMenuName = nullptr,
             .lpszClassName = clsName().data(),
-            .hIconSm = nullptr
+            .hIconSm = static_cast<HICON>(
+                LoadImage( hInst,
+                    (resourcePath/"icon.ico").c_str(),
+                    IMAGE_ICON, 16, 16, LR_LOADFROMFILE
+                )
+            )
         };
 
         auto bFine = ATOM{};

@@ -81,6 +81,7 @@
         "ranges": "cpp",
         "span": "cpp",
         "string_view": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "*.in": "cpp"
     }
 }
