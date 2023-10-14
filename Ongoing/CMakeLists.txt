@@ -168,6 +168,7 @@ target_link_libraries(chili
 PRIVATE
     Win::win
     Utility::literal
+    Utility::timer
     Resource::resource
     d3d11.lib
 )

@@ -10,7 +10,8 @@ public:
     using MyWindow = Wnd;
 
     Graphics(MyWindow& wnd)
-        : wnd_(wnd) {
+        : wnd_(wnd), pDevice_(nullptr), pSwap_(nullptr),
+        pContext_(nullptr), pTarget_(nullptr) {
         auto sd = DXGI_SWAP_CHAIN_DESC{
             .BufferDesc = DXGI_MODE_DESC{
                 .Width = 0,
@@ -50,12 +51,23 @@ public:
             /* pFeatureLevel = */ nullptr,
             /* ppImmediateContext = */ &pContext_
         );
+
+        ID3D11Resource* pBackBuffer = nullptr;
+        pSwap_->GetBuffer( 0, __uuidof(ID3D11Resource),
+            reinterpret_cast<void**>(&pBackBuffer)
+        );
+        pDevice_->CreateRenderTargetView(
+            pBackBuffer,
+            nullptr,
+            &pTarget_
+        );
     }
 
     ~Graphics() {
         releaseCOM(pDevice_);
         releaseCOM(pSwap_);
         releaseCOM(pContext_);
+        releaseCOM(pTarget_);
     }
 
     Graphics(const Graphics&) = delete;
@@ -63,6 +75,11 @@ public:
 
     void render() {
         pSwap_->Present(2u, 0u);
+    }
+
+    void clear( float r, float g, float b ) {
+        const float color[] = { r, g, b, 1.f };
+        pContext_->ClearRenderTargetView( pTarget_, color );
     }
 
 private:
@@ -77,6 +94,7 @@ private:
     ID3D11Device* pDevice_;
     IDXGISwapChain* pSwap_;
     ID3D11DeviceContext* pContext_;
+    ID3D11RenderTargetView* pTarget_;
 };
 
 #endif  // __Graphics
