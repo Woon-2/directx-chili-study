@@ -48,7 +48,7 @@ struct WndFrame
     int width;
     int height;
 
-    operator RECT() noexcept {
+    operator RECT() const noexcept {
         return RECT{x, y, x + width, y + height};
     }
 };
