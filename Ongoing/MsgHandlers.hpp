@@ -109,21 +109,6 @@ public:
                 "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
         }
 
-        if ( auto ev = kbd_.readKey() ) {
-            if ( ev->pressed() && ev->keycode() == VK_SPACE ) {
-                MessageBoxA(nullptr, "Space Key Pressed!", "Key Press",
-                    MB_OK | MB_ICONEXCLAMATION);
-            }
-            else if ( ev->pressed() && ev->keycode() == VK_MENU ) {
-                MessageBoxA(nullptr, "ALT Key Pressed!", "Key Press",
-                    MB_OK | MB_ICONEXCLAMATION);
-            }
-        }
-
-        if ( auto ch = kbd_.readChar() ) {
-            window().setTitle( MyString{ch} );
-        }
-
         return {};
     }
 private:
