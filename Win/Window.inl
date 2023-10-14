@@ -63,7 +63,7 @@ void Window<Traits>::msgLoop()
 
     try {
 
-        while ( ( result = GetMessageW(&msg, nullptr, 0, 0) ) > 0 ) {
+        while ( ( result = GetMessageW(&msg, nativeHandle(), 0, 0) ) > 0 ) {
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
         }
@@ -81,6 +81,41 @@ void Window<Traits>::msgLoop()
         MessageBoxA(nullptr, "no details available",
             "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
     }
+}
+
+template <class Traits>
+[[maybe_unused]] std::optional<int>
+    Window<Traits>::processMessages()
+{
+    MSG msg;
+
+    try {
+
+        while ( PeekMessageW(
+            &msg, nativeHandle(), 0, 0, PM_REMOVE
+        ) ) {
+            if (msg.message == WM_QUIT) {
+                return static_cast<int>(msg.wParam);
+            }
+
+            TranslateMessage(&msg);
+            DispatchMessageW(&msg);
+        }
+    }
+    catch (const WindowException& e) {
+        MessageBoxA(nullptr, e.what(), "Window Exception",
+            MB_OK | MB_ICONEXCLAMATION);
+    }
+    catch (const std::exception& e) {
+        MessageBoxA(nullptr, e.what(), "Standard Exception",
+            MB_OK | MB_ICONEXCLAMATION);
+    }
+    catch(...) {
+        MessageBoxA(nullptr, "no details available",
+            "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+    }
+
+    return {};
 }
 
 template <class Traits>
