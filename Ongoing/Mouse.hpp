@@ -109,7 +109,7 @@ public:
 
     Mouse(std::size_t bufferSize = 32ull, int wheelThresholdVal = 120)
         : buf_(), bufSize_(bufferSize),
-        wheelThreshold_(wheelThresholdVal), wheelDelta_(),
+        wheelThreshold_(wheelThresholdVal), wheelDeltaCarry_(),
         bInWindow_(false) {};
 
     Mouse(const Mouse&) = delete;
@@ -190,13 +190,13 @@ private:
     }
 
     void onMouseWheel(Point pos, int wheelDelta) {
-        wheelDelta_ += wheelDelta;
+        wheelDeltaCarry_ += wheelDelta;
         
         auto nWheelStep = static_cast<int>(
-            wheelDelta_ / wheelThreshold()
+            wheelDeltaCarry_ / wheelThreshold()
         );
 
-        wheelDelta_ -= nWheelStep * wheelThreshold();
+        wheelDeltaCarry_ -= nWheelStep * wheelThreshold();
 
         while (nWheelStep > 0) {
             buf_.emplace( Event::Type::WheelUp, pos );
@@ -232,7 +232,7 @@ private:
     std::queue<Event> buf_;
     std::size_t bufSize_;
     int wheelThreshold_;
-    int wheelDelta_;
+    int wheelDeltaCarry_;
     bool bInWindow_;
 };
 
