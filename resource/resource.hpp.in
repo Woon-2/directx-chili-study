@@ -3,6 +3,6 @@
 
 #include <filesystem>
 
-const auto resource_path = std::filesystem::path("@RESOURCE_PATH@");
+const auto resourcePath = std::filesystem::path("@RESOURCE_PATH@");
 
 #endif
