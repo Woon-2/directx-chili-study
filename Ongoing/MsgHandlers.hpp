@@ -55,6 +55,7 @@ public:
     using MyKeyboard = Keyboard<MyChar>;
     using MyVK = typename MyKeyboard::VK;
     using MyKbdMsgAPI = KeyboardMsgAPI<MyChar>;
+    using MyString = std::basic_string<MyChar>;
 
     KbdMsgHandler(MyWindow& wnd) noexcept
         : Win32::MsgHandler<MyWindow>(wnd), kbd_() {}
@@ -71,9 +72,11 @@ public:
 
             case WM_KEYDOWN:
             case WM_SYSKEYDOWN:
-                MyKbdMsgAPI::onKeyPressed(
-                    kbd_, static_cast<MyVK>(msg.wParam)
-                );
+                if ( !(msg.lParam & 0x40000000) || kbd_.autoRepeat() ) {
+                    MyKbdMsgAPI::onKeyPressed(
+                        kbd_, static_cast<MyVK>(msg.wParam)
+                    );
+                }
                 return 0;
 
             case WM_KEYUP:
@@ -111,6 +114,14 @@ public:
                 MessageBoxA(nullptr, "Space Key Pressed!", "Key Press",
                     MB_OK | MB_ICONEXCLAMATION);
             }
+            else if ( ev->pressed() && ev->keycode() == VK_MENU ) {
+                MessageBoxA(nullptr, "ALT Key Pressed!", "Key Press",
+                    MB_OK | MB_ICONEXCLAMATION);
+            }
+        }
+
+        if ( auto ch = kbd_.readChar() ) {
+            window().setTitle( MyString{ch} );
         }
 
         return {};
