@@ -116,6 +116,8 @@ private:
     MyKeyboard kbd_;
 };
 
+#include <sstream>
+
 template <class Wnd>
 class MouseMsgHandler : public Win32::MsgHandler<Wnd>{
 public:
@@ -133,6 +135,53 @@ public:
         const Win32::Message& msg
     ) override {
         try {
+            while (!mouse_.empty()) {
+                const auto e = mouse_.read();
+                std::ostringstream oss;
+
+                switch(e->type().value()) {
+                case Mouse::Event::Type::Move:
+                    oss << "Mouse Position: (" << e->pos().x << ", " << e->pos().y << ")";
+                    window().setTitle(oss.str());
+                    break;
+
+                case Mouse::Event::Type::LPress:
+                    window().setTitle("LPress");
+                    break;
+
+                case Mouse::Event::Type::LRelease:
+                    window().setTitle("LRelease");
+                    break;
+
+                case Mouse::Event::Type::MPress:
+                    window().setTitle("MPress");
+                    break;
+
+                case Mouse::Event::Type::MRelease:
+                    window().setTitle("MRelease");
+                    break;
+
+                case Mouse::Event::Type::RPress:
+                    window().setTitle("RPress");
+                    break;
+
+                case Mouse::Event::Type::RRelease:
+                    window().setTitle("RRelease");
+                    break;
+
+                case Mouse::Event::Type::WheelUp:
+                    window().setTitle("WheelUp");
+                    break;
+
+                case Mouse::Event::Type::WheelDown:
+                    window().setTitle("WheelDown");
+                    break;
+
+                default:
+                    break;
+                }
+            }
+
             auto pt = makePoint(msg.lParam);
 
             switch (msg.type) {

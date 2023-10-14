@@ -173,11 +173,14 @@ private:
     }
 
     void onMouseWheel(Point pos, int wheelDelta) {
+
         wheelDelta_ += wheelDelta;
         
         auto nWheelStep = static_cast<int>(
             wheelDelta_ / wheelThreshold()
         );
+
+        wheelDelta_ -= nWheelStep * wheelThreshold();
 
         while (nWheelStep > 0) {
             buf_.emplace( Event::Type::WheelUp, pos );
