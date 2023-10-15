@@ -3,6 +3,7 @@
 
 #include "ChiliWindow.hpp"
 #include <d3d11.h>
+#include <wrl.h>
 
 #ifndef NDEBUG
 #include <dxgidebug.h>
@@ -35,21 +36,54 @@
 #define GFX_CLEAR_LOG() getLogger().clear()
 #endif  // NDEBUG
 
-void releaseCOM(IUnknown* com);
+// for ComPtrs resides in Microsoft::WRL
+namespace wrl = Microsoft::WRL;
 
-#ifndef NDEBUG
+#ifdef NDEBUG
+// Graphics Exception for Release Mode
+class GraphicsException : public Win32::WindowException {
+public:
+    using Win32::WindowException::WindowException;
+    const char* type() const noexcept override;
+
+private:
+};
+#else
+// Graphics Exception for Debug Mode
 template <class T>
 using DXGIInfoMsgContainer = std::vector<T>;
 
+class GraphicsException : public Win32::WindowException {
+public:
+    GraphicsException(int line, const char* file, HRESULT hr,
+        const DXGIInfoMsgContainer<std::string>& msgs = {});
+
+    const char* what() const noexcept override;
+    const char* type() const noexcept override;
+    bool emptyInfo() const noexcept { return info_.empty(); }
+    const std::string& info() const noexcept { return info_; }
+
+private:
+    std::string info_;
+};
+#endif  // NDEBUG
+
+class DeviceRemovedException : public GraphicsException {
+public:
+    using GraphicsException::GraphicsException;
+    const char* type() const noexcept override;
+
+private:
+};
+
+#ifndef NDEBUG
 class BasicDXGIDebugLogger {
 public:
     BasicDXGIDebugLogger(const BasicDXGIDebugLogger&) = default;
     BasicDXGIDebugLogger& operator=(const BasicDXGIDebugLogger&) = default;
     BasicDXGIDebugLogger(BasicDXGIDebugLogger&&) noexcept = default;
     BasicDXGIDebugLogger& operator=(BasicDXGIDebugLogger&&) noexcept = default;
-    ~BasicDXGIDebugLogger() {
-        releaseCOM(pDXGIInfoQueue_);
-    }
+    ~BasicDXGIDebugLogger();
 
     void clear() noexcept {
         pDXGIInfoQueue_->ClearStoredMessages(DXGI_DEBUG_ALL);
@@ -103,51 +137,26 @@ private:
             throw WND_LAST_EXCEPT();
         }
 
-        (*pDXGIGetDebugInterface)(__uuidof(IDXGIInfoQueue),
-            reinterpret_cast<void**>(&pDXGIInfoQueue_)
+        WND_THROW_FAILED( 
+            (*pDXGIGetDebugInterface)(
+                __uuidof(IDXGIDebug), &pDXGIDebug_
+            )
+        );
+
+        WND_THROW_FAILED(
+            (*pDXGIGetDebugInterface)(
+                __uuidof(IDXGIInfoQueue), &pDXGIInfoQueue_
+            )
         );
     }
 
-    IDXGIInfoQueue* pDXGIInfoQueue_;
+    wrl::ComPtr<IDXGIInfoQueue> pDXGIInfoQueue_;
+    wrl::ComPtr<IDXGIDebug> pDXGIDebug_;
 };
 
 BasicDXGIDebugLogger& getLogger();
 
 #endif  // NDEBUG
-
-#ifdef NDEBUG
-// Graphics Exception for Release Mode
-class GraphicsException : public Win32::WindowException {
-public:
-    using Win32::WindowException::WindowException;
-    const char* type() const noexcept override;
-
-private:
-};
-#else
-// Graphics Exception for Debug Mode
-class GraphicsException : public Win32::WindowException {
-public:
-    GraphicsException(int line, const char* file, HRESULT hr,
-        const DXGIInfoMsgContainer<std::string>& msgs = {});
-
-    const char* what() const noexcept override;
-    const char* type() const noexcept override;
-    bool emptyInfo() const noexcept { return info_.empty(); }
-    const std::string& info() const noexcept { return info_; }
-
-private:
-    std::string info_;
-};
-#endif  // NDEBUG
-
-class DeviceRemovedException : public GraphicsException {
-public:
-    using GraphicsException::GraphicsException;
-    const char* type() const noexcept override;
-
-private:
-};
 
 template <class Wnd>
 class Graphics {
@@ -158,7 +167,6 @@ public:
         : wnd_(wnd), pDevice_(nullptr), pSwap_(nullptr),
         pContext_(nullptr), pTarget_(nullptr) {
         try {
-
         auto sd = DXGI_SWAP_CHAIN_DESC{
             .BufferDesc = DXGI_MODE_DESC{
                 .Width = 0,
@@ -177,7 +185,7 @@ public:
             },
             .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
             .BufferCount = 1,
-            .OutputWindow = HWND(696969),
+            .OutputWindow = wnd_.nativeHandle(),
             .Windowed = true,
             .SwapEffect = DXGI_SWAP_EFFECT_DISCARD,
             .Flags = 0
@@ -204,22 +212,24 @@ public:
             /* ppImmediateContext = */ &pContext_
         ) );
 
-        // TODO: must use RAII
-        ID3D11Resource* pBackBuffer = nullptr;
+        wrl::ComPtr<ID3D11Resource> pBackBuffer = nullptr;
         GFX_THROW_FAILED(
-            pSwap_->GetBuffer( 0, __uuidof(ID3D11Resource),
-                reinterpret_cast<void**>(&pBackBuffer)
+            pSwap_->GetBuffer(
+                0, __uuidof(ID3D11Resource), &pBackBuffer
             )
         );
         GFX_THROW_FAILED(
             pDevice_->CreateRenderTargetView(
-                pBackBuffer,
+                pBackBuffer.Get(),
                 nullptr,
                 &pTarget_
             )
         );
-        pBackBuffer->Release();
 
+        }
+        catch (const GraphicsException& e) {
+            MessageBoxA(nullptr, e.what(), "Graphics Exception",
+                MB_OK | MB_ICONEXCLAMATION);
         }
         catch (const Win32::WindowException& e) {
             MessageBoxA(nullptr, e.what(), "Window Exception",
@@ -235,12 +245,7 @@ public:
         }
     }
 
-    ~Graphics() {
-        releaseCOM(pDevice_);
-        releaseCOM(pSwap_);
-        releaseCOM(pContext_);
-        releaseCOM(pTarget_);
-    }
+    ~Graphics() = default;
 
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
@@ -258,22 +263,15 @@ public:
 
     void clear( float r, float g, float b ) {
         const float color[] = { r, g, b, 1.f };
-        pContext_->ClearRenderTargetView( pTarget_, color );
+        pContext_->ClearRenderTargetView( pTarget_.Get(), color );
     }
 
 private:
-    static void releaseCOM(IUnknown* com) {
-        if (com) {
-            com->Release();
-            com = nullptr;
-        }
-    }
-
     MyWindow& wnd_;
-    ID3D11Device* pDevice_;
-    IDXGISwapChain* pSwap_;
-    ID3D11DeviceContext* pContext_;
-    ID3D11RenderTargetView* pTarget_;
+    wrl::ComPtr<ID3D11Device> pDevice_;
+    wrl::ComPtr<IDXGISwapChain> pSwap_;
+    wrl::ComPtr<ID3D11DeviceContext> pContext_;
+    wrl::ComPtr<ID3D11RenderTargetView> pTarget_;
 };
 
 #endif  // __Graphics

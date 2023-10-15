@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.10.14 LANGUAGES CXX)
+project(POngoing VERSION 2023.10.15 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -67,6 +67,8 @@ function(auto_configure TARGET_NAME ACCESS_MODIFIER)
             /Zc:__cplusplus
             /sdl-
             /fp:fast
+            /JMC
+            /wd5104
         )
 
     # See below link for gcc options

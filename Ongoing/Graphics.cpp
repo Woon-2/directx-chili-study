@@ -6,13 +6,6 @@
 #include <string>
 #include <sstream>
 
-void releaseCOM(IUnknown* com) {
-    if (com) {
-        com->Release();
-        com = nullptr;
-    }
-}
-
 #ifndef NDEBUG
 BasicDXGIDebugLogger& getLogger() {
     static std::optional<BasicDXGIDebugLogger> inst;
@@ -58,6 +51,19 @@ const char* GraphicsException::what() const noexcept
     whatBuffer_ = oss.str();
     return whatBuffer_.c_str();
 }
+
+BasicDXGIDebugLogger::~BasicDXGIDebugLogger()
+{
+    try {
+        GFX_THROW_FAILED( pDXGIDebug_->ReportLiveObjects(
+            DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL
+        ));
+    } catch (GraphicsException& e) {
+        MessageBoxA(nullptr, e.what(), "Graphics Exception",
+            MB_OK | MB_ICONEXCLAMATION);
+    }
+}
+
 #endif  // NDEBUG
 
 const char* GraphicsException::type() const noexcept
