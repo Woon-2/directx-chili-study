@@ -1,0 +1,8 @@
+#ifndef __SHADERPATH
+#define __SHADERPATH
+
+#include <filesystem>
+
+const auto compiledShaderPath = std::filesystem::path("@COMPILED_SHADER_PATH@");
+
+#endif  // __SHADERPATH

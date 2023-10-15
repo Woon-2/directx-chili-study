@@ -174,6 +174,26 @@ endfunction()
 
 auto_configure(chili PRIVATE)
 
+# Shader related stuffs
+
+configure_file("${PROJECT_SOURCE_DIR}/shader/ShaderPath.h.in"
+    "${PROJECT_SOURCE_DIR}/shader/ShaderPath.h"
+)
+set(COMPILED_SHADER_PATH "${PROJECT_BINARY_DIR}/shader" CACHE PATH
+    "Write path to populate compiled shaders."
+)
+
+include(find_hlsl_compiler)
+compile_hlsl("${PROJECT_SOURCE_DIR}/shader/VertexShader.hlsl"
+    "${COMPILED_SHADER_PATH}/VertexShader.cso"
+    "vs_4_0_level_9_3"
+)
+add_hlsl_target("${HLSL_COMPILED_SHADERS}")
+
+add_dependencies(chili hlsl)
+
+# link modules
+
 target_link_libraries(chili
 PRIVATE
     Win::win
@@ -181,7 +201,8 @@ PRIVATE
     Utility::timer
     Resource::resource
     d3d11.lib
+    D3DCompiler.lib
     $<$<CONFIG:DEBUG>:dxguid.lib>
 )
 
-target_include_directories(chili PRIVATE include)
+target_include_directories(chili PRIVATE include shader)
