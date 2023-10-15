@@ -47,8 +47,16 @@ message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
 
 add_executable(chili)
 
-target_sources(chili PRIVATE main.cpp ChiliWindow.hpp ChiliWindow.cpp MsgHandlers.hpp
-    Keyboard.hpp Mouse.hpp App.hpp Graphics.hpp Graphics.cpp
+target_sources(chili PRIVATE
+    src/main.cpp
+    include/ChiliWindow.hpp
+    src/ChiliWindow.cpp
+    include/MsgHandlers.hpp
+    include/Keyboard.hpp
+    include/Mouse.hpp
+    include/App.hpp
+    include/Graphics.hpp
+    src/Graphics.cpp
 )
 
 function(auto_configure TARGET_NAME ACCESS_MODIFIER)
@@ -175,3 +183,5 @@ PRIVATE
     d3d11.lib
     $<$<CONFIG:DEBUG>:dxguid.lib>
 )
+
+target_include_directories(chili PRIVATE include)
