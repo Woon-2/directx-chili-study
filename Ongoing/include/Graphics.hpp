@@ -315,7 +315,8 @@ public:
 
         GFX_THROW_FAILED_VOID(
             pContext_->IASetVertexBuffers(
-                0u, 1u, &pVertexBuffer, &stride, &offset
+                0u, 1u, pVertexBuffer.GetAddressOf(),
+                &stride, &offset
             )
         );
 
@@ -364,6 +365,11 @@ public:
             pContext_->Draw( static_cast<UINT>(
                 std::size(vertices)
             ), 0u )
+        );
+
+        // Bind Render Target
+        pContext->OMSetRenderTargets(
+            1u, pTarget_.GetAddressOf(), nullptr
         );
     }
 
