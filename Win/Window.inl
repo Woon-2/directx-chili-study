@@ -44,6 +44,17 @@ requires canRegist< Traits, HINSTANCE >
 Window<Traits>::Window(Args&& ... args)
     : title_{}, msgHandlers_{}, hWnd_{nullptr}
 {
+    open(std::forward<Args>(args)...);
+}
+
+template <class Traits>
+template <class ... Args>
+requires canRegist< Traits, HINSTANCE >
+    && canCreate< Traits, HINSTANCE, Window<Traits>*, Args... >
+void Window<Traits>::open(Args&& ... args)
+{
+    close();
+
     if (!bRegist) [[unlikely]] {
         Traits::regist( getHInst() );
         bRegist = true;
@@ -87,31 +98,15 @@ template <class Traits>
 std::optional<int> Window<Traits>::processMessages()
 {
     MSG msg;
-
-    try {
-
-        while ( PeekMessageW(
-            &msg, nativeHandle(), 0, 0, PM_REMOVE
-        ) ) {
-            if (msg.message == WM_QUIT) {
-                return static_cast<int>(msg.wParam);
-            }
-
-            TranslateMessage(&msg);
-            DispatchMessageW(&msg);
+    while ( PeekMessageW(
+        &msg, nativeHandle(), 0, 0, PM_REMOVE
+    ) ) {
+        if (msg.message == WM_QUIT) {
+            return static_cast<int>(msg.wParam);
         }
-    }
-    catch (const WindowException& e) {
-        MessageBoxA(nullptr, e.what(), "Window Exception",
-            MB_OK | MB_ICONEXCLAMATION);
-    }
-    catch (const std::exception& e) {
-        MessageBoxA(nullptr, e.what(), "Standard Exception",
-            MB_OK | MB_ICONEXCLAMATION);
-    }
-    catch(...) {
-        MessageBoxA(nullptr, "no details available",
-            "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
     }
 
     return {};

@@ -13,11 +13,10 @@
 #include "AdditionalConcepts.hpp"
 #include "Woon2Exception.hpp"
 
-#define WND_EXCEPT(hr) Win32::WindowException(__LINE__, __FILE__, hr)
+#define WND_EXCEPT(hr) Win32::WindowException(__LINE__, __FILE__, (hr))
 #define WND_THROW_FAILED(hrcall)    \
-    if ( HRESULT hr = (hrcall); hr < 0 ) { \
-        throw WND_EXCEPT(hr);    \
-    }
+    if ( HRESULT hr = (hrcall); hr < 0 ) \
+        throw WND_EXCEPT(hr)
 #define WND_LAST_EXCEPT() WND_EXCEPT( GetLastError() )
 
 namespace Win32
@@ -144,22 +143,9 @@ public:
     Window() requires false;
     ~Window() requires canDestroy<Traits, HWND>
     { 
-        try {
-            Traits::destroy( nativeHandle() );
-        }
-        catch (const WindowException& e) {
-            MessageBoxA(nullptr, e.what(), "Window Exception",
-                MB_OK | MB_ICONEXCLAMATION);
-        }
-        catch (const std::exception& e) {
-            MessageBoxA(nullptr, e.what(), "Standard Exception",
-                MB_OK | MB_ICONEXCLAMATION);
-        }
-        catch(...) {
-            MessageBoxA(nullptr, "no details available",
-                "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
-        }
+        close();
     }
+
     template <class ... Args>
     requires canRegist<Traits, HINSTANCE>
         && canCreate<Traits, HINSTANCE, Window<Traits>*, Args...>
@@ -168,6 +154,18 @@ public:
     Window(Window&&) requires false;
     Window& operator=(const Window&) = delete;
     Window& operator=(Window&&) = delete;
+
+    template <class ... Args>
+    requires canRegist<Traits, HINSTANCE>
+        && canCreate<Traits, HINSTANCE, Window<Traits>*, Args...>
+    void open(Args&& ... args);
+
+    void close() requires canDestroy<Traits, HWND> {
+        if ( nativeHandle() ) {
+            Traits::destroy( nativeHandle() );
+            hWnd_ = nullptr;
+        }
+    }
 
     static void setHInst(HINSTANCE hInstance) noexcept
     { hInst = hInstance; }
