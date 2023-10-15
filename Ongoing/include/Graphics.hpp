@@ -289,25 +289,19 @@ public:
                 float y;
                 float z;
             };
-            struct Color {
-                unsigned char r;
-                unsigned char g;
-                unsigned char b;
-            };
             Pos pos;
-            Color color;
         };
 
         // Create Vertex Buffer
         const Vertex vertices[] = {
-            {-1.f, -1.f, -1.f, 255, 0, 0},
-            {1.f, -1.f, -1.f, 0, 255, 0},
-            {-1.f, 1.f, -1.f, 0, 0, 255},
-            {1.f, 1.f, -1.f, 255, 255, 0},
-            {-1.f, -1.f, 1.f, 255, 0, 255},
-            {1.f, -1.f, 1.f, 0, 255, 255},
-            {-1.f, 1.f, 1.f, 0, 0, 0},
-            {1.f, 1.f, 1.f, 255, 255, 255}
+            {-1.f, -1.f, -1.f},
+            {1.f, -1.f, -1.f},
+            {-1.f, 1.f, -1.f},
+            {1.f, 1.f, -1.f},
+            {-1.f, -1.f, 1.f},
+            {1.f, -1.f, 1.f},
+            {-1.f, 1.f, 1.f},           
+            {1.f, 1.f, 1.f}
         };
 
         auto pVertexBuffer = wrl::ComPtr<ID3D11Buffer>();
@@ -446,6 +440,55 @@ public:
             )
         );
 
+        // Create Constant Buffer for Face Color
+        struct ConstantBufferColor {
+            struct {
+                float r;
+                float g;
+                float b;
+                float a;
+            } face_colors[6];
+        };
+
+        auto cbufColor = ConstantBufferColor{
+            {
+                {1.f, 0.f, 1.f, 0.f},
+                {1.f, 0.f, 0.f, 0.f},
+                {0.f, 1.f, 0.f, 0.f},
+                {0.f, 0.f, 1.f, 0.f},
+                {1.f, 1.f, 0.f, 0.f},
+                {0.f, 1.f, 1.f, 0.f}
+            }
+        };
+
+        auto cbdColor = D3D11_BUFFER_DESC{
+            .ByteWidth = sizeof(ConstantBufferColor),
+            .Usage = D3D11_USAGE_DEFAULT,
+            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+            .CPUAccessFlags = 0u,
+            .MiscFlags = 0u,
+            .StructureByteStride = 0u
+        };
+
+        auto csdColor = D3D11_SUBRESOURCE_DATA{
+            .pSysMem = &cbufColor
+        };
+
+        auto pConstantBufferColor = wrl::ComPtr<ID3D11Buffer>();
+
+        GFX_THROW_FAILED(
+            pDevice_->CreateBuffer(
+                &cbdColor, &csdColor, &pConstantBufferColor
+            )
+        );
+
+        // Bind Constant Buffer
+        GFX_THROW_FAILED_VOID(
+            pContext_->PSSetConstantBuffers(
+                0u, 1u, pConstantBufferColor.GetAddressOf()
+            )
+        );
+
         // Layout Vertex Shader Input
         auto pInputLayout = wrl::ComPtr<ID3D11InputLayout>();
         const D3D11_INPUT_ELEMENT_DESC ied[] = {
@@ -454,14 +497,6 @@ public:
               .Format = DXGI_FORMAT_R32G32B32_FLOAT,
               .InputSlot = 0,
               .AlignedByteOffset = 0,
-              .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-              .InstanceDataStepRate = 0
-            },
-            { .SemanticName = "Color",
-              .SemanticIndex = 0,
-              .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
-              .InputSlot = 0,
-              .AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
               .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
               .InstanceDataStepRate = 0
             }
