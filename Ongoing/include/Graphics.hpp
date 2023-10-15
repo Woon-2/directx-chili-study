@@ -10,6 +10,8 @@
 #include <dxgidebug.h>
 #endif  // NDEBUG
 
+#include <DirectXMath.h>
+
 #include <vector>
 #include <string>
 #include <cstddef>
@@ -49,6 +51,7 @@
 
 // for ComPtrs resides in Microsoft::WRL
 namespace wrl = Microsoft::WRL;
+namespace dx = DirectX;
 
 #ifdef NDEBUG
 // Graphics Exception for Release Mode
@@ -261,8 +264,8 @@ public:
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
 
-    void render(float angle) {
-        drawTriangle(angle);
+    void render(float angle, float x, float y) {
+        drawTriangle(angle, x, y);
 
         if (auto hr = pSwap_->Present(2u, 0u); hr < 0) {
             if (hr == DXGI_ERROR_DEVICE_REMOVED) {
@@ -279,7 +282,7 @@ public:
         pContext_->ClearRenderTargetView(pTarget_.Get(), color);
     }
 
-    void drawTriangle(float angle) {
+    void drawTriangle(float angle, float x, float y) {
         struct Vertex {
             struct Pos {
                 float x;
@@ -399,17 +402,16 @@ public:
 
         // Create Constant Buffer for Transformation Matrix
         struct ConstantBuffer {
-            struct {
-                float element[4][4];
-            } transformation;
+            dx::XMMATRIX transform;
         };
         
         const auto cbuf = ConstantBuffer{
             {
-                (3.f/4.f) * std::cos(angle), -(3.f/4.f) * std::sin(angle), 0.f, 0.f,
-                std::sin(angle),             std::cos(angle),              0.f, 0.f,
-                0.f,                         0.f,                          1.f, 0.f,
-                0.f,                         0.f,                          0.f, 1.f
+                dx::XMMatrixTranspose(
+                    dx::XMMatrixRotationZ( angle )
+                    * dx::XMMatrixScaling( 3.f/4.f, 1.f, 1.f )
+                    * dx::XMMatrixTranslation( x, y, 0.f )
+                )
             }
         };
 

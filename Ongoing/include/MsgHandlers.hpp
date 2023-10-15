@@ -94,8 +94,8 @@ public:
     using MyKbdMsgAPI = KeyboardMsgAPI<MyChar>;
     using MyString = std::basic_string<MyChar>;
 
-    KbdMsgHandler(MyWindow& wnd) noexcept
-        : Win32::MsgHandler<MyWindow>(wnd), kbd_() {}
+    KbdMsgHandler(MyWindow& wnd, MyKeyboard* pKbd) noexcept
+        : Win32::MsgHandler<MyWindow>(wnd), pKbd_(pKbd) {}
 
     std::optional<LRESULT> operator()(
         const Win32::Message& msg
@@ -104,14 +104,14 @@ public:
             switch (msg.type) {
             // clear scanned key state when window loses focus
             case WM_KILLFOCUS:
-                MyKbdMsgAPI::clearScanned(kbd_);
+                MyKbdMsgAPI::clearScanned(*pKbd_);
                 break;
 
             case WM_KEYDOWN:
             case WM_SYSKEYDOWN:
-                if ( !(msg.lParam & 0x40000000) || kbd_.autoRepeat() ) {
+                if ( !(msg.lParam & 0x40000000) || pKbd_->autoRepeat() ) {
                     MyKbdMsgAPI::onKeyPressed(
-                        kbd_, static_cast<MyVK>(msg.wParam)
+                        *pKbd_, static_cast<MyVK>(msg.wParam)
                     );
                 }
                 return 0;
@@ -119,13 +119,13 @@ public:
             case WM_KEYUP:
             case WM_SYSKEYUP:
                 MyKbdMsgAPI::onKeyReleased(
-                    kbd_, static_cast<MyVK>(msg.wParam)
+                    *pKbd_, static_cast<MyVK>(msg.wParam)
                 );
                 return 0;
 
             case WM_CHAR:
                 MyKbdMsgAPI::onChar(
-                    kbd_, static_cast<MyChar>(msg.wParam)
+                    *pKbd_, static_cast<MyChar>(msg.wParam)
                 );
                 return 0;
 
@@ -149,7 +149,7 @@ public:
         return {};
     }
 private:
-    MyKeyboard kbd_;
+    MyKeyboard* pKbd_;
 };
 
 #include <sstream>
@@ -164,15 +164,15 @@ public:
     using MyMouseMsgAPI = MouseMsgAPI;
     using MyString = std::basic_string<MyChar>;
 
-    MouseMsgHandler(MyWindow& wnd) noexcept
-        : Win32::MsgHandler<MyWindow>(wnd), mouse_() {}
+    MouseMsgHandler(MyWindow& wnd, MyMouse* pMouse) noexcept
+        : Win32::MsgHandler<MyWindow>(wnd), pMouse_(pMouse) {}
 
     std::optional<LRESULT> operator()(
         const Win32::Message& msg
     ) override {
         try {
-            while (!mouse_.empty()) {
-                const auto e = mouse_.read();
+            while (!pMouse_->empty()) {
+                const auto e = pMouse_->read();
                 std::ostringstream oss;
 
                 switch(e->type().value()) {
@@ -223,50 +223,50 @@ public:
             switch (msg.type) {
             case WM_MOUSEMOVE:
                 if ( insideClient(pt) ) {
-                    MyMouseMsgAPI::onMouseMove(mouse_, pt);
+                    MyMouseMsgAPI::onMouseMove(*pMouse_, pt);
 
-                    if ( !mouse_.inWindow() ) {
+                    if ( !pMouse_->inWindow() ) {
                         SetCapture( window().nativeHandle() );
-                        MyMouseMsgAPI::onEnter(mouse_, pt);
+                        MyMouseMsgAPI::onEnter(*pMouse_, pt);
                     }
                 }
                 else {
                     if ( msg.wParam & (MK_LBUTTON | MK_RBUTTON) ) {
-                        MyMouseMsgAPI::onMouseMove(mouse_, pt);
+                        MyMouseMsgAPI::onMouseMove(*pMouse_, pt);
                     }
                     else {
                         ReleaseCapture();
-                        MyMouseMsgAPI::onLeave(mouse_, pt);
+                        MyMouseMsgAPI::onLeave(*pMouse_, pt);
                     }
                 }
                 return 0;
 
             case WM_LBUTTONDOWN:
-                MyMouseMsgAPI::onLeftPressed(mouse_, pt);
+                MyMouseMsgAPI::onLeftPressed(*pMouse_, pt);
                 return 0;
 
             case WM_LBUTTONUP:
-                MyMouseMsgAPI::onLeftReleased(mouse_, pt);
+                MyMouseMsgAPI::onLeftReleased(*pMouse_, pt);
                 return 0;
 
             case WM_RBUTTONDOWN:
-                MyMouseMsgAPI::onRightPressed(mouse_, pt);
+                MyMouseMsgAPI::onRightPressed(*pMouse_, pt);
                 return 0;
 
             case WM_RBUTTONUP:
-                MyMouseMsgAPI::onRightReleased(mouse_, pt);
+                MyMouseMsgAPI::onRightReleased(*pMouse_, pt);
                 return 0;
 
             case WM_MBUTTONDOWN:
-                MyMouseMsgAPI::onMidPressed(mouse_, pt);
+                MyMouseMsgAPI::onMidPressed(*pMouse_, pt);
                 return 0;
 
             case WM_MBUTTONUP:
-                MyMouseMsgAPI::onMidReleased(mouse_, pt);
+                MyMouseMsgAPI::onMidReleased(*pMouse_, pt);
                 return 0;
 
             case WM_MOUSEWHEEL:
-                MyMouseMsgAPI::onMouseWheel(mouse_, pt,
+                MyMouseMsgAPI::onMouseWheel(*pMouse_, pt,
                     GET_WHEEL_DELTA_WPARAM(msg.wParam)
                 );
                 return 0;
@@ -310,7 +310,7 @@ private:
             && pt.y <= client.y + client.height;
     }
 
-    MyMouse mouse_;
+    MyMouse* pMouse_;
 };
 
 #endif // __ChiliMsgHandlers
