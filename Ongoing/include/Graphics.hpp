@@ -361,15 +361,16 @@ public:
         // Bind Pixel Shader
         pContext_->PSSetShader( pPixelShader.Get(), 0, 0 );
 
-        GFX_THROW_FAILED_VOID(
-            pContext_->Draw( static_cast<UINT>(
-                std::size(vertices)
-            ), 0u )
-        );
 
         // Bind Render Target
         pContext_->OMSetRenderTargets(
             1u, pTarget_.GetAddressOf(), nullptr
+        );
+
+        GFX_THROW_FAILED_VOID(
+            pContext_->Draw( static_cast<UINT>(
+                std::size(vertices)
+            ), 0u )
         );
     }
 
