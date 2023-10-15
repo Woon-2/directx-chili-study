@@ -44,9 +44,30 @@ public:
     }
 
     void render() {
-        const float c = sin( timer_.peek() ) / 2.f + 0.5f;
-        gfx_.clear(c,c,1.f);
-        gfx_.render();
+        try {
+            const float c = sin( timer_.peek() ) / 2.f + 0.5f;
+            gfx_.clear(c,c,1.f);
+            gfx_.render();
+        } catch (const GraphicsException& e) {
+            MessageBoxA(nullptr, e.what(), "Graphics Exception",
+                MB_OK | MB_ICONEXCLAMATION);
+            wnd_.close();
+        }
+        catch (const Win32::WindowException& e) {
+            MessageBoxA(nullptr, e.what(), "Window Exception",
+                MB_OK | MB_ICONEXCLAMATION);
+            wnd_.close();
+        }
+        catch (const std::exception& e) {
+            MessageBoxA(nullptr, e.what(), "Standard Exception",
+                MB_OK | MB_ICONEXCLAMATION);
+            wnd_.close();
+        }
+        catch(...) {
+            MessageBoxA(nullptr, "no details available",
+                "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+            wnd_.close();
+        }
     }
 private: 
     MyWindow wnd_;

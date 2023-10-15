@@ -24,15 +24,23 @@
 #ifdef NDEBUG
 #define GFX_DEVICE_REMOVED_EXCEPT(hr) DeviceRemovedException(__LINE__, __FILE__, (hr))
 #define GFX_EXCEPT(hr) GFX_EXCEPT_NOINFO((hr))
+#define GFX_EXCEPT_VOID() GFX_EXCEPT(E_INVALIDARG)
 #define GFX_THROW_FAILED(hrcall) GFX_THROW_FAILED_NOINFO((hrcall))
+#define GFX_THROW_FAILED_VOID(voidcall) (voidcall)
 #else
 #define GFX_DEVICE_REMOVED_EXCEPT(hr) \
     DeviceRemovedException(__LINE__, __FILE__, (hr), getLogger().getMessages())
 #define GFX_EXCEPT(hr) GraphicsException(__LINE__, __FILE__, (hr), getLogger().getMessages())
+#define GFX_EXCEPT_VOID() GFX_EXCEPT(E_INVALIDARG)
 #define GFX_THROW_FAILED(hrcall) \
-    if ( HRESULT hr = (hrcall); hr < 0 ) {  \
-        throw GFX_EXCEPT(hr);   \
-    }
+    GFX_CLEAR_LOG();    \
+    if ( HRESULT hr = (hrcall); hr < 0 )  \
+        throw GFX_EXCEPT(hr)
+#define GFX_THROW_FAILED_VOID(voidcall) \
+    GFX_CLEAR_LOG();    \
+    (voidcall); \
+    if ( !getLogger().getMessages().empty() )   \
+        throw GFX_EXCEPT_VOID()
 #define GFX_CLEAR_LOG() getLogger().clear()
 #endif  // NDEBUG
 
@@ -96,7 +104,7 @@ public:
 
         for (auto i = decltype(nMsgs)(0); i < nMsgs; ++i) {
             auto msgLength = size_t(0ull);
-            WND_THROW_FAILED( pDXGIInfoQueue_->GetMessage(
+            WND_THROW_FAILED(pDXGIInfoQueue_->GetMessage(
                 DXGI_DEBUG_ALL, i, nullptr, &msgLength
             ));
 
@@ -106,11 +114,11 @@ public:
                 DXGI_INFO_QUEUE_MESSAGE*
             >(bytes.data());
 
-            WND_THROW_FAILED( pDXGIInfoQueue_->GetMessage(
+            WND_THROW_FAILED(pDXGIInfoQueue_->GetMessage(
                 DXGI_DEBUG_ALL, i, pMsg, &msgLength
             ));
 
-            ret.emplace_back( pMsg->pDescription );
+            ret.emplace_back(pMsg->pDescription);
         }
 
         return ret;
@@ -121,7 +129,7 @@ public:
 private:
     BasicDXGIDebugLogger()
         : pDXGIInfoQueue_(nullptr) {
-        using fPtr = HRESULT(__stdcall *)(REFIID, void**);
+        using fPtr = HRESULT(__stdcall*)(REFIID, void**);
 
         const auto hModDXGIDebug = LoadLibraryExA(
             "dxgidebug.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32
@@ -130,23 +138,23 @@ private:
         fPtr pDXGIGetDebugInterface = reinterpret_cast<fPtr>(
             reinterpret_cast<void*>(
                 GetProcAddress(hModDXGIDebug, "DXGIGetDebugInterface")
-            )
-        );
+                )
+            );
 
         if (!pDXGIGetDebugInterface) {
             throw WND_LAST_EXCEPT();
         }
 
-        WND_THROW_FAILED( 
+        WND_THROW_FAILED(
             (*pDXGIGetDebugInterface)(
                 __uuidof(IDXGIDebug), &pDXGIDebug_
-            )
+                )
         );
 
         WND_THROW_FAILED(
             (*pDXGIGetDebugInterface)(
                 __uuidof(IDXGIInfoQueue), &pDXGIInfoQueue_
-            )
+                )
         );
     }
 
@@ -167,64 +175,64 @@ public:
         : wnd_(wnd), pDevice_(nullptr), pSwap_(nullptr),
         pContext_(nullptr), pTarget_(nullptr) {
         try {
-        auto sd = DXGI_SWAP_CHAIN_DESC{
-            .BufferDesc = DXGI_MODE_DESC{
-                .Width = 0,
-                .Height = 0,
-                .RefreshRate = DXGI_RATIONAL{
-                    .Numerator = 0,
-                    .Denominator = 0
+            auto sd = DXGI_SWAP_CHAIN_DESC{
+                .BufferDesc = DXGI_MODE_DESC{
+                    .Width = 0,
+                    .Height = 0,
+                    .RefreshRate = DXGI_RATIONAL{
+                        .Numerator = 0,
+                        .Denominator = 0
+                    },
+                    .Format = DXGI_FORMAT_B8G8R8A8_UNORM,
+                    .ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
+                    .Scaling = DXGI_MODE_SCALING_UNSPECIFIED
                 },
-                .Format = DXGI_FORMAT_B8G8R8A8_UNORM,
-                .ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
-                .Scaling = DXGI_MODE_SCALING_UNSPECIFIED
-            },
-            .SampleDesc = DXGI_SAMPLE_DESC {
-                .Count = 1,
-                .Quality = 0
-            },
-            .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-            .BufferCount = 1,
-            .OutputWindow = wnd_.nativeHandle(),
-            .Windowed = true,
-            .SwapEffect = DXGI_SWAP_EFFECT_DISCARD,
-            .Flags = 0
-        };
+                .SampleDesc = DXGI_SAMPLE_DESC {
+                    .Count = 1,
+                    .Quality = 0
+                },
+                .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+                .BufferCount = 1,
+                .OutputWindow = wnd_.nativeHandle(),
+                .Windowed = true,
+                .SwapEffect = DXGI_SWAP_EFFECT_DISCARD,
+                .Flags = 0
+            };
 
-        UINT swapCreateFlags = 0u;
-        #ifndef NDEBUG
-        swapCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
-        #endif
+            UINT swapCreateFlags = 0u;
+#ifndef NDEBUG
+            swapCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
-        // create device and front/back buffers, swap chain, and rendering context
-        GFX_THROW_FAILED( D3D11CreateDeviceAndSwapChain(
-            /* pAdapter = */ nullptr,
-            /* DriverType = */ D3D_DRIVER_TYPE_HARDWARE,
-            /* Software = */ nullptr,
-            /* Flags = */ swapCreateFlags,
-            /* pFeatureLevels = */ nullptr,
-            /* FeatureLevels = */ 0,
-            /* SDKVersion = */ D3D11_SDK_VERSION,
-            /* pSwapChainDesc = */ &sd,
-            /* ppSwapChain = */ &pSwap_,
-            /* ppDevice = */ &pDevice_,
-            /* pFeatureLevel = */ nullptr,
-            /* ppImmediateContext = */ &pContext_
-        ) );
+            // create device and front/back buffers, swap chain, and rendering context
+            GFX_THROW_FAILED(D3D11CreateDeviceAndSwapChain(
+                /* pAdapter = */ nullptr,
+                /* DriverType = */ D3D_DRIVER_TYPE_HARDWARE,
+                /* Software = */ nullptr,
+                /* Flags = */ swapCreateFlags,
+                /* pFeatureLevels = */ nullptr,
+                /* FeatureLevels = */ 0,
+                /* SDKVersion = */ D3D11_SDK_VERSION,
+                /* pSwapChainDesc = */ &sd,
+                /* ppSwapChain = */ &pSwap_,
+                /* ppDevice = */ &pDevice_,
+                /* pFeatureLevel = */ nullptr,
+                /* ppImmediateContext = */ &pContext_
+            ));
 
-        wrl::ComPtr<ID3D11Resource> pBackBuffer = nullptr;
-        GFX_THROW_FAILED(
-            pSwap_->GetBuffer(
-                0, __uuidof(ID3D11Resource), &pBackBuffer
-            )
-        );
-        GFX_THROW_FAILED(
-            pDevice_->CreateRenderTargetView(
-                pBackBuffer.Get(),
-                nullptr,
-                &pTarget_
-            )
-        );
+            wrl::ComPtr<ID3D11Resource> pBackBuffer = nullptr;
+            GFX_THROW_FAILED(
+                pSwap_->GetBuffer(
+                    0, __uuidof(ID3D11Resource), &pBackBuffer
+                )
+            );
+            GFX_THROW_FAILED(
+                pDevice_->CreateRenderTargetView(
+                    pBackBuffer.Get(),
+                    nullptr,
+                    &pTarget_
+                )
+            );
 
         }
         catch (const GraphicsException& e) {
@@ -239,7 +247,7 @@ public:
             MessageBoxA(nullptr, e.what(), "Standard Exception",
                 MB_OK | MB_ICONEXCLAMATION);
         }
-        catch(...) {
+        catch (...) {
             MessageBoxA(nullptr, "no details available",
                 "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
         }
@@ -251,7 +259,9 @@ public:
     Graphics& operator=(const Graphics&) = delete;
 
     void render() {
-        if ( auto hr = pSwap_->Present(2u, 0u); hr < 0 ) {
+        drawTriangle();
+
+        if (auto hr = pSwap_->Present(2u, 0u); hr < 0) {
             if (hr == DXGI_ERROR_DEVICE_REMOVED) {
                 throw GFX_DEVICE_REMOVED_EXCEPT(hr);
             }
@@ -261,9 +271,53 @@ public:
         }
     }
 
-    void clear( float r, float g, float b ) {
+    void clear(float r, float g, float b) {
         const float color[] = { r, g, b, 1.f };
-        pContext_->ClearRenderTargetView( pTarget_.Get(), color );
+        pContext_->ClearRenderTargetView(pTarget_.Get(), color);
+    }
+
+    void drawTriangle() {
+        struct Vertex {
+            float x;
+            float y;
+        };
+
+        const Vertex vertices[] = {
+            {0.f, 0.5f},
+            {0.5f, -0.5f},
+            {-0.5f, -0.5f}
+        };
+
+        auto pVertexBuffer = wrl::ComPtr<ID3D11Buffer>();
+
+        auto bd = D3D11_BUFFER_DESC{
+            .ByteWidth = sizeof(vertices),
+            .Usage = D3D11_USAGE_DEFAULT,
+            .BindFlags = D3D11_BIND_VERTEX_BUFFER,
+            .CPUAccessFlags = 0u,
+            .MiscFlags = 0u,
+            .StructureByteStride = sizeof(Vertex)
+        };
+
+        auto sd = D3D11_SUBRESOURCE_DATA{
+            .pSysMem = vertices
+        };
+
+        GFX_THROW_FAILED(
+            pDevice_->CreateBuffer(&bd, &sd, &pVertexBuffer)
+        );
+
+        const UINT stride = sizeof(Vertex);
+        const UINT offset = 0u;
+
+        GFX_THROW_FAILED_VOID(
+            pContext_->IASetVertexBuffers(
+                0u, 1u, &pVertexBuffer, &stride, &offset
+            )
+        );
+        GFX_THROW_FAILED_VOID(
+            pContext_->Draw(3u, 0u)
+        );
     }
 
 private:

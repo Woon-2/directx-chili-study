@@ -17,7 +17,7 @@ BasicDXGIDebugLogger& getLogger() {
     return inst.value();
 }
 
-GraphicsException::GraphicsException(int line, const char *file,
+GraphicsException::GraphicsException(int line, const char* file,
     HRESULT hr, const DXGIInfoMsgContainer<std::string>& msgs
 ) : Win32::WindowException(line, file, hr), info_() {
     // join all messages with newlines into single string
@@ -26,7 +26,7 @@ GraphicsException::GraphicsException(int line, const char *file,
     auto insertNewLine = [](const auto& s) {
         return s + '\n';
     };
-    std::ranges::copy( msgs
+    std::ranges::copy(msgs
         | std::views::transform(insertNewLine)
         | std::views::join,
         out
@@ -55,10 +55,13 @@ const char* GraphicsException::what() const noexcept
 BasicDXGIDebugLogger::~BasicDXGIDebugLogger()
 {
     try {
-        GFX_THROW_FAILED( pDXGIDebug_->ReportLiveObjects(
-            DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL
-        ));
-    } catch (GraphicsException& e) {
+        if (pDXGIDebug_) {
+            GFX_THROW_FAILED(pDXGIDebug_->ReportLiveObjects(
+                DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL
+            ));
+        }
+    }
+    catch (GraphicsException& e) {
         MessageBoxA(nullptr, e.what(), "Graphics Exception",
             MB_OK | MB_ICONEXCLAMATION);
     }

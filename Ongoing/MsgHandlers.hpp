@@ -22,6 +22,33 @@ public:
             switch (msg.type) {
             case WM_CLOSE:
                 if constexpr (std::is_same_v<MyChar, CHAR>) {
+                    auto ans = MessageBoxA(window().nativeHandle(),
+                        "Will you really close the application?",
+                        window().title().data(), MB_YESNO
+                    );
+                    
+                    if (ans == IDYES) {
+                        PostMessageA(window().nativeHandle(),
+                            WM_DESTROY, 0, 0
+                        );
+                    }
+                }
+                else /* WCHAR */ {
+                    auto ans = MessageBoxW(window().nativeHandle(),
+                        L"Will you really close the application?",
+                        window().title().data(), MB_YESNO
+                    );
+                    
+                    if (ans == IDYES) {
+                        PostMessageW(window().nativeHandle(),
+                            WM_DESTROY, 0, 0
+                        );
+                    }
+                }
+                return 0;
+
+            case WM_DESTROY:
+                if constexpr (std::is_same_v<MyChar, CHAR>) {
                     PostMessageA(window().nativeHandle(),
                         WM_QUIT, 0, 0
                     );
