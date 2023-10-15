@@ -282,12 +282,16 @@ public:
         struct Vertex {
             float x;
             float y;
+            unsigned char r;
+            unsigned char g;
+            unsigned char b;
+            unsigned char a;
         };
 
         const Vertex vertices[] = {
-            {0.f, 0.5f},
-            {0.5f, -0.5f},
-            {-0.5f, -0.5f}
+            {0.f, 0.5f, 255, 0, 0, 255},
+            {0.5f, -0.5f, 0, 255, 0, 255},
+            {-0.5f, -0.5f, 0, 0, 255, 255}
         };
 
         // Create Vertex Buffer
@@ -354,6 +358,14 @@ public:
               .Format = DXGI_FORMAT_R32G32_FLOAT,
               .InputSlot = 0,
               .AlignedByteOffset = 0,
+              .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+              .InstanceDataStepRate = 0
+            },
+            { .SemanticName = "Color",
+              .SemanticIndex = 0,
+              .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+              .InputSlot = 0,
+              .AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
               .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
               .InstanceDataStepRate = 0
             }
