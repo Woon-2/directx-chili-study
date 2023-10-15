@@ -368,7 +368,7 @@ public:
         );
 
         // Bind Render Target
-        pContext->OMSetRenderTargets(
+        pContext_->OMSetRenderTargets(
             1u, pTarget_.GetAddressOf(), nullptr
         );
     }
