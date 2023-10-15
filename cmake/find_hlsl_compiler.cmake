@@ -36,7 +36,7 @@ function(compile_hlsl INPUT_HLSL_FILE OUTPUT_CSO_FILE SHADER_TYPE)
         DEPENDS "${INPUT_HLSL_FILE}"
     )
     set(HLSL_COMPILED_SHADERS "${HLSL_COMPILED_SHADERS};${OUTPUT_CSO_FILE}"
-        CACHE STRING "compiled shaders(.hlsl)"
+        CACHE STRING "compiled shaders(.hlsl)" FORCE
     )
     mark_as_advanced(HLSL_COMPILED_SHADERS)
 endfunction()

@@ -177,64 +177,64 @@ public:
         : wnd_(wnd), pDevice_(nullptr), pSwap_(nullptr),
         pContext_(nullptr), pTarget_(nullptr) {
         try {
-        auto sd = DXGI_SWAP_CHAIN_DESC{
-            .BufferDesc = DXGI_MODE_DESC{
-                .Width = 0,
-                .Height = 0,
-                .RefreshRate = DXGI_RATIONAL{
-                    .Numerator = 0,
-                    .Denominator = 0
+            auto sd = DXGI_SWAP_CHAIN_DESC{
+                .BufferDesc = DXGI_MODE_DESC{
+                    .Width = 0,
+                    .Height = 0,
+                    .RefreshRate = DXGI_RATIONAL{
+                        .Numerator = 0,
+                        .Denominator = 0
+                    },
+                    .Format = DXGI_FORMAT_B8G8R8A8_UNORM,
+                    .ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
+                    .Scaling = DXGI_MODE_SCALING_UNSPECIFIED
                 },
-                .Format = DXGI_FORMAT_B8G8R8A8_UNORM,
-                .ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
-                .Scaling = DXGI_MODE_SCALING_UNSPECIFIED
-            },
-            .SampleDesc = DXGI_SAMPLE_DESC {
-                .Count = 1,
-                .Quality = 0
-            },
-            .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-            .BufferCount = 1,
-            .OutputWindow = wnd_.nativeHandle(),
-            .Windowed = true,
-            .SwapEffect = DXGI_SWAP_EFFECT_DISCARD,
-            .Flags = 0
-        };
+                .SampleDesc = DXGI_SAMPLE_DESC {
+                    .Count = 1,
+                    .Quality = 0
+                },
+                .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+                .BufferCount = 1,
+                .OutputWindow = wnd_.nativeHandle(),
+                .Windowed = true,
+                .SwapEffect = DXGI_SWAP_EFFECT_DISCARD,
+                .Flags = 0
+            };
 
-        UINT swapCreateFlags = 0u;
+            UINT swapCreateFlags = 0u;
 #ifndef NDEBUG
-        swapCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
+            swapCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-        // create device and front/back buffers, swap chain, and rendering context
-        GFX_THROW_FAILED(D3D11CreateDeviceAndSwapChain(
-            /* pAdapter = */ nullptr,
-            /* DriverType = */ D3D_DRIVER_TYPE_HARDWARE,
-            /* Software = */ nullptr,
-            /* Flags = */ swapCreateFlags,
-            /* pFeatureLevels = */ nullptr,
-            /* FeatureLevels = */ 0,
-            /* SDKVersion = */ D3D11_SDK_VERSION,
-            /* pSwapChainDesc = */ &sd,
-            /* ppSwapChain = */ &pSwap_,
-            /* ppDevice = */ &pDevice_,
-            /* pFeatureLevel = */ nullptr,
-            /* ppImmediateContext = */ &pContext_
-        ));
+            // create device and front/back buffers, swap chain, and rendering context
+            GFX_THROW_FAILED(D3D11CreateDeviceAndSwapChain(
+                /* pAdapter = */ nullptr,
+                /* DriverType = */ D3D_DRIVER_TYPE_HARDWARE,
+                /* Software = */ nullptr,
+                /* Flags = */ swapCreateFlags,
+                /* pFeatureLevels = */ nullptr,
+                /* FeatureLevels = */ 0,
+                /* SDKVersion = */ D3D11_SDK_VERSION,
+                /* pSwapChainDesc = */ &sd,
+                /* ppSwapChain = */ &pSwap_,
+                /* ppDevice = */ &pDevice_,
+                /* pFeatureLevel = */ nullptr,
+                /* ppImmediateContext = */ &pContext_
+            ));
 
-        wrl::ComPtr<ID3D11Resource> pBackBuffer = nullptr;
-        GFX_THROW_FAILED(
-            pSwap_->GetBuffer(
-                0, __uuidof(ID3D11Resource), &pBackBuffer
-            )
-        );
-        GFX_THROW_FAILED(
-            pDevice_->CreateRenderTargetView(
-                pBackBuffer.Get(),
-                nullptr,
-                &pTarget_
-            )
-        );
+            wrl::ComPtr<ID3D11Resource> pBackBuffer = nullptr;
+            GFX_THROW_FAILED(
+                pSwap_->GetBuffer(
+                    0, __uuidof(ID3D11Resource), &pBackBuffer
+                )
+            );
+            GFX_THROW_FAILED(
+                pDevice_->CreateRenderTargetView(
+                    pBackBuffer.Get(),
+                    nullptr,
+                    &pTarget_
+                )
+            );
 
         }
         catch (const GraphicsException& e) {
@@ -337,7 +337,28 @@ public:
             )
         );
 
+        // Bind Vertex Shader
         pContext_->VSSetShader( pVertexShader.Get(), 0, 0 );
+
+        // Create Pixel Shader
+        auto pPixelShader = wrl::ComPtr<ID3D11PixelShader>();
+        GFX_THROW_FAILED(
+            D3DReadFileToBlob(
+                (compiledShaderPath/L"PixelShader.cso").c_str(),
+                &pBlob
+            )
+        );
+        GFX_THROW_FAILED(
+            pDevice_->CreatePixelShader(
+                pBlob->GetBufferPointer(),
+                pBlob->GetBufferSize(),
+                nullptr,
+                &pPixelShader
+            )
+        );
+
+        // Bind Pixel Shader
+        pContext_->PSSetShader( pPixelShader.Get(), 0, 0 );
 
         GFX_THROW_FAILED_VOID(
             pContext_->Draw( static_cast<UINT>(
