@@ -320,6 +320,11 @@ public:
             )
         );
 
+        // Set primitive topology to triangle list
+        pContext_->IASetPrimitiveTopology(
+            D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+        );
+
         // Create Vertex Shader
         auto pVertexShader = wrl::ComPtr<ID3D11VertexShader>();
         auto pBlob = wrl::ComPtr<ID3DBlob>();
@@ -340,6 +345,32 @@ public:
 
         // Bind Vertex Shader
         pContext_->VSSetShader( pVertexShader.Get(), 0, 0 );
+
+        // Layout Vertex Shader Input
+        auto pInputLayout = wrl::ComPtr<ID3D11InputLayout>();
+        const D3D11_INPUT_ELEMENT_DESC ied[] = {
+            { .SemanticName = "Position",
+              .SemanticIndex = 0,
+              .Format = DXGI_FORMAT_R32G32_FLOAT,
+              .InputSlot = 0,
+              .AlignedByteOffset = 0,
+              .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+              .InstanceDataStepRate = 0
+            }
+        };
+
+        GFX_THROW_FAILED(
+            pDevice_->CreateInputLayout(
+                ied,
+                static_cast<UINT>( std::size(ied) ),
+                pBlob->GetBufferPointer(),
+                pBlob->GetBufferSize(),
+                &pInputLayout
+            )
+        );
+
+        // Bind Vertex Input Layout
+        pContext_->IASetInputLayout(pInputLayout.Get());
 
         // Create Pixel Shader
         auto pPixelShader = wrl::ComPtr<ID3D11PixelShader>();
