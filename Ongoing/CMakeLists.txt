@@ -186,11 +186,11 @@ set(COMPILED_SHADER_PATH "${PROJECT_BINARY_DIR}/shader" CACHE PATH
 include(find_hlsl_compiler)
 compile_hlsl("${PROJECT_SOURCE_DIR}/shader/VertexShader.hlsl"
     "${COMPILED_SHADER_PATH}/VertexShader.cso"
-    "vs_4_0_level_9_3"
+    "vs_4_0"
 )
 compile_hlsl("${PROJECT_SOURCE_DIR}/shader/PixelShader.hlsl"
     "${COMPILED_SHADER_PATH}/PixelShader.cso"
-    "ps_4_0_level_9_3"
+    "ps_4_0"
 )
 add_hlsl_target("${HLSL_COMPILED_SHADERS}")
 
