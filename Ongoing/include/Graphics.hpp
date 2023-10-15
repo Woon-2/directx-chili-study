@@ -280,24 +280,33 @@ public:
 
     void drawTriangle() {
         struct Vertex {
-            float x;
-            float y;
-            unsigned char r;
-            unsigned char g;
-            unsigned char b;
-            unsigned char a;
-        };
-
-        const Vertex vertices[] = {
-            {0.f, 0.5f, 255, 0, 0, 255},
-            {0.5f, -0.5f, 0, 255, 0, 255},
-            {-0.5f, -0.5f, 0, 0, 255, 255}
+            struct Pos {
+                float x;
+                float y;
+            };
+            struct Color {
+                unsigned char r;
+                unsigned char g;
+                unsigned char b;
+                unsigned char a;
+            };
+            Pos pos;
+            Color color;
         };
 
         // Create Vertex Buffer
+        const Vertex vertices[] = {
+            {0.f, 0.5f, 255, 0, 0, 255},
+            {0.5f, -0.5f, 0, 255, 0, 255},
+            {-0.5f, -0.5f, 0, 0, 255, 255},
+            {-0.3f, 0.3f, 0, 255, 0, 255},
+            {0.3f, 0.3f, 0, 0, 255, 255},
+            {0.0f, -0.8f, 255, 0, 0, 255}
+        };
+
         auto pVertexBuffer = wrl::ComPtr<ID3D11Buffer>();
 
-        auto bd = D3D11_BUFFER_DESC{
+        auto vbd = D3D11_BUFFER_DESC{
             .ByteWidth = sizeof(vertices),
             .Usage = D3D11_USAGE_DEFAULT,
             .BindFlags = D3D11_BIND_VERTEX_BUFFER,
@@ -306,14 +315,15 @@ public:
             .StructureByteStride = sizeof(Vertex)
         };
 
-        auto sd = D3D11_SUBRESOURCE_DATA{
+        auto vsd = D3D11_SUBRESOURCE_DATA{
             .pSysMem = vertices
         };
 
         GFX_THROW_FAILED(
-            pDevice_->CreateBuffer(&bd, &sd, &pVertexBuffer)
+            pDevice_->CreateBuffer(&vbd, &vsd, &pVertexBuffer)
         );
 
+        // Bind Vertex Buffer
         const UINT stride = sizeof(Vertex);
         const UINT offset = 0u;
 
@@ -321,6 +331,42 @@ public:
             pContext_->IASetVertexBuffers(
                 0u, 1u, pVertexBuffer.GetAddressOf(),
                 &stride, &offset
+            )
+        );
+
+        // Create Index Buffer
+        const unsigned short indices[] = {
+            0, 1, 2,
+            0, 2, 3,
+            0, 4, 1,
+            2, 1, 5
+        };
+
+        auto pIndexBuffer = wrl::ComPtr<ID3D11Buffer>();
+
+        auto ibd = D3D11_BUFFER_DESC{
+            .ByteWidth = sizeof(indices),
+            .Usage = D3D11_USAGE_DEFAULT,
+            .BindFlags = D3D11_BIND_INDEX_BUFFER,
+            .CPUAccessFlags = 0u,
+            .MiscFlags = 0u,
+            .StructureByteStride = sizeof(unsigned short)
+        };
+
+        auto isd = D3D11_SUBRESOURCE_DATA{
+            .pSysMem = indices
+        };
+
+        GFX_THROW_FAILED(
+            pDevice_->CreateBuffer(&ibd, &isd, &pIndexBuffer)
+        );
+
+        // Bind Index Buffer
+        GFX_THROW_FAILED_VOID(
+            pContext_->IASetIndexBuffer(
+                pIndexBuffer.Get(),
+                DXGI_FORMAT_R16_UINT,
+                0u
             )
         );
 
@@ -424,9 +470,10 @@ public:
         pContext_->RSSetViewports( 1u, &vp );
 
         GFX_THROW_FAILED_VOID(
-            pContext_->Draw( static_cast<UINT>(
-                std::size(vertices)
-            ), 0u )
+            pContext_->DrawIndexed(
+                static_cast<UINT>(std::size(indices)),
+                0u, 0u
+            )
         );
     }
 
