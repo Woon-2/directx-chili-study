@@ -287,12 +287,12 @@ public:
             struct Pos {
                 float x;
                 float y;
+                float z;
             };
             struct Color {
                 unsigned char r;
                 unsigned char g;
                 unsigned char b;
-                unsigned char a;
             };
             Pos pos;
             Color color;
@@ -300,12 +300,14 @@ public:
 
         // Create Vertex Buffer
         const Vertex vertices[] = {
-            {0.f, 0.5f, 255, 0, 0, 255},
-            {0.5f, -0.5f, 0, 255, 0, 255},
-            {-0.5f, -0.5f, 0, 0, 255, 255},
-            {-0.3f, 0.3f, 0, 255, 0, 255},
-            {0.3f, 0.3f, 0, 0, 255, 255},
-            {0.0f, -0.8f, 255, 0, 0, 255}
+            {-1.f, -1.f, -1.f, 255, 0, 0},
+            {1.f, -1.f, -1.f, 0, 255, 0},
+            {-1.f, 1.f, -1.f, 0, 0, 255},
+            {1.f, 1.f, -1.f, 255, 255, 0},
+            {-1.f, -1.f, 1.f, 255, 0, 255},
+            {1.f, -1.f, 1.f, 0, 255, 255},
+            {-1.f, 1.f, 1.f, 0, 0, 0},
+            {1.f, 1.f, 1.f, 255, 255, 255}
         };
 
         auto pVertexBuffer = wrl::ComPtr<ID3D11Buffer>();
@@ -340,10 +342,12 @@ public:
 
         // Create Index Buffer
         const unsigned short indices[] = {
-            0, 1, 2,
-            0, 2, 3,
-            0, 4, 1,
-            2, 1, 5
+            0, 2, 1, 2, 3, 1,
+            1, 3, 5, 3, 7, 5,
+            2, 6, 3, 3, 6, 7,
+            4, 5, 7, 4, 7, 6,
+            0, 4, 2, 2, 4, 6,
+            0, 1, 4, 1, 5, 4
         };
 
         auto pIndexBuffer = wrl::ComPtr<ID3D11Buffer>();
@@ -409,8 +413,9 @@ public:
             {
                 dx::XMMatrixTranspose(
                     dx::XMMatrixRotationZ( angle )
-                    * dx::XMMatrixScaling( 3.f/4.f, 1.f, 1.f )
-                    * dx::XMMatrixTranslation( x, y, 0.f )
+                    * dx::XMMatrixRotationX( angle )
+                    * dx::XMMatrixTranslation( x, y, 4.f )
+                    * dx::XMMatrixPerspectiveLH( 1.f, 3.f/4.f, 0.5f, 10.f )
                 )
             }
         };
@@ -446,7 +451,7 @@ public:
         const D3D11_INPUT_ELEMENT_DESC ied[] = {
             { .SemanticName = "Position",
               .SemanticIndex = 0,
-              .Format = DXGI_FORMAT_R32G32_FLOAT,
+              .Format = DXGI_FORMAT_R32G32B32_FLOAT,
               .InputSlot = 0,
               .AlignedByteOffset = 0,
               .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
