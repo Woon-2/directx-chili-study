@@ -47,7 +47,7 @@ public:
         try {
             const float c = sin( timer_.peek() ) / 2.f + 0.5f;
             gfx_.clear(c,c,1.f);
-            gfx_.render();
+            gfx_.render(timer_.peek());
         } catch (const GraphicsException& e) {
             MessageBoxA(nullptr, e.what(), "Graphics Exception",
                 MB_OK | MB_ICONEXCLAMATION);

@@ -13,6 +13,7 @@
 #include <vector>
 #include <string>
 #include <cstddef>
+#include <cmath>
 
 #include "Woon2Exception.hpp"
 #include "ShaderPath.h"
@@ -260,8 +261,8 @@ public:
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
 
-    void render() {
-        drawTriangle();
+    void render(float angle) {
+        drawTriangle(angle);
 
         if (auto hr = pSwap_->Present(2u, 0u); hr < 0) {
             if (hr == DXGI_ERROR_DEVICE_REMOVED) {
@@ -278,7 +279,7 @@ public:
         pContext_->ClearRenderTargetView(pTarget_.Get(), color);
     }
 
-    void drawTriangle() {
+    void drawTriangle(float angle) {
         struct Vertex {
             struct Pos {
                 float x;
@@ -395,6 +396,48 @@ public:
 
         // Bind Vertex Shader
         pContext_->VSSetShader( pVertexShader.Get(), 0, 0 );
+
+        // Create Constant Buffer for Transformation Matrix
+        struct ConstantBuffer {
+            struct {
+                float element[4][4];
+            } transformation;
+        };
+        
+        const auto cbuf = ConstantBuffer{
+            {
+                (3.f/4.f) * std::cos(angle), -(3.f/4.f) * std::sin(angle), 0.f, 0.f,
+                std::sin(angle),             std::cos(angle),              0.f, 0.f,
+                0.f,                         0.f,                          1.f, 0.f,
+                0.f,                         0.f,                          0.f, 1.f
+            }
+        };
+
+        auto pConstantBuffer = wrl::ComPtr<ID3D11Buffer>();
+
+        auto cbd = D3D11_BUFFER_DESC{
+            .ByteWidth = sizeof(ConstantBuffer),
+            .Usage = D3D11_USAGE_DYNAMIC,
+            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+            .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+            .MiscFlags = 0u,
+            .StructureByteStride = 0u
+        };
+
+        auto csd = D3D11_SUBRESOURCE_DATA{
+            .pSysMem = &cbuf
+        };
+
+        GFX_THROW_FAILED(
+            pDevice_->CreateBuffer(&cbd, &csd, &pConstantBuffer)
+        );
+
+        // Bind Constant Buffer
+        GFX_THROW_FAILED_VOID(
+            pContext_->VSSetConstantBuffers(
+                0u, 1u, pConstantBuffer.GetAddressOf()
+            )
+        );
 
         // Layout Vertex Shader Input
         auto pInputLayout = wrl::ComPtr<ID3D11InputLayout>();
