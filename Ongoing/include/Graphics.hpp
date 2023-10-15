@@ -367,6 +367,19 @@ public:
             1u, pTarget_.GetAddressOf(), nullptr
         );
 
+        // Configure Viewport
+        auto vp = D3D11_VIEWPORT{
+            .TopLeftX = 0,
+            .TopLeftY = 0,
+            .Width = 800,
+            .Height = 600,
+            .MinDepth = 0,
+            .MaxDepth = 1
+        };
+
+        // Bind Viewport
+        pContext_->RSSetViewports( 1u, &vp );
+
         GFX_THROW_FAILED_VOID(
             pContext_->Draw( static_cast<UINT>(
                 std::size(vertices)
