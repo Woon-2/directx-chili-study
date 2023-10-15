@@ -171,4 +171,5 @@ PRIVATE
     Utility::timer
     Resource::resource
     d3d11.lib
+    $<$<CONFIG:DEBUG>:dxguid.lib>
 )
