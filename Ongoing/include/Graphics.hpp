@@ -240,6 +240,65 @@ public:
                 )
             );
 
+            // create depth stencil state
+            auto dsStateDesc = D3D11_DEPTH_STENCIL_DESC{
+                .DepthEnable = true,
+                .DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL,
+                .DepthFunc = D3D11_COMPARISON_LESS
+            };
+
+            auto pDSState = wrl::ComPtr<ID3D11DepthStencilState>();
+
+            GFX_THROW_FAILED(
+                pDevice_->CreateDepthStencilState( &dsStateDesc, &pDSState )
+            );
+
+            // bind depth stencil state
+            pContext_->OMSetDepthStencilState( pDSState.Get(), 1u );
+
+            // create depth stencil texture
+            auto dsDesc = D3D11_TEXTURE2D_DESC{
+                .Width = 800u,
+                .Height = 600u,
+                .MipLevels = 1u,
+                .ArraySize = 1u,
+                .Format = DXGI_FORMAT_D32_FLOAT,
+                .SampleDesc = DXGI_SAMPLE_DESC{
+                    .Count = 1u,
+                    .Quality = 0u
+                },
+                .Usage = D3D11_USAGE_DEFAULT,
+                .BindFlags = D3D11_BIND_DEPTH_STENCIL,
+                .CPUAccessFlags = 0u,
+                .MiscFlags = 0u
+            };
+
+            auto pDepthStencil = wrl::ComPtr<ID3D11Texture2D>();
+
+            GFX_THROW_FAILED(
+                pDevice_->CreateTexture2D(
+                    &dsDesc, nullptr, &pDepthStencil
+                )
+            );
+
+            // create view of depth stencil texture
+            auto desvDesc = D3D11_DEPTH_STENCIL_VIEW_DESC{
+                .Format = DXGI_FORMAT_D32_FLOAT,
+                .ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D,
+                .Texture2D = D3D11_TEX2D_DSV{
+                    .MipSlice = 0u
+                }
+            };
+            GFX_THROW_FAILED(
+                pDevice_->CreateDepthStencilView(
+                    pDepthStencil.Get(), &desvDesc, &pDSV_
+                )
+            );
+
+            // bind depth stencil view to output merger
+            pContext_->OMSetRenderTargets(
+                1u, pTarget_.GetAddressOf(), pDSV_.Get()
+            );
         }
         catch (const GraphicsException& e) {
             MessageBoxA(nullptr, e.what(), "Graphics Exception",
@@ -266,6 +325,7 @@ public:
 
     void render(float angle, float x, float y) {
         drawTriangle(angle, x, y);
+        drawTriangle(-angle, 0.f, 0.f);
 
         if (auto hr = pSwap_->Present(2u, 0u); hr < 0) {
             if (hr == DXGI_ERROR_DEVICE_REMOVED) {
@@ -280,6 +340,9 @@ public:
     void clear(float r, float g, float b) {
         const float color[] = { r, g, b, 1.f };
         pContext_->ClearRenderTargetView(pTarget_.Get(), color);
+        pContext_->ClearDepthStencilView(
+            pDSV_.Get(), D3D11_CLEAR_DEPTH, 1.f, 0u
+        );
     }
 
     void drawTriangle(float angle, float x, float y) {
@@ -408,7 +471,7 @@ public:
                 dx::XMMatrixTranspose(
                     dx::XMMatrixRotationZ( angle )
                     * dx::XMMatrixRotationX( angle )
-                    * dx::XMMatrixTranslation( x, y, 4.f )
+                    * dx::XMMatrixTranslation( x, 0.f, y + 4.f )
                     * dx::XMMatrixPerspectiveLH( 1.f, 3.f/4.f, 0.5f, 10.f )
                 )
             }
@@ -535,12 +598,6 @@ public:
         // Bind Pixel Shader
         pContext_->PSSetShader( pPixelShader.Get(), 0, 0 );
 
-
-        // Bind Render Target
-        pContext_->OMSetRenderTargets(
-            1u, pTarget_.GetAddressOf(), nullptr
-        );
-
         // Configure Viewport
         auto vp = D3D11_VIEWPORT{
             .TopLeftX = 0,
@@ -568,6 +625,7 @@ private:
     wrl::ComPtr<IDXGISwapChain> pSwap_;
     wrl::ComPtr<ID3D11DeviceContext> pContext_;
     wrl::ComPtr<ID3D11RenderTargetView> pTarget_;
+    wrl::ComPtr<ID3D11DepthStencilView> pDSV_;
 };
 
 #endif  // __Graphics
