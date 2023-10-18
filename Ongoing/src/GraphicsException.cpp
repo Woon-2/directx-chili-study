@@ -1,4 +1,4 @@
-#include "Graphics.hpp"
+#include "GraphicsException.hpp"
 
 #include <ranges>
 #include <iterator>
