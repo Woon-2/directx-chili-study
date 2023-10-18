@@ -71,13 +71,20 @@ public:
     }
 
     std::optional<Event> readKey() noexcept {
+        if (auto ret = peekKey()) {
+            keyBuf_.pop();
+            return ret;
+        }
+
+        return {};
+    }
+
+    std::optional<Event> peekKey() const noexcept {
         if (emptyKey()) {
             return {};
         }
 
-        auto ret = keyBuf_.front();
-        keyBuf_.pop();
-        return ret;
+        return keyBuf_.front();
     }
 
     bool emptyKey() const noexcept {
@@ -88,14 +95,21 @@ public:
         keyBuf_ = decltype(keyBuf_)();
     }
 
-    MyChar readChar() noexcept {
+    std::optional<MyChar> readChar() noexcept {
+        if (auto ret = peekChar()) {
+            charBuf_.pop();
+            return ret;
+        }
+
+        return {};
+    }
+
+    std::optional<MyChar> peekChar() const noexcept {
         if (emptyChar()) {
             return {};
         }
 
-        auto ret = charBuf_.front();
-        charBuf_.pop();
-        return ret;
+        return charBuf_.front();
     }
 
     bool emptyChar() const noexcept {

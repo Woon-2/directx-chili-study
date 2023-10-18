@@ -52,7 +52,7 @@ public:
     void render() {
         try {
             static auto mousePos = MyMouse::Point{};
-            if (auto ev = mouse_.read()) {
+            if (auto ev = mouse_.peek()) {
                 mousePos = ev->pos();
             }
 

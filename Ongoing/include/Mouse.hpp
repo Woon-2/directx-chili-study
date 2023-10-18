@@ -116,13 +116,20 @@ public:
     Mouse& operator=(const Mouse&) = delete;
     
     const std::optional<Event> read() noexcept {
+        if (auto ret = peek()) {
+            buf_.pop();
+            return ret;
+        }
+
+        return {};
+    }
+
+    const std::optional<Event> peek() const noexcept {
         if (empty()) {
             return {};
         }
 
-        auto ret = buf_.front();
-        buf_.pop();
-        return ret;
+        return buf_.front();
     }
 
     void setBufSize(std::size_t bufferSize) noexcept {
