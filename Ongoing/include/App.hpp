@@ -59,11 +59,6 @@ public:
             const float c = sin( timer_.peek() ) / 2.f + 0.5f;
             gfx_.clear(c,c,1.f);
             gfx_.render(
-                -timer_.peek(),
-                0.f,
-                0.f
-            );
-            gfx_.render(
                 timer_.peek(),
                 mousePos.x / static_cast<float>(wnd_.client().width) * 2 - 1.f,
                 mousePos.y / static_cast<float>(wnd_.client().height) * -2 + 1.f
