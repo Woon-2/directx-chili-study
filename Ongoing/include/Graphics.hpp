@@ -40,6 +40,14 @@ public:
         return pContext_;
     }
 
+    decltype(auto) operator&() {
+        return &pContext_;
+    }
+
+    decltype(auto) operator&() const {
+        return &pContext_;
+    }
+
 private:
     wrl::ComPtr<ID3D11DeviceContext> pContext_;
 };
@@ -51,7 +59,7 @@ public:
 
     Graphics(MyWindow& wnd)
         : wnd_(wnd), pDevice_(nullptr), pSwap_(nullptr),
-        pContext_(nullptr), pTarget_(nullptr) {
+        pTarget_(nullptr), pipeline_() {
         try {
             auto sd = DXGI_SWAP_CHAIN_DESC{
                 .BufferDesc = DXGI_MODE_DESC{
@@ -95,7 +103,7 @@ public:
                 /* ppSwapChain = */ &pSwap_,
                 /* ppDevice = */ &pDevice_,
                 /* pFeatureLevel = */ nullptr,
-                /* ppImmediateContext = */ &pContext_
+                /* ppImmediateContext = */ &pipeline_
             ));
 
             wrl::ComPtr<ID3D11Resource> pBackBuffer = nullptr;
@@ -126,7 +134,7 @@ public:
             );
 
             // bind depth stencil state
-            pContext_->OMSetDepthStencilState( pDSState.Get(), 1u );
+            pipeline_.context()->OMSetDepthStencilState( pDSState.Get(), 1u );
 
             // create depth stencil texture
             auto dsDesc = D3D11_TEXTURE2D_DESC{
@@ -168,7 +176,7 @@ public:
             );
 
             // bind depth stencil view to output merger
-            pContext_->OMSetRenderTargets(
+            pipeline_.context()->OMSetRenderTargets(
                 1u, pTarget_.GetAddressOf(), pDSV_.Get()
             );
         }
@@ -211,14 +219,14 @@ public:
 
     void clear(float r, float g, float b) {
         const float color[] = { r, g, b, 1.f };
-        pContext_->ClearRenderTargetView(pTarget_.Get(), color);
-        pContext_->ClearDepthStencilView(
+        pipeline_.context()->ClearRenderTargetView(pTarget_.Get(), color);
+        pipeline_.context()->ClearDepthStencilView(
             pDSV_.Get(), D3D11_CLEAR_DEPTH, 1.f, 0u
         );
     }
 
     void drawTriangle(float angle, float x, float y) {
-        auto dcb = DrawComponentBase(pDevice_, pContext_);
+        auto dcb = DrawComponentBase(pDevice_, pipeline_.context());
         dcb.render(angle, x, y);
     }
 
@@ -226,9 +234,9 @@ private:
     MyWindow& wnd_;
     wrl::ComPtr<ID3D11Device> pDevice_;
     wrl::ComPtr<IDXGISwapChain> pSwap_;
-    wrl::ComPtr<ID3D11DeviceContext> pContext_;
     wrl::ComPtr<ID3D11RenderTargetView> pTarget_;
     wrl::ComPtr<ID3D11DepthStencilView> pDSV_;
+    GFXPipeline pipeline_;
 };
 
 #endif  // __Graphics
