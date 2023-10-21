@@ -58,6 +58,7 @@ target_sources(chili PRIVATE
     include/Graphics.hpp
     include/GraphicsException.hpp
     include/GraphicsNamespaces.hpp
+    include/DrawComponent.hpp
     src/GraphicsException.cpp
 )
 
