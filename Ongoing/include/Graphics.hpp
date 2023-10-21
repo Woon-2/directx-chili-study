@@ -3,6 +3,7 @@
 
 #include "ChiliWindow.hpp"
 #include "DrawComponent.hpp"
+#include "Bindable.hpp"
 
 #include "GraphicsNamespaces.hpp"
 #include "GraphicsException.hpp"
@@ -13,8 +14,35 @@
 #include <string>
 #include <cstddef>
 #include <cmath>
+#include <unordered_set>
+#include <memory>
 
 #include "ShaderPath.h"
+
+class GFXPipeline {
+public:
+    GFXPipeline() = default;
+
+    GFXPipeline(wrl::ComPtr<ID3D11DeviceContext> pContext)
+        : pContext_(pContext) {
+
+    }
+
+    void bind(IBindable* bindable) {
+        bindable->bind(*this);
+    }
+
+    void setContext(wrl::ComPtr<ID3D11DeviceContext> pContext) {
+        pContext_ = pContext;
+    }
+
+    wrl::ComPtr<ID3D11DeviceContext> context() const noexcept {
+        return pContext_;
+    }
+
+private:
+    wrl::ComPtr<ID3D11DeviceContext> pContext_;
+};
 
 template <class Wnd>
 class Graphics {
