@@ -61,6 +61,7 @@ private:
                 pInputLayout_.Get()
             )
         );
+    }
 
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11VertexShader> pVertexShader_;
