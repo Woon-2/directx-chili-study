@@ -14,7 +14,7 @@
 class VertexShader : public IBindable {
 public:
     template <std::ranges::contiguous_range InputElemDescArray>
-    VertexShader(const wrl::ComPtr<ID3D11Device> device,
+    VertexShader( const wrl::ComPtr<ID3D11Device> device,
         const InputElemDescArray& ieDescs,
         const std::filesystem::path& path
     ) {
@@ -66,6 +66,45 @@ private:
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11VertexShader> pVertexShader_;
     wrl::ComPtr<ID3D11InputLayout> pInputLayout_;
+};
+
+class PixelShader : public IBindable {
+public:
+    PixelShader( const wrl::ComPtr<ID3D11Device> device,
+        const std::filesystem::path& path
+    ) {
+        GFX_THROW_FAILED(
+            D3DReadFileToBlob(path.c_str(), &byteCode_)
+        );
+        GFX_THROW_FAILED(
+            device->CreatePixelShader( byteCode(),
+                byteCodeLength(), nullptr, &pPixelShader_
+            )
+        );
+    }
+
+    const wrl::ComPtr<ID3DBlob> byteCodeBlob() const noexcept {
+        return byteCode_;
+    }
+
+    const void* byteCode() const noexcept {
+        return byteCodeBlob()->GetBufferPointer();
+    }
+
+    const SIZE_T byteCodeLength() const noexcept {
+        return byteCodeBlob()->GetBufferSize();
+    }
+private:
+    void bind(GFXPipeline& pipeline) override {
+        GFX_THROW_FAILED_VOID(
+            pipeline.context()->PSSetShader(
+                pPixelShader_.Get(), nullptr, 0u
+            )
+        );
+    }
+
+    wrl::ComPtr<ID3DBlob> byteCode_;
+    wrl::ComPtr<ID3D11PixelShader> pPixelShader_;
 };
 
 #endif  // __Shader

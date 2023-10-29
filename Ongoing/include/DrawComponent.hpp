@@ -148,25 +148,11 @@ public:
 
         pipeline.bind( storage_.get(cbufColorID).get() );
 
-        // Create Pixel Shader
-        auto pPixelShader = wrl::ComPtr<ID3D11PixelShader>();
-        GFX_THROW_FAILED(
-            D3DReadFileToBlob(
-                (compiledShaderPath/L"PixelShader.cso").c_str(),
-                &pBlob
-            )
-        );
-        GFX_THROW_FAILED(
-            pDevice_->CreatePixelShader(
-                pBlob->GetBufferPointer(),
-                pBlob->GetBufferSize(),
-                nullptr,
-                &pPixelShader
-            )
+        auto pixelShaderID = storage_.load<PixelShader>(
+            device(), compiledShaderPath/L"PixelShader.cso"
         );
 
-        // Bind Pixel Shader
-        context()->PSSetShader( pPixelShader.Get(), 0, 0 );
+        pipeline.bind( storage_.get(pixelShaderID).get() );
 
         // Configure Viewport
         auto vp = D3D11_VIEWPORT{
