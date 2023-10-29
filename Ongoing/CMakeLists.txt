@@ -63,6 +63,7 @@ target_sources(chili PRIVATE
     include/GraphicsStorage.hpp
     include/Buffer.hpp
     include/Topology.hpp
+    include/Shader.hpp
     src/GraphicsException.cpp
 )
 

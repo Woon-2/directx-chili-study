@@ -3,6 +3,7 @@
 
 #include "Buffer.hpp"
 #include "Topology.hpp"
+#include "Shader.hpp"
 
 #include "GraphicsStorage.hpp"
 
@@ -75,26 +76,26 @@ public:
 
         pipeline.bind( storage_.get(topologyID).get() );
 
-        // Create Vertex Shader
-        auto pVertexShader = wrl::ComPtr<ID3D11VertexShader>();
-        auto pBlob = wrl::ComPtr<ID3DBlob>();
-        GFX_THROW_FAILED(
-            D3DReadFileToBlob(
-                (compiledShaderPath/L"VertexShader.cso").c_str(),
-                &pBlob 
-            )
-        );
-        GFX_THROW_FAILED(
-            pDevice_->CreateVertexShader(
-                pBlob->GetBufferPointer(),
-                pBlob->GetBufferSize(),
-                nullptr,
-                &pVertexShader
-            )
+        // Layout Vertex Shader Input
+        const D3D11_INPUT_ELEMENT_DESC ied[] = {
+            { .SemanticName = "Position",
+              .SemanticIndex = 0,
+              .Format = DXGI_FORMAT_R32G32B32_FLOAT,
+              .InputSlot = 0,
+              .AlignedByteOffset = 0,
+              .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+              .InstanceDataStepRate = 0
+            }
+        };
+
+        auto vertexShaderID = storage_.load<VertexShader>(
+            device(), std::move(ied),
+            compiledShaderPath/L"VertexShader.cso"
         );
 
-        // Bind Vertex Shader
-        context()->VSSetShader( pVertexShader.Get(), 0, 0 );
+        pipeline.bind( storage_.get(vertexShaderID).get() );
+
+        auto pBlob = wrl::ComPtr<ID3DBlob>();
 
         // Create Constant Buffer for Transformation Matrix
         struct ConstantBuffer {
@@ -186,32 +187,6 @@ public:
                 0u, 1u, pConstantBufferColor.GetAddressOf()
             )
         );
-
-        // Layout Vertex Shader Input
-        auto pInputLayout = wrl::ComPtr<ID3D11InputLayout>();
-        const D3D11_INPUT_ELEMENT_DESC ied[] = {
-            { .SemanticName = "Position",
-              .SemanticIndex = 0,
-              .Format = DXGI_FORMAT_R32G32B32_FLOAT,
-              .InputSlot = 0,
-              .AlignedByteOffset = 0,
-              .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-              .InstanceDataStepRate = 0
-            }
-        };
-
-        GFX_THROW_FAILED(
-            pDevice_->CreateInputLayout(
-                ied,
-                static_cast<UINT>( std::size(ied) ),
-                pBlob->GetBufferPointer(),
-                pBlob->GetBufferSize(),
-                &pInputLayout
-            )
-        );
-
-        // Bind Vertex Input Layout
-        context()->IASetInputLayout(pInputLayout.Get());
 
         // Create Pixel Shader
         auto pPixelShader = wrl::ComPtr<ID3D11PixelShader>();
