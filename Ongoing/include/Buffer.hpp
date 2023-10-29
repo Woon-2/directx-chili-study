@@ -22,13 +22,13 @@ public:
         );
     }
 
-    virtual void bind(GFXPipeline& pipeline) = 0;
-
     const wrl::ComPtr<ID3D11Buffer> data() {
         return data_;
     }
 
 private:
+    virtual void bind(GFXPipeline& pipeline) = 0;
+
     wrl::ComPtr<ID3D11Buffer> data_;
 };
 
