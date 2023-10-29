@@ -98,11 +98,11 @@ public:
         auto pBlob = wrl::ComPtr<ID3DBlob>();
 
         // Create Constant Buffer for Transformation Matrix
-        struct ConstantBuffer {
+        struct Transform {
             dx::XMMATRIX transform;
         };
         
-        const auto cbuf = ConstantBuffer{
+        const Transform cbuf[] = {
             {
                 dx::XMMatrixTranspose(
                     dx::XMMatrixRotationZ( angle )
@@ -113,31 +113,12 @@ public:
             }
         };
 
-        auto pConstantBuffer = wrl::ComPtr<ID3D11Buffer>();
-
-        auto cbd = D3D11_BUFFER_DESC{
-            .ByteWidth = sizeof(ConstantBuffer),
-            .Usage = D3D11_USAGE_DYNAMIC,
-            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-            .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
-            .MiscFlags = 0u,
-            .StructureByteStride = 0u
-        };
-
-        auto csd = D3D11_SUBRESOURCE_DATA{
-            .pSysMem = &cbuf
-        };
-
-        GFX_THROW_FAILED(
-            pDevice_->CreateBuffer(&cbd, &csd, &pConstantBuffer)
+        auto transformID = storage_.load<VSCBuffer<Transform>>(
+            device(), 0u, D3D11_USAGE_DYNAMIC,
+            D3D11_CPU_ACCESS_WRITE, std::move(cbuf)
         );
 
-        // Bind Constant Buffer
-        GFX_THROW_FAILED_VOID(
-            context()->VSSetConstantBuffers(
-                0u, 1u, pConstantBuffer.GetAddressOf()
-            )
-        );
+        pipeline.bind( storage_.get(transformID).get() );
 
         // Create Constant Buffer for Face Color
         struct ConstantBufferColor {

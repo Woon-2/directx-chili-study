@@ -94,8 +94,8 @@ public:
         },
         D3D11_SUBRESOURCE_DATA{
             .pSysMem = std::data(range),
-            .SysMemPitch = 0,
-            .SysMemSlicePitch = 0
+            .SysMemPitch = 0u,
+            .SysMemSlicePitch = 0u
         }
     ) {}
 private:
@@ -131,6 +131,61 @@ private:
                 "supported index types are [unsigned char, char, unsigned short, short, unsigned int, int].");
         }
     }
+};
+
+template <class ValT>
+class CBuffer : public Buffer {
+public:
+    using MyValue = ValT;
+
+    template <std::ranges::contiguous_range R>
+    CBuffer( const wrl::ComPtr<ID3D11Device> device,
+        D3D11_USAGE usage, UINT CPUAccessFlags, R&& range
+    ) : Buffer( std::move(device),
+        D3D11_BUFFER_DESC{
+            .ByteWidth = static_cast<UINT>(
+                std::size(range) * sizeof(MyValue)
+            ),
+            .Usage = usage,
+            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+            .CPUAccessFlags = CPUAccessFlags,
+            .MiscFlags = 0u,
+            .StructureByteStride = sizeof(MyValue)
+        },
+        D3D11_SUBRESOURCE_DATA{
+            .pSysMem = std::data(range),
+            .SysMemPitch = 0u,
+            .SysMemSlicePitch = 0u
+        }
+    ) {}
+
+private:
+    virtual void bind(GFXPipeline& pipeline) = 0;
+};
+
+template <class ValT>
+class VSCBuffer : public CBuffer<ValT> {
+public:
+    using MyValue = ValT;
+    using Buffer::data;
+
+    template <std::ranges::contiguous_range R>
+    VSCBuffer( const wrl::ComPtr<ID3D11Device> device,
+        UINT slot, D3D11_USAGE usage, UINT CPUAccessFlags, R&& range
+    ) : CBuffer<ValT>( std::move(device), usage,
+        CPUAccessFlags, std::forward<R>(range)
+    ), slot_(slot) {}
+
+private:
+    void bind(GFXPipeline& pipeline) override {
+        GFX_THROW_FAILED_VOID(
+            pipeline.context()->VSSetConstantBuffers(
+                slot_, 1u, data().GetAddressOf()
+            )
+        );
+    }
+
+    UINT slot_;
 };
 
 #endif  // __Buffer
