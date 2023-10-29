@@ -130,44 +130,23 @@ public:
             } face_colors[6];
         };
 
-        auto cbufColor = ConstantBufferColor{
-            {
+        const ConstantBufferColor cbufColor[] = {
+            {{
                 {1.f, 0.f, 1.f, 0.f},
                 {1.f, 0.f, 0.f, 0.f},
                 {0.f, 1.f, 0.f, 0.f},
                 {0.f, 0.f, 1.f, 0.f},
                 {1.f, 1.f, 0.f, 0.f},
                 {0.f, 1.f, 1.f, 0.f}
-            }
+            }}
         };
 
-        auto cbdColor = D3D11_BUFFER_DESC{
-            .ByteWidth = sizeof(ConstantBufferColor),
-            .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-            .CPUAccessFlags = 0u,
-            .MiscFlags = 0u,
-            .StructureByteStride = 0u
-        };
-
-        auto csdColor = D3D11_SUBRESOURCE_DATA{
-            .pSysMem = &cbufColor
-        };
-
-        auto pConstantBufferColor = wrl::ComPtr<ID3D11Buffer>();
-
-        GFX_THROW_FAILED(
-            pDevice_->CreateBuffer(
-                &cbdColor, &csdColor, &pConstantBufferColor
-            )
+        auto cbufColorID = storage_.load< PSCBuffer<ConstantBufferColor> >(
+            device(), 0u, D3D11_USAGE_DEFAULT,
+            0u, std::move(cbufColor)
         );
 
-        // Bind Constant Buffer
-        GFX_THROW_FAILED_VOID(
-            context()->PSSetConstantBuffers(
-                0u, 1u, pConstantBufferColor.GetAddressOf()
-            )
-        );
+        pipeline.bind( storage_.get(cbufColorID).get() );
 
         // Create Pixel Shader
         auto pPixelShader = wrl::ComPtr<ID3D11PixelShader>();

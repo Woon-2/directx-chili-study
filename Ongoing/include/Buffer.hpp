@@ -188,4 +188,29 @@ private:
     UINT slot_;
 };
 
+template <class ValT>
+class PSCBuffer : public CBuffer<ValT> {
+public:
+    using MyValue = ValT;
+    using Buffer::data;
+
+    template <std::ranges::contiguous_range R>
+    PSCBuffer( const wrl::ComPtr<ID3D11Device> device,
+        UINT slot, D3D11_USAGE usage, UINT CPUAccessFlags, R&& range
+    ) : CBuffer<ValT>( std::move(device), usage,
+        CPUAccessFlags, std::forward<R>(range)
+    ), slot_(slot) {}
+
+private:
+    void bind(GFXPipeline& pipeline) override {
+        GFX_THROW_FAILED_VOID(
+            pipeline.context()->PSSetConstantBuffers(
+                slot_, 1u, data().GetAddressOf()
+            )
+        );
+    }
+
+    UINT slot_;
+};
+
 #endif  // __Buffer
