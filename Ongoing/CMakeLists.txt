@@ -60,6 +60,8 @@ target_sources(chili PRIVATE
     include/GraphicsNamespaces.hpp
     include/DrawComponent.hpp
     include/Bindable.hpp
+    include/GraphicsStorage.hpp
+    include/Buffer.hpp
     src/GraphicsException.cpp
 )
 

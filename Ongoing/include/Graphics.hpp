@@ -19,39 +19,6 @@
 
 #include "ShaderPath.h"
 
-class GFXPipeline {
-public:
-    GFXPipeline() = default;
-
-    GFXPipeline(wrl::ComPtr<ID3D11DeviceContext> pContext)
-        : pContext_(pContext) {
-
-    }
-
-    void bind(IBindable* bindable) {
-        bindable->bind(*this);
-    }
-
-    void setContext(wrl::ComPtr<ID3D11DeviceContext> pContext) {
-        pContext_ = pContext;
-    }
-
-    wrl::ComPtr<ID3D11DeviceContext> context() const noexcept {
-        return pContext_;
-    }
-
-    decltype(auto) operator&() {
-        return &pContext_;
-    }
-
-    decltype(auto) operator&() const {
-        return &pContext_;
-    }
-
-private:
-    wrl::ComPtr<ID3D11DeviceContext> pContext_;
-};
-
 template <class Wnd>
 class Graphics {
 public:
@@ -226,7 +193,7 @@ public:
     }
 
     void drawTriangle(float angle, float x, float y) {
-        auto dcb = DrawComponentBase(pDevice_, pipeline_.context());
+        auto dcb = DrawComponentBase(pDevice_, pipeline_);
         dcb.render(angle, x, y);
     }
 

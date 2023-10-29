@@ -1,7 +1,8 @@
 #ifndef __DrawComponent
 #define __DrawComponent
 
-#include "ChiliWindow.hpp"
+#include "Buffer.hpp"
+#include "GraphicsStorage.hpp"
 
 #include "GraphicsNamespaces.hpp"
 #include "GraphicsException.hpp"
@@ -15,12 +16,14 @@ public:
     DrawComponentBase() = default;
 
     DrawComponentBase(wrl::ComPtr<ID3D11Device> pDevice,
-        wrl::ComPtr<ID3D11DeviceContext> pContext
-    ) : pDevice_(pDevice), pContext_(pContext) {
+        GFXPipeline& pipeline
+    ) : pDevice_(pDevice), pPipeline_(pipeline.address()) {
 
     }
 
     void render(float angle, float x, float y) {
+        decltype(auto) pipeline = *pPipeline_;
+
         struct Vertex {
             struct Pos {
                 float x;
@@ -42,35 +45,41 @@ public:
             {1.f, 1.f, 1.f}
         };
 
-        auto pVertexBuffer = wrl::ComPtr<ID3D11Buffer>();
-
-        auto vbd = D3D11_BUFFER_DESC{
-            .ByteWidth = sizeof(vertices),
-            .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_VERTEX_BUFFER,
-            .CPUAccessFlags = 0u,
-            .MiscFlags = 0u,
-            .StructureByteStride = sizeof(Vertex)
-        };
-
-        auto vsd = D3D11_SUBRESOURCE_DATA{
-            .pSysMem = vertices
-        };
-
-        GFX_THROW_FAILED(
-            pDevice_->CreateBuffer(&vbd, &vsd, &pVertexBuffer)
+        auto vertexBufferID = storage_.load<VertexBuffer<Vertex>>(
+            device(), std::move(vertices)
         );
 
-        // Bind Vertex Buffer
-        const UINT stride = sizeof(Vertex);
-        const UINT offset = 0u;
+        pipeline.bind( storage_.get(vertexBufferID).get() );
 
-        GFX_THROW_FAILED_VOID(
-            pContext_->IASetVertexBuffers(
-                0u, 1u, pVertexBuffer.GetAddressOf(),
-                &stride, &offset
-            )
-        );
+        // auto pVertexBuffer = wrl::ComPtr<ID3D11Buffer>();
+
+        // auto vbd = D3D11_BUFFER_DESC{
+        //     .ByteWidth = sizeof(vertices),
+        //     .Usage = D3D11_USAGE_DEFAULT,
+        //     .BindFlags = D3D11_BIND_VERTEX_BUFFER,
+        //     .CPUAccessFlags = 0u,
+        //     .MiscFlags = 0u,
+        //     .StructureByteStride = sizeof(Vertex)
+        // };
+
+        // auto vsd = D3D11_SUBRESOURCE_DATA{
+        //     .pSysMem = vertices
+        // };
+
+        // GFX_THROW_FAILED(
+        //     pDevice_->CreateBuffer(&vbd, &vsd, &pVertexBuffer)
+        // );
+
+        // // Bind Vertex Buffer
+        // const UINT stride = sizeof(Vertex);
+        // const UINT offset = 0u;
+
+        // GFX_THROW_FAILED_VOID(
+        //     context()->IASetVertexBuffers(
+        //         0u, 1u, pVertexBuffer.GetAddressOf(),
+        //         &stride, &offset
+        //     )
+        // );
 
         // Create Index Buffer
         const unsigned short indices[] = {
@@ -103,7 +112,7 @@ public:
 
         // Bind Index Buffer
         GFX_THROW_FAILED_VOID(
-            pContext_->IASetIndexBuffer(
+            context()->IASetIndexBuffer(
                 pIndexBuffer.Get(),
                 DXGI_FORMAT_R16_UINT,
                 0u
@@ -111,7 +120,7 @@ public:
         );
 
         // Set primitive topology to triangle list
-        pContext_->IASetPrimitiveTopology(
+        context()->IASetPrimitiveTopology(
             D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
         );
 
@@ -134,7 +143,7 @@ public:
         );
 
         // Bind Vertex Shader
-        pContext_->VSSetShader( pVertexShader.Get(), 0, 0 );
+        context()->VSSetShader( pVertexShader.Get(), 0, 0 );
 
         // Create Constant Buffer for Transformation Matrix
         struct ConstantBuffer {
@@ -173,7 +182,7 @@ public:
 
         // Bind Constant Buffer
         GFX_THROW_FAILED_VOID(
-            pContext_->VSSetConstantBuffers(
+            context()->VSSetConstantBuffers(
                 0u, 1u, pConstantBuffer.GetAddressOf()
             )
         );
@@ -222,7 +231,7 @@ public:
 
         // Bind Constant Buffer
         GFX_THROW_FAILED_VOID(
-            pContext_->PSSetConstantBuffers(
+            context()->PSSetConstantBuffers(
                 0u, 1u, pConstantBufferColor.GetAddressOf()
             )
         );
@@ -251,7 +260,7 @@ public:
         );
 
         // Bind Vertex Input Layout
-        pContext_->IASetInputLayout(pInputLayout.Get());
+        context()->IASetInputLayout(pInputLayout.Get());
 
         // Create Pixel Shader
         auto pPixelShader = wrl::ComPtr<ID3D11PixelShader>();
@@ -271,7 +280,7 @@ public:
         );
 
         // Bind Pixel Shader
-        pContext_->PSSetShader( pPixelShader.Get(), 0, 0 );
+        context()->PSSetShader( pPixelShader.Get(), 0, 0 );
 
         // Configure Viewport
         auto vp = D3D11_VIEWPORT{
@@ -284,10 +293,10 @@ public:
         };
 
         // Bind Viewport
-        pContext_->RSSetViewports( 1u, &vp );
+        context()->RSSetViewports( 1u, &vp );
 
         GFX_THROW_FAILED_VOID(
-            pContext_->DrawIndexed(
+            context()->DrawIndexed(
                 static_cast<UINT>(std::size(indices)),
                 0u, 0u
             )
@@ -299,7 +308,7 @@ public:
     }
 
     void setContext(wrl::ComPtr<ID3D11DeviceContext> pContext) {
-        pContext_ = pContext;
+        pPipeline_->setContext(pContext);
     }
 
     wrl::ComPtr<ID3D11Device> device() const noexcept {
@@ -307,12 +316,13 @@ public:
     }
 
     wrl::ComPtr<ID3D11DeviceContext> context() const noexcept {
-        return pContext_;
+        return pPipeline_->context();
     }
 
 private:
     wrl::ComPtr<ID3D11Device> pDevice_;
-    wrl::ComPtr<ID3D11DeviceContext> pContext_;
+    GFXPipeline* pPipeline_;
+    GFXStorage storage_;
 };
 
 template <class T>
