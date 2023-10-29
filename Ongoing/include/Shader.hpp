@@ -51,12 +51,16 @@ public:
 
 private:
     void bind(GFXPipeline& pipeline) override {
-        pipeline.context()->VSSetShader(pVertexShader_.Get(),
-            nullptr, 0
+        GFX_THROW_FAILED_VOID(
+            pipeline.context()->VSSetShader(
+                pVertexShader_.Get(), nullptr, 0
+            )
         );
-
-        pipeline.context()->IASetInputLayout(pInputLayout_.Get());
-    }
+        GFX_THROW_FAILED_VOID(
+            pipeline.context()->IASetInputLayout(
+                pInputLayout_.Get()
+            )
+        );
 
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11VertexShader> pVertexShader_;
