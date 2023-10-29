@@ -62,6 +62,7 @@ target_sources(chili PRIVATE
     include/Bindable.hpp
     include/GraphicsStorage.hpp
     include/Buffer.hpp
+    include/Topology.hpp
     src/GraphicsException.cpp
 )
 

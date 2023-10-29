@@ -2,6 +2,8 @@
 #define __DrawComponent
 
 #include "Buffer.hpp"
+#include "Topology.hpp"
+
 #include "GraphicsStorage.hpp"
 
 #include "GraphicsNamespaces.hpp"
@@ -67,11 +69,11 @@ public:
 
         pipeline.bind( storage_.get(indexBufferID).get() );
 
-
-        // Set primitive topology to triangle list
-        context()->IASetPrimitiveTopology(
+        auto topologyID = storage_.load<Topology>(
             D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
         );
+
+        pipeline.bind( storage_.get(topologyID).get() );
 
         // Create Vertex Shader
         auto pVertexShader = wrl::ComPtr<ID3D11VertexShader>();
