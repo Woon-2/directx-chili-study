@@ -4,6 +4,7 @@
 #include "Buffer.hpp"
 #include "Topology.hpp"
 #include "Shader.hpp"
+#include "Viewport.hpp"
 
 #include "GraphicsStorage.hpp"
 
@@ -154,18 +155,18 @@ public:
 
         pipeline.bind( storage_.get(pixelShaderID).get() );
 
-        // Configure Viewport
-        auto vp = D3D11_VIEWPORT{
-            .TopLeftX = 0,
-            .TopLeftY = 0,
-            .Width = 800,
-            .Height = 600,
-            .MinDepth = 0,
-            .MaxDepth = 1
-        };
+        auto viewportID = storage_.load<Viewport>(
+            D3D11_VIEWPORT{
+                .TopLeftX = 0,
+                .TopLeftY = 0,
+                .Width = 800,
+                .Height = 600,
+                .MinDepth = 0,
+                .MaxDepth = 1
+            }
+        );
 
-        // Bind Viewport
-        context()->RSSetViewports( 1u, &vp );
+        pipeline.bind( storage_.get(viewportID).get() );
 
         GFX_THROW_FAILED_VOID(
             context()->DrawIndexed(
