@@ -121,7 +121,7 @@ public:
 private:
     BasicDXGIDebugLogger()
         : pDXGIInfoQueue_(nullptr) {
-        using fPtr = HRESULT(__stdcall*)(REFIID, void**);
+        using fPtr = HRESULT(CALLBACK*)(REFIID, void**);
 
         const auto hModDXGIDebug = LoadLibraryExA(
             "dxgidebug.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32
