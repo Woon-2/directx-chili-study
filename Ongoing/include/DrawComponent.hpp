@@ -61,33 +61,12 @@ public:
             0, 1, 4, 1, 5, 4
         };
 
-        auto pIndexBuffer = wrl::ComPtr<ID3D11Buffer>();
-
-        auto ibd = D3D11_BUFFER_DESC{
-            .ByteWidth = sizeof(indices),
-            .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_INDEX_BUFFER,
-            .CPUAccessFlags = 0u,
-            .MiscFlags = 0u,
-            .StructureByteStride = sizeof(unsigned short)
-        };
-
-        auto isd = D3D11_SUBRESOURCE_DATA{
-            .pSysMem = indices
-        };
-
-        GFX_THROW_FAILED(
-            pDevice_->CreateBuffer(&ibd, &isd, &pIndexBuffer)
+        auto indexBufferID = storage_.load<IndexBuffer<unsigned short>>(
+            device(), std::move(indices)
         );
 
-        // Bind Index Buffer
-        GFX_THROW_FAILED_VOID(
-            context()->IASetIndexBuffer(
-                pIndexBuffer.Get(),
-                DXGI_FORMAT_R16_UINT,
-                0u
-            )
-        );
+        pipeline.bind( storage_.get(indexBufferID).get() );
+
 
         // Set primitive topology to triangle list
         context()->IASetPrimitiveTopology(
