@@ -3,7 +3,6 @@
 
 #include "ChiliWindow.hpp"
 #include "DrawComponent.hpp"
-#include "Bindable.hpp"
 
 #include "GraphicsNamespaces.hpp"
 #include "GraphicsException.hpp"

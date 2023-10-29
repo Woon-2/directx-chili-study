@@ -51,36 +51,6 @@ public:
 
         pipeline.bind( storage_.get(vertexBufferID).get() );
 
-        // auto pVertexBuffer = wrl::ComPtr<ID3D11Buffer>();
-
-        // auto vbd = D3D11_BUFFER_DESC{
-        //     .ByteWidth = sizeof(vertices),
-        //     .Usage = D3D11_USAGE_DEFAULT,
-        //     .BindFlags = D3D11_BIND_VERTEX_BUFFER,
-        //     .CPUAccessFlags = 0u,
-        //     .MiscFlags = 0u,
-        //     .StructureByteStride = sizeof(Vertex)
-        // };
-
-        // auto vsd = D3D11_SUBRESOURCE_DATA{
-        //     .pSysMem = vertices
-        // };
-
-        // GFX_THROW_FAILED(
-        //     pDevice_->CreateBuffer(&vbd, &vsd, &pVertexBuffer)
-        // );
-
-        // // Bind Vertex Buffer
-        // const UINT stride = sizeof(Vertex);
-        // const UINT offset = 0u;
-
-        // GFX_THROW_FAILED_VOID(
-        //     context()->IASetVertexBuffers(
-        //         0u, 1u, pVertexBuffer.GetAddressOf(),
-        //         &stride, &offset
-        //     )
-        // );
-
         // Create Index Buffer
         const unsigned short indices[] = {
             0, 2, 1, 2, 3, 1,
