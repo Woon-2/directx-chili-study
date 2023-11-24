@@ -2,6 +2,7 @@
 #define __EnumUtil
 
 #include <utility>
+#include <type_traits>
 
 /**
  * @brief Define logical operators for all integral types and a specified enumeration type.
@@ -253,5 +254,11 @@
         )) ) {  \
         return opFunc( std::forward<Arg_t>(arg) );  \
     }
+
+template <class EnumT>
+constexpr auto etoi(EnumT e) noexcept
+    -> std::underlying_type_t<EnumT> {
+    return static_cast<std::underlying_type_t<EnumT>>(e);
+}
 
 #endif  // EnumUtil

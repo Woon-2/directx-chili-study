@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project (PUtility VERSION 2023.10.10
+project (PUtility VERSION 2023.11.24
     DESCRIPTION "Project for devloper-utility functionalities"
     LANGUAGES CXX
 )
@@ -67,6 +67,7 @@ add_library_target(num_args INTERFACE NumArgs.hpp)
 add_library_target(onehot_encode INTERFACE OneHotEncode.hpp)
 add_library_target(literal INTERFACE Literal.hpp)
 add_library_target(aconcepts INTERFACE AdditionalConcepts.hpp)
+add_library_target(aranges INTERFACE AdditionalRanges.hpp)
 add_library_target(string_like INTERFACE StringLike.hpp)
 add_library_target(timer INTERFACE Timer.hpp)
 
@@ -79,6 +80,7 @@ target_compile_features(timer INTERFACE cxx_std_11)
 target_link_libraries(iterate_call INTERFACE num_args)
 target_link_libraries(onehot_encode INTERFACE num_args)
 target_link_libraries(string_like INTERFACE aconcepts)
+target_link_libraries(aranges INTERFACE aconcepts)
 
 # concrete libraries
 
