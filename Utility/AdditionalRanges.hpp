@@ -7,13 +7,6 @@
 #include <ranges>
 #include <utility>
 
-template <class T>
-concept pointable = std::is_pointer_v<std::remove_cvref_t<T>> ||
-    requires (T & t) {
-    *t;
-    t.operator->();
-};
-
 template <std::input_or_output_iterator Iter>
     requires pointable< std::iter_value_t<Iter> >
 class dereference_iterator {
