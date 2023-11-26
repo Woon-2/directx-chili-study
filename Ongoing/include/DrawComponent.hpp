@@ -1,6 +1,12 @@
 #ifndef __DrawComponent
 #define __DrawComponent
 
+//
+#include "RenderDesc.hpp"
+#include "Pipeline.hpp"
+#include "DrawContext.hpp"
+//
+
 #include "Buffer.hpp"
 #include "Topology.hpp"
 #include "Shader.hpp"
@@ -14,6 +20,31 @@
 #include <d3dcompiler.h>
 
 #include "ShaderPath.h"
+
+class IDrawComponent {
+public:
+    virtual ~IDrawComponent() {}
+
+    virtual const RenderDesc renderDesc() const = 0;
+    virtual IDrawContext* drawContext() = 0;
+    virtual const IDrawContext* drawContext() const = 0;
+
+    friend auto operator<=>(const IDrawComponent& lhs,
+        const IDrawComponent& rhs) {
+        return lhs.renderDesc() <=> rhs.renderDesc();
+    }
+};
+
+// Prevent instantiation with general type T.
+// DrawComponent has to be specialized.
+// There's no common implementation between other type of DrawComponents,
+// This class template stands for having constraint of naming.
+// e.g. to enforce the class which is going to support IDrawComponent interface
+// to have a predictable name DrawComponent<Box>,
+// rather than unpredictable name BoxDrawComponent.
+// Note: The specialization of this class template must inherit IDrawComponent.
+template <class T>
+class DrawComponent;
 
 class DrawComponentBase {
 public:
@@ -53,7 +84,7 @@ public:
             device(), std::move(vertices)
         );
 
-        pipeline.bind( storage_.get(vertexBufferID).get() );
+        pipeline.bind( storage_.get(vertexBufferID).value() );
 
         // Create Index Buffer
         const unsigned short indices[] = {
@@ -69,13 +100,13 @@ public:
             device(), std::move(indices)
         );
 
-        pipeline.bind( storage_.get(indexBufferID).get() );
+        pipeline.bind( storage_.get(indexBufferID).value() );
 
         auto topologyID = storage_.load<Topology>(
             D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
         );
 
-        pipeline.bind( storage_.get(topologyID).get() );
+        pipeline.bind( storage_.get(topologyID).value() );
 
         // Layout Vertex Shader Input
         const D3D11_INPUT_ELEMENT_DESC ied[] = {
@@ -94,7 +125,7 @@ public:
             compiledShaderPath/L"VertexShader.cso"
         );
 
-        pipeline.bind( storage_.get(vertexShaderID).get() );
+        pipeline.bind( storage_.get(vertexShaderID).value() );
 
         auto pBlob = wrl::ComPtr<ID3DBlob>();
 
@@ -119,7 +150,7 @@ public:
             D3D11_CPU_ACCESS_WRITE, std::move(cbuf)
         );
 
-        pipeline.bind( storage_.get(transformID).get() );
+        pipeline.bind( storage_.get(transformID).value() );
 
         // Create Constant Buffer for Face Color
         struct ConstantBufferColor {
@@ -147,13 +178,13 @@ public:
             0u, std::move(cbufColor)
         );
 
-        pipeline.bind( storage_.get(cbufColorID).get() );
+        pipeline.bind( storage_.get(cbufColorID).value() );
 
         auto pixelShaderID = storage_.load<PixelShader>(
             device(), compiledShaderPath/L"PixelShader.cso"
         );
 
-        pipeline.bind( storage_.get(pixelShaderID).get() );
+        pipeline.bind( storage_.get(pixelShaderID).value() );
 
         auto viewportID = storage_.load<Viewport>(
             D3D11_VIEWPORT{
@@ -166,7 +197,7 @@ public:
             }
         );
 
-        pipeline.bind( storage_.get(viewportID).get() );
+        pipeline.bind( storage_.get(viewportID).value() );
 
         GFX_THROW_FAILED_VOID(
             context()->DrawIndexed(
@@ -196,14 +227,6 @@ private:
     wrl::ComPtr<ID3D11Device> pDevice_;
     GFXPipeline* pPipeline_;
     GFXStorage storage_;
-};
-
-template <class T>
-class DrawComponent {
-public:
-
-private:
-    
 };
 
 #endif  // __DrawComponent

@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.10.29 LANGUAGES CXX)
+project(POngoing VERSION 2023.11.26 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -59,12 +59,21 @@ target_sources(chili PRIVATE
     include/GraphicsException.hpp
     include/GraphicsNamespaces.hpp
     include/DrawComponent.hpp
+    include/Pipeline.hpp
     include/Bindable.hpp
+    include/DrawContext.hpp
+    src/DrawContext.cpp
     include/GraphicsStorage.hpp
     include/Buffer.hpp
     include/Topology.hpp
     include/Shader.hpp
     include/Viewport.hpp
+    include/IA.hpp
+    include/RenderDesc.hpp
+    include/Scene.hpp
+    include/Renderer.hpp
+    include/Entity.hpp
+    include/Box.hpp
     src/GraphicsException.cpp
 )
 
@@ -212,7 +221,10 @@ PRIVATE
     Win::win
     Utility::literal
     Utility::timer
+    Utility::aconcepts
+    Utility::aranges
     Resource::resource
+    woon2cache::LRUCache
     d3d11.lib
     D3DCompiler.lib
     $<$<CONFIG:DEBUG>:dxguid.lib>

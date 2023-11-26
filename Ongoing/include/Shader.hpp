@@ -2,6 +2,7 @@
 #define __Shader
 
 #include "Bindable.hpp"
+#include "Pipeline.hpp"
 
 #include "GraphicsNamespaces.hpp"
 #include "GraphicsException.hpp"

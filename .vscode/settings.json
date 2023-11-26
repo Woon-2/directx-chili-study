@@ -82,6 +82,9 @@
         "span": "cpp",
         "string_view": "cpp",
         "filesystem": "cpp",
-        "*.in": "cpp"
+        "*.in": "cpp",
+        "csignal": "cpp",
+        "random": "cpp",
+        "typeindex": "cpp"
     }
 }

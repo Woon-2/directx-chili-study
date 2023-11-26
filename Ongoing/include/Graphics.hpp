@@ -170,8 +170,8 @@ public:
     Graphics& operator=(const Graphics&) = delete;
 
     void render(float angle, float x, float y) {
-        drawTriangle(angle, x, y);
-        drawTriangle(-angle, 0.f, 0.f);
+        // drawTriangle(angle, x, y);
+        // drawTriangle(-angle, 0.f, 0.f);
 
         if (auto hr = pSwap_->Present(2u, 0u); hr < 0) {
             if (hr == DXGI_ERROR_DEVICE_REMOVED) {
@@ -194,6 +194,14 @@ public:
     void drawTriangle(float angle, float x, float y) {
         auto dcb = DrawComponentBase(pDevice_, pipeline_);
         dcb.render(angle, x, y);
+    }
+
+    wrl::ComPtr<ID3D11Device> pDevice() noexcept {
+        return pDevice_;
+    }
+
+    GFXPipeline pipeline() noexcept {
+        return pipeline_;
     }
 
 private:

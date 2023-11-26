@@ -6,7 +6,7 @@ int CALLBACK WinMain(
     [[maybe_unused]] LPSTR lpCmdLine,
     [[maybe_unused]] int nCmdShow
 ) {
-    App::setHInst(hInst);
-    App app;
-    return app.run();
+        App::setHInst(hInst);
+        App app;
+        return app.run();
 }

@@ -2,6 +2,7 @@
 #define __Viewport
 
 #include "Bindable.hpp"
+#include "Pipeline.hpp"
 #include <d3d11.h>
 
 #include "GraphicsNamespaces.hpp"

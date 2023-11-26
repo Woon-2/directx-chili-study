@@ -109,6 +109,12 @@ struct ChiliWindowTraits {
     static HWND create( HINSTANCE hInst, MyWindow* pWnd,
         MyStringView wndName, const WndFrame& wndFrame
     ) {
+        auto tmp = static_cast<RECT>(wndFrame);
+
+        if ( !AdjustWindowRect(&tmp, WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, false) ) {
+            throw WND_LAST_EXCEPT();
+        }
+
         #define ARG_LISTS   \
             /* .dwExStyle = */ 0, \
             /* .lpClassName = */ clsName().data(),    \
@@ -116,8 +122,8 @@ struct ChiliWindowTraits {
             /* .dwStyle = */ WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,    \
             /* .X = */ wndFrame.x,    \
             /* .Y = */ wndFrame.y,    \
-            /* .nWidth = */ wndFrame.width,   \
-            /* .nHeight = */ wndFrame.height, \
+            /* .nWidth = */ tmp.right - tmp.left,   \
+            /* .nHeight = */ tmp.bottom - tmp.top, \
             /* .hWndParent = */ nullptr,   \
             /* .hMenu = */ nullptr,    \
             /* .hInstance = */ hInst, \
@@ -135,17 +141,6 @@ struct ChiliWindowTraits {
         if (!hWnd) {
             throw WND_LAST_EXCEPT();
         }
-
-        auto tmp = static_cast<RECT>(wndFrame);
-
-        if ( !AdjustWindowRect(&tmp,
-                WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-                false
-            )) {  
-            throw WND_LAST_EXCEPT();
-        }
-
-        pWnd->setClient(wndFrame);
 
         return hWnd;
 

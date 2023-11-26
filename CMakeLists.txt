@@ -46,7 +46,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(DirectX_Study VERSION 2023.10.29)
+project(DirectX_Study VERSION 2023.11.26)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -56,6 +56,7 @@ message("Author: @Woon2 (wkdauddns9@gmail.com)")
 include(gitlog)
 add_gitlog(8)
 
+add_subdirectory(extern)
 add_subdirectory(Win)
 add_subdirectory(Utility)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
