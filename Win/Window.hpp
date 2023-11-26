@@ -194,14 +194,6 @@ public:
     void setClient(const WndFrame& windowClient)
     {
         frame_ = windowClient;
-        auto tmp = static_cast<RECT>(frame_);
-
-        if ( !AdjustWindowRect(&tmp,
-                WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-                false
-            )) {  
-            throw WND_LAST_EXCEPT();
-        }
     }
     const WndFrame& client() const noexcept
     {
