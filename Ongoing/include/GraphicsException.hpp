@@ -110,7 +110,7 @@ public:
                 DXGI_DEBUG_ALL, i, pMsg, &msgLength
             ));
 
-            ret.emplace_back(pMsg->pDescription);
+            ret.emplace_back(pMsg->pDescription, pMsg->DescriptionByteLength);
         }
 
         return ret;

@@ -175,7 +175,7 @@ public:
 
         if (auto hr = pSwap_->Present(2u, 0u); hr < 0) {
             if (hr == DXGI_ERROR_DEVICE_REMOVED) {
-                throw GFX_DEVICE_REMOVED_EXCEPT(hr);
+                throw GFX_DEVICE_REMOVED_EXCEPT( pDevice()->GetDeviceRemovedReason() );
             }
             else {
                 throw GFX_EXCEPT(hr);
