@@ -24,8 +24,8 @@ public:
     using MyWindow = Wnd;
 
     Graphics(MyWindow& wnd)
-        : wnd_(wnd), pDevice_(nullptr), pSwap_(nullptr),
-        pTarget_(nullptr), pipeline_() {
+        : wnd_(wnd), factory_(), pipeline_(),
+        pSwap_(nullptr), pTarget_(nullptr) {
         try {
             auto sd = DXGI_SWAP_CHAIN_DESC{
                 .BufferDesc = DXGI_MODE_DESC{
@@ -67,7 +67,7 @@ public:
                 /* SDKVersion = */ D3D11_SDK_VERSION,
                 /* pSwapChainDesc = */ &sd,
                 /* ppSwapChain = */ &pSwap_,
-                /* ppDevice = */ &pDevice_,
+                /* ppDevice = */ &factory_,
                 /* pFeatureLevel = */ nullptr,
                 /* ppImmediateContext = */ &pipeline_
             ));
@@ -79,7 +79,7 @@ public:
                 )
             );
             GFX_THROW_FAILED(
-                pDevice_->CreateRenderTargetView(
+                factory_.device()->CreateRenderTargetView(
                     pBackBuffer.Get(),
                     nullptr,
                     &pTarget_
@@ -96,7 +96,7 @@ public:
             auto pDSState = wrl::ComPtr<ID3D11DepthStencilState>();
 
             GFX_THROW_FAILED(
-                pDevice_->CreateDepthStencilState( &dsStateDesc, &pDSState )
+                factory_.device()->CreateDepthStencilState( &dsStateDesc, &pDSState )
             );
 
             // bind depth stencil state
@@ -122,7 +122,7 @@ public:
             auto pDepthStencil = wrl::ComPtr<ID3D11Texture2D>();
 
             GFX_THROW_FAILED(
-                pDevice_->CreateTexture2D(
+                factory_.device()->CreateTexture2D(
                     &dsDesc, nullptr, &pDepthStencil
                 )
             );
@@ -136,7 +136,7 @@ public:
                 }
             };
             GFX_THROW_FAILED(
-                pDevice_->CreateDepthStencilView(
+                factory_.device()->CreateDepthStencilView(
                     pDepthStencil.Get(), &desvDesc, &pDSV_
                 )
             );
@@ -175,7 +175,7 @@ public:
 
         if (auto hr = pSwap_->Present(2u, 0u); hr < 0) {
             if (hr == DXGI_ERROR_DEVICE_REMOVED) {
-                throw GFX_DEVICE_REMOVED_EXCEPT( pDevice()->GetDeviceRemovedReason() );
+                throw GFX_DEVICE_REMOVED_EXCEPT( factory_.device()->GetDeviceRemovedReason() );
             }
             else {
                 throw GFX_EXCEPT(hr);
@@ -192,12 +192,12 @@ public:
     }
 
     void drawTriangle(float angle, float x, float y) {
-        auto dcb = DrawComponentBase(pDevice_, pipeline_);
+        auto dcb = DrawComponentBase(factory_.device(), pipeline_);
         dcb.render(angle, x, y);
     }
 
-    wrl::ComPtr<ID3D11Device> pDevice() noexcept {
-        return pDevice_;
+    GFXFactory factory() noexcept {
+        return factory_;
     }
 
     GFXPipeline pipeline() noexcept {
@@ -206,11 +206,11 @@ public:
 
 private:
     MyWindow& wnd_;
-    wrl::ComPtr<ID3D11Device> pDevice_;
+    GFXFactory factory_;
+    GFXPipeline pipeline_;
     wrl::ComPtr<IDXGISwapChain> pSwap_;
     wrl::ComPtr<ID3D11RenderTargetView> pTarget_;
     wrl::ComPtr<ID3D11DepthStencilView> pDSV_;
-    GFXPipeline pipeline_;
 };
 
 #endif  // __Graphics

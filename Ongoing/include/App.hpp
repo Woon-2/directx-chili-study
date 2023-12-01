@@ -123,7 +123,7 @@ private:
         entities_.push_back( std::make_unique<Entity<Box>>( Box{} ));
 
         std::ranges::for_each( entities_ | dereference(), [this](auto& entity) {
-            entity.loadAt(gfx_.pDevice(), scene_);
+            entity.loadAt(gfx_.factory(), scene_);
         });
 
         scene_.sortFor(renderer_);

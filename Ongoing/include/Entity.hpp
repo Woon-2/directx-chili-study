@@ -1,11 +1,12 @@
 #ifndef __Entity
 #define __Entity
 
+#include "GFXFactory.hpp"
 #include "Scene.hpp"
 
 class IEntity {
 public:
-    virtual void loadAt(wrl::ComPtr<ID3D11Device> pDevice, Scene& scene) = 0;
+    virtual void loadAt(GFXFactory factory, Scene& scene) = 0;
 };
 
 template <class T>
@@ -17,8 +18,8 @@ public:
     Entity(T&& obj)
         : obj_(std::move(obj)) {}
 
-    void loadAt(wrl::ComPtr<ID3D11Device> pDevice, Scene& scene) override {
-        Loader<T>(obj_).loadAt(pDevice, scene);
+    void loadAt(GFXFactory factory, Scene& scene) override {
+        Loader<T>(obj_).loadAt(factory, scene);
     }
 
 private:

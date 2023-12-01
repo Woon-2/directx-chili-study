@@ -60,6 +60,7 @@ target_sources(chili PRIVATE
     include/GraphicsNamespaces.hpp
     include/DrawComponent.hpp
     include/Pipeline.hpp
+    include/GFXFactory.hpp
     include/Bindable.hpp
     include/DrawContext.hpp
     src/DrawContext.cpp

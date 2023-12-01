@@ -2,6 +2,7 @@
 #define __Shader
 
 #include "Bindable.hpp"
+#include "GFXFactory.hpp"
 #include "Pipeline.hpp"
 
 #include "GraphicsNamespaces.hpp"
@@ -15,7 +16,7 @@
 class VertexShader : public IBindable {
 public:
     template <std::ranges::contiguous_range InputElemDescArray>
-    VertexShader( const wrl::ComPtr<ID3D11Device> device,
+    VertexShader( GFXFactory factory,
         const InputElemDescArray& ieDescs,
         const std::filesystem::path& path
     ) {
@@ -23,12 +24,12 @@ public:
             D3DReadFileToBlob(path.c_str(), &byteCode_)
         );
         GFX_THROW_FAILED(
-            device->CreateVertexShader( byteCode(),
+            factory.device()->CreateVertexShader( byteCode(),
                 byteCodeLength(), nullptr, &pVertexShader_
             )
         );
         GFX_THROW_FAILED(
-            device->CreateInputLayout(
+            factory.device()->CreateInputLayout(
                 std::data(ieDescs),
                 static_cast<UINT>( std::size(ieDescs) ),
                 byteCode(),
@@ -71,14 +72,14 @@ private:
 
 class PixelShader : public IBindable {
 public:
-    PixelShader( const wrl::ComPtr<ID3D11Device> device,
+    PixelShader( GFXFactory factory,
         const std::filesystem::path& path
     ) {
         GFX_THROW_FAILED(
             D3DReadFileToBlob(path.c_str(), &byteCode_)
         );
         GFX_THROW_FAILED(
-            device->CreatePixelShader( byteCode(),
+            factory.device()->CreatePixelShader( byteCode(),
                 byteCodeLength(), nullptr, &pPixelShader_
             )
         );

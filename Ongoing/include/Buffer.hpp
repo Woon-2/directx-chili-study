@@ -5,6 +5,7 @@
 
 #include "Bindable.hpp"
 #include "Pipeline.hpp"
+#include "GFXFactory.hpp"
 #include <d3d11.h>
 
 #include "GraphicsNamespaces.hpp"
@@ -15,10 +16,10 @@
 
 class Buffer : public IBindable {
 public:
-    Buffer( const wrl::ComPtr<ID3D11Device> device,
+    Buffer( GFXFactory factory,
         const D3D11_BUFFER_DESC& bufferDesc,
         const D3D11_SUBRESOURCE_DATA& subresourceData) {
-        device->CreateBuffer(&bufferDesc, &subresourceData,
+        factory.device()->CreateBuffer(&bufferDesc, &subresourceData,
             &data_
         );
     }
@@ -40,9 +41,9 @@ public:
     using MyVertex = VertexT;
 
     template <std::ranges::contiguous_range R>
-    VertexBuffer( const wrl::ComPtr<ID3D11Device> device,
+    VertexBuffer( GFXFactory factory,
         R&& range
-    ) : Buffer( std::move(device),
+    ) : Buffer( std::move(factory),
             D3D11_BUFFER_DESC{
                 .ByteWidth = static_cast<UINT>(
                     std::size(range) * sizeof(MyVertex)
@@ -80,9 +81,9 @@ public:
     using MyIndex = IndexT;
 
     template <std::ranges::contiguous_range R>
-    IndexBuffer( const wrl::ComPtr<ID3D11Device> device,
+    IndexBuffer( GFXFactory factory,
         R&& range
-    ) : Buffer( std::move(device),
+    ) : Buffer( std::move(factory),
         D3D11_BUFFER_DESC{
             .ByteWidth = static_cast<UINT>(
                 std::size(range) * sizeof(MyIndex)
@@ -140,9 +141,9 @@ public:
     using MyValue = ValT;
 
     template <std::ranges::contiguous_range R>
-    CBuffer( const wrl::ComPtr<ID3D11Device> device,
+    CBuffer( GFXFactory factory,
         D3D11_USAGE usage, UINT CPUAccessFlags, R&& range
-    ) : Buffer( std::move(device),
+    ) : Buffer( std::move(factory),
         D3D11_BUFFER_DESC{
             .ByteWidth = static_cast<UINT>(
                 std::size(range) * sizeof(MyValue)
@@ -171,9 +172,9 @@ public:
     using Buffer::data;
 
     template <std::ranges::contiguous_range R>
-    VSCBuffer( const wrl::ComPtr<ID3D11Device> device,
+    VSCBuffer( GFXFactory factory,
         UINT slot, D3D11_USAGE usage, UINT CPUAccessFlags, R&& range
-    ) : CBuffer<ValT>( std::move(device), usage,
+    ) : CBuffer<ValT>( std::move(factory), usage,
         CPUAccessFlags, std::forward<R>(range)
     ), slot_(slot) {}
 
@@ -196,9 +197,9 @@ public:
     using Buffer::data;
 
     template <std::ranges::contiguous_range R>
-    PSCBuffer( const wrl::ComPtr<ID3D11Device> device,
+    PSCBuffer( GFXFactory factory,
         UINT slot, D3D11_USAGE usage, UINT CPUAccessFlags, R&& range
-    ) : CBuffer<ValT>( std::move(device), usage,
+    ) : CBuffer<ValT>( std::move(factory), usage,
         CPUAccessFlags, std::forward<R>(range)
     ), slot_(slot) {}
 

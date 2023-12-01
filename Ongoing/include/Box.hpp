@@ -8,6 +8,7 @@
 #include "GraphicsStorage.hpp"
 
 #include "Bindable.hpp"
+#include "GFXFactory.hpp"
 #include "Pipeline.hpp"
 #include "IA.hpp"
 #include "Buffer.hpp"
@@ -33,8 +34,8 @@ public:
     class MyVertexBuffer : public VertexBuffer<MyVertex> {
     public:
         MyVertexBuffer() = default;
-        MyVertexBuffer(wrl::ComPtr<ID3D11Device> pDevice)
-            : VertexBuffer<MyVertex>( pDevice, modelVertices() ) {}
+        MyVertexBuffer(GFXFactory factory)
+            : VertexBuffer<MyVertex>( factory, modelVertices() ) {}
 
     private:
         static constexpr std::vector<MyVertex> modelVertices() {
@@ -54,8 +55,8 @@ public:
     class MyIndexBuffer : public IndexBuffer<MyIndex> {
     public:
         MyIndexBuffer() = default;
-        MyIndexBuffer(wrl::ComPtr<ID3D11Device> pDevice)
-            : IndexBuffer<MyIndex>( pDevice, modelIndices() ) {}
+        MyIndexBuffer(GFXFactory factory)
+            : IndexBuffer<MyIndex>( factory, modelIndices() ) {}
 
         static constexpr std::size_t size() {
             return 36u;
@@ -83,8 +84,8 @@ public:
     class MyTransform : public VSCBuffer<dx::XMMATRIX> {
     public:
         MyTransform() = default;
-        MyTransform(wrl::ComPtr<ID3D11Device> pDevice)
-            : VSCBuffer<dx::XMMATRIX>(pDevice, 0u, D3D11_USAGE_DYNAMIC,
+        MyTransform(GFXFactory factory)
+            : VSCBuffer<dx::XMMATRIX>(factory, 0u, D3D11_USAGE_DYNAMIC,
                 D3D11_CPU_ACCESS_WRITE, initialTransforms()
             ) {}
 
@@ -116,9 +117,9 @@ public:
     class MyColorBuffer : public PSCBuffer<MyConstantBufferColor> {
     public:
         MyColorBuffer() = default;
-        MyColorBuffer(wrl::ComPtr<ID3D11Device> pDevice)
+        MyColorBuffer(GFXFactory factory)
             : PSCBuffer<MyConstantBufferColor>(
-                pDevice, 0u, D3D11_USAGE_DEFAULT, 0u, initialColors()
+                factory, 0u, D3D11_USAGE_DEFAULT, 0u, initialColors()
             ) {}
 
     private:
@@ -137,8 +138,8 @@ public:
     class MyVertexShader : public VertexShader {
     public:
         MyVertexShader() = default;
-        MyVertexShader(wrl::ComPtr<ID3D11Device> pDevice)
-            : VertexShader(pDevice, inputElemDescs(),
+        MyVertexShader(GFXFactory factory)
+            : VertexShader(factory, inputElemDescs(),
                 compiledShaderPath/L"VertexShader.cso"
             ) {}
 
@@ -161,8 +162,8 @@ public:
     class MyPixelShader : public PixelShader {
     public:
         MyPixelShader() = default;
-        MyPixelShader(wrl::ComPtr<ID3D11Device> pDevice)
-            : PixelShader( pDevice, compiledShaderPath/L"PixelShader.cso" ) {}
+        MyPixelShader(GFXFactory factory)
+            : PixelShader( factory, compiledShaderPath/L"PixelShader.cso" ) {}
 
     private:
     };
@@ -204,24 +205,24 @@ public:
         return &drawContext_;
     }
 
-    static void loadAt( wrl::ComPtr<ID3D11Device> pDevice,
+    static void loadAt( GFXFactory factory,
         Box& box, Scene& scene
     ) {
-        scene.addDrawComponent( new MyType(pDevice, box, scene) );
+        scene.addDrawComponent( new MyType(factory, box, scene) );
     }
 
 private:
-    DrawComponent( wrl::ComPtr<ID3D11Device> pDevice,
+    DrawComponent( GFXFactory factory,
         Box& box, Scene& scene
     ) : drawContext_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0 ),
-        IDVertexShader_( scene.storage().cache<MyVertexShader>( pDevice ) ),
-        IDPixelShader_( scene.storage().cache<MyPixelShader>( pDevice ) ),
-        IDVertexBuffer_( scene.storage().cache<MyVertexBuffer>( pDevice ) ),
-        IDIndexBuffer_( scene.storage().cache<MyIndexBuffer>( pDevice ) ),
+        IDVertexShader_( scene.storage().cache<MyVertexShader>( factory ) ),
+        IDPixelShader_( scene.storage().cache<MyPixelShader>( factory ) ),
+        IDVertexBuffer_( scene.storage().cache<MyVertexBuffer>( factory ) ),
+        IDIndexBuffer_( scene.storage().cache<MyIndexBuffer>( factory ) ),
         IDTopology_( scene.storage().cache<MyTopology>() ),
         IDViewport_( scene.storage().cache<MyViewport>() ),
-        IDTransform_( scene.storage().load<MyTransform>( pDevice ) ),
-        IDColor_( scene.storage().load<MyColorBuffer>( pDevice ) ) {}
+        IDTransform_( scene.storage().load<MyTransform>( factory ) ),
+        IDColor_( scene.storage().load<MyColorBuffer>( factory ) ) {}
 
     DrawContextIndexed drawContext_;
     GFXStorage::ID IDVertexShader_;
@@ -239,8 +240,8 @@ class Loader<Box> {
 public:
     Loader(Box& box) : box_(box) {}
 
-    void loadAt(wrl::ComPtr<ID3D11Device> pDevice, Scene& scene) {
-        DrawComponent<Box>::loadAt(pDevice, box_, scene);
+    void loadAt(GFXFactory factory, Scene& scene) {
+        DrawComponent<Box>::loadAt(factory, box_, scene);
     }
 
 private:
