@@ -28,14 +28,15 @@
 #define GFX_EXCEPT(hr) GraphicsException(__LINE__, __FILE__, (hr), getLogger().getMessages())
 #define GFX_EXCEPT_VOID() GFX_EXCEPT(E_INVALIDARG)
 #define GFX_THROW_FAILED(hrcall) \
-    GFX_CLEAR_LOG();    \
     if ( HRESULT hr = (hrcall); hr < 0 )  \
         throw GFX_EXCEPT(hr)
 #define GFX_THROW_FAILED_VOID(voidcall) \
-    GFX_CLEAR_LOG();    \
-    (voidcall); \
-    if ( !getLogger().getMessages().empty() )   \
-        throw GFX_EXCEPT_VOID()
+    [&]() {  \
+        auto __LoggedMessageSize = getLogger().size();    \
+        (voidcall); \
+        if ( getLogger().size() != __LoggedMessageSize )   \
+            throw GFX_EXCEPT_VOID();    \
+    }()
 #define GFX_CLEAR_LOG() getLogger().clear()
 #endif  // NDEBUG
 
@@ -89,7 +90,15 @@ public:
         pDXGIInfoQueue_->ClearStoredMessages(DXGI_DEBUG_ALL);
     }
 
-    DXGIInfoMsgContainer<std::string> getMessages() const {
+    std::size_t size() const noexcept {
+        return pDXGIInfoQueue_->GetNumStoredMessages(DXGI_DEBUG_ALL);
+    }
+
+    bool empty() const noexcept {
+        return size() == 0u;
+    }
+
+    DXGIInfoMsgContainer<std::string> peekMessages() const {
         auto ret = DXGIInfoMsgContainer<std::string>();
         auto nMsgs = pDXGIInfoQueue_->GetNumStoredMessages(DXGI_DEBUG_ALL);
         ret.reserve(nMsgs);
@@ -113,6 +122,12 @@ public:
             ret.emplace_back(pMsg->pDescription, pMsg->DescriptionByteLength);
         }
 
+        return ret;
+    }
+
+    DXGIInfoMsgContainer<std::string> getMessages() {
+        auto ret = peekMessages();
+        clear();
         return ret;
     }
 
