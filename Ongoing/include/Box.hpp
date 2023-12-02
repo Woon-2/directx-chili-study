@@ -5,6 +5,8 @@
 #include "Scene.hpp"
 #include "RenderDesc.hpp"
 #include "DrawComponent.hpp"
+#include "InputSystem.hpp"
+#include "InputComponent.hpp"
 #include "GraphicsStorage.hpp"
 
 #include "Bindable.hpp"
@@ -181,6 +183,17 @@ public:
             }) {}
     };
 
+    DrawComponent( GFXFactory factory, Scene& scene )
+        : drawContext_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0 ),
+        IDVertexShader_( scene.storage().cache<MyVertexShader>( factory ) ),
+        IDPixelShader_( scene.storage().cache<MyPixelShader>( factory ) ),
+        IDVertexBuffer_( scene.storage().cache<MyVertexBuffer>( factory ) ),
+        IDIndexBuffer_( scene.storage().cache<MyIndexBuffer>( factory ) ),
+        IDTopology_( scene.storage().cache<MyTopology>() ),
+        IDViewport_( scene.storage().cache<MyViewport>() ),
+        IDTransform_( scene.storage().load<MyTransform>( factory ) ),
+        IDColor_( scene.storage().load<MyColorBuffer>( factory ) ) {}
+
     const RenderDesc renderDesc() const override {
         // assert(vertexShaderID_.has_value());
         // assert(pixelShaderID_.has_value());
@@ -205,25 +218,7 @@ public:
         return &drawContext_;
     }
 
-    static void loadAt( GFXFactory factory,
-        Box& box, Scene& scene
-    ) {
-        scene.addDrawComponent( new MyType(factory, box, scene) );
-    }
-
 private:
-    DrawComponent( GFXFactory factory,
-        Box& box, Scene& scene
-    ) : drawContext_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0 ),
-        IDVertexShader_( scene.storage().cache<MyVertexShader>( factory ) ),
-        IDPixelShader_( scene.storage().cache<MyPixelShader>( factory ) ),
-        IDVertexBuffer_( scene.storage().cache<MyVertexBuffer>( factory ) ),
-        IDIndexBuffer_( scene.storage().cache<MyIndexBuffer>( factory ) ),
-        IDTopology_( scene.storage().cache<MyTopology>() ),
-        IDViewport_( scene.storage().cache<MyViewport>() ),
-        IDTransform_( scene.storage().load<MyTransform>( factory ) ),
-        IDColor_( scene.storage().load<MyColorBuffer>( factory ) ) {}
-
     DrawContextIndexed drawContext_;
     GFXStorage::ID IDVertexShader_;
     GFXStorage::ID IDPixelShader_;
@@ -236,16 +231,88 @@ private:
 };
 
 template<>
-class Loader<Box> {
+class MouseInputComponent<Box> {
+private:
+    struct DeltaPosition {
+        float dx;
+        float dy;
+    };
 public:
-    Loader(Box& box) : box_(box) {}
+    DeltaPosition deltaPos() const noexcept {
+        return deltaPos_;
+    }
 
-    void loadAt(GFXFactory factory, Scene& scene) {
-        DrawComponent<Box>::loadAt(factory, box_, scene);
+    void receive(const Mouse::Event& ev) {
+        static constexpr auto center = Mouse::Point(400, 300);
+        static auto last = Mouse::Point(center);
+        auto cur = ev.pos();
+        deltaPos_ = DeltaPosition {
+            .dx = static_cast<float>( (cur.x - last.x) * 2 ),
+            .dy = static_cast<float>( (cur.y - last.y) * 2 )
+        };
+        last = cur;
     }
 
 private:
-    Box box_;
+    DeltaPosition deltaPos_;
 };
+
+template<>
+class Entity<Box> : public IEntity {
+public:
+    friend class Loader<Box>;
+
+    Entity() = default;
+    Entity(const Box& box) noexcept
+        : box_(box), dc_(), ic_() {}
+
+    void update(std::chrono::milliseconds elapsed) override {
+        
+    }
+
+    // ct stands for construct
+    void ctDrawComponent(GFXFactory factory, Scene& scene) {
+        dc_.reset( new DrawComponent<Box>(factory, scene) );
+    }
+
+    void ctInputComponent() {
+        ic_.reset( new MouseInputComponent<Box>() );
+    }
+
+    Loader<Box> loader() const noexcept;
+
+private:
+    Box box_;
+    std::shared_ptr< DrawComponent<Box> > dc_;
+    std::shared_ptr< MouseInputComponent<Box> > ic_;
+};
+
+template<>
+class Loader<Box> {
+public:
+    Loader(const Entity<Box>& entity)
+        : entity_(entity) {}
+
+    Loader(const Loader&) = delete;
+    Loader& operator=(const Loader&) = delete;
+    Loader(Loader&&) = delete;
+    Loader& operator=(Loader&&) = delete;
+
+    void loadAt(Scene& scene) {
+        scene.addDrawComponent(entity_.dc_);
+    }
+
+    template <class CharT>
+    void loadAt(InputSystem<CharT>& inputSystem) {
+        inputSystem.setListner(entity_.ic_);
+    }
+
+private:
+    const Entity<Box>& entity_;
+};
+
+Loader<Box> Entity<Box>::loader() const noexcept {
+    return Loader<Box>(*this);
+}
 
 #endif

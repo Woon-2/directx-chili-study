@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.12.01 LANGUAGES CXX)
+project(POngoing VERSION 2023.12.02 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -55,6 +55,8 @@ target_sources(chili PRIVATE
     include/Keyboard.hpp
     include/Mouse.hpp
     include/App.hpp
+    include/InputComponent.hpp
+    include/InputSystem.hpp
     include/Graphics.hpp
     include/GraphicsException.hpp
     include/GraphicsNamespaces.hpp

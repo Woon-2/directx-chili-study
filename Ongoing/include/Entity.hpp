@@ -1,29 +1,27 @@
 #ifndef __Entity
 #define __Entity
 
-#include "GFXFactory.hpp"
-#include "Scene.hpp"
+#include <chrono>
 
 class IEntity {
 public:
-    virtual void loadAt(GFXFactory factory, Scene& scene) = 0;
+    virtual void update(std::chrono::milliseconds elapsed) = 0;
 };
 
+// Entity is the game object represented by code.
+// Like DrawComponent<T> class template,
+// it stands for having constraints of naming.
+// So prevent instantiation with general type T.
+// Loader has to be specialized.
 template <class T>
-class Entity : public IEntity {
-public:
-    Entity(const T& obj)
-        : obj_(obj) {}
+class Entity;
 
-    Entity(T&& obj)
-        : obj_(std::move(obj)) {}
-
-    void loadAt(GFXFactory factory, Scene& scene) override {
-        Loader<T>(obj_).loadAt(factory, scene);
-    }
-
-private:
-    T obj_;
-};
+// Loader is responsible for adding entities at an arbitrary system.
+// Like DrawComponent<T> class template,
+// it stands for having constraints of naming.
+// So prevent instantiation with general type T.
+// Loader has to be specialized.
+template <class T>
+class Loader;
 
 #endif  // __Entity

@@ -120,11 +120,11 @@ private:
     void loadGFXResources() {
         renderer_.linkPipeline( gfx_.pipeline() );
 
-        entities_.push_back( std::make_unique<Entity<Box>>( Box{} ));
+        auto box = std::make_unique<Entity<Box>>( Box{} );
+        box->ctDrawComponent(gfx_.factory(), scene_);
+        box->loader().loadAt(scene_);
 
-        std::ranges::for_each( entities_ | dereference(), [this](auto& entity) {
-            entity.loadAt(gfx_.factory(), scene_);
-        });
+        entities_.push_back( std::move(box) );
 
         scene_.sortFor(renderer_);
     }
