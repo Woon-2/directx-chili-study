@@ -98,72 +98,12 @@ public:
         return size() == 0u;
     }
 
-    DXGIInfoMsgContainer<std::string> peekMessages() const {
-        auto ret = DXGIInfoMsgContainer<std::string>();
-        auto nMsgs = pDXGIInfoQueue_->GetNumStoredMessages(DXGI_DEBUG_ALL);
-        ret.reserve(nMsgs);
-
-        for (auto i = decltype(nMsgs)(0); i < nMsgs; ++i) {
-            auto msgLength = size_t(0ull);
-            WND_THROW_FAILED(pDXGIInfoQueue_->GetMessage(
-                DXGI_DEBUG_ALL, i, nullptr, &msgLength
-            ));
-
-            auto bytes = std::vector<std::byte>(msgLength);
-
-            auto pMsg = reinterpret_cast<
-                DXGI_INFO_QUEUE_MESSAGE*
-            >(bytes.data());
-
-            WND_THROW_FAILED(pDXGIInfoQueue_->GetMessage(
-                DXGI_DEBUG_ALL, i, pMsg, &msgLength
-            ));
-
-            ret.emplace_back(pMsg->pDescription, pMsg->DescriptionByteLength);
-        }
-
-        return ret;
-    }
-
-    DXGIInfoMsgContainer<std::string> getMessages() {
-        auto ret = peekMessages();
-        clear();
-        return ret;
-    }
-
+    DXGIInfoMsgContainer<std::string> peekMessages() const;
+    DXGIInfoMsgContainer<std::string> getMessages();
     friend BasicDXGIDebugLogger& getLogger();
 
 private:
-    BasicDXGIDebugLogger()
-        : pDXGIInfoQueue_(nullptr) {
-        using fPtr = HRESULT(CALLBACK*)(REFIID, void**);
-
-        const auto hModDXGIDebug = LoadLibraryExA(
-            "dxgidebug.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32
-        );
-
-        fPtr pDXGIGetDebugInterface = reinterpret_cast<fPtr>(
-            reinterpret_cast<void*>(
-                GetProcAddress(hModDXGIDebug, "DXGIGetDebugInterface")
-                )
-            );
-
-        if (!pDXGIGetDebugInterface) {
-            throw WND_LAST_EXCEPT();
-        }
-
-        WND_THROW_FAILED(
-            (*pDXGIGetDebugInterface)(
-                __uuidof(IDXGIDebug), &pDXGIDebug_
-                )
-        );
-
-        WND_THROW_FAILED(
-            (*pDXGIGetDebugInterface)(
-                __uuidof(IDXGIInfoQueue), &pDXGIInfoQueue_
-                )
-        );
-    }
+    BasicDXGIDebugLogger();
 
     wrl::ComPtr<IDXGIInfoQueue> pDXGIInfoQueue_;
     wrl::ComPtr<IDXGIDebug> pDXGIDebug_;

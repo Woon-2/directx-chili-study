@@ -1,8 +1,6 @@
 #ifndef __Keyboard
 #define __Keyboard
 
-#include "ChiliWindow.hpp"
-
 #include <type_traits>
 #include <bitset>
 #include <queue>

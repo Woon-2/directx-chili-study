@@ -73,6 +73,4 @@ private:
     std::map< ID, std::shared_ptr<IBindable> > resources_;
 };
 
-int GFXStorage::IDDistribution = 0;
-
 #endif  // __GraphicsStorage

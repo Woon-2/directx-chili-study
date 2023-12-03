@@ -4,7 +4,6 @@
 #include <d3d11.h>
 #include <dxgi.h>
 #include "GraphicsNamespaces.hpp"
-#include "GraphicsException.hpp"
 
 class GFXSwapChain {
 public:
@@ -18,16 +17,7 @@ public:
         pSwapChain_ = pSwapChain;
     }
 
-    void present() {
-        if ( auto hr = pSwapChain_->Present(2u, 0u); FAILED(hr) ) {
-            if (hr == DXGI_ERROR_DEVICE_REMOVED) {
-                setDeviceRemoved(true);
-            }
-            else {
-                throw GFX_EXCEPT(hr);
-            }
-        }  
-    }
+    void present();
 
     bool deviceRemoved() const noexcept {
         return bDeviceRemoved_;

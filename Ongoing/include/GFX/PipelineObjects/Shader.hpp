@@ -52,18 +52,7 @@ public:
     }
 
 private:
-    void bind(GFXPipeline& pipeline) override {
-        GFX_THROW_FAILED_VOID(
-            pipeline.context()->VSSetShader(
-                pVertexShader_.Get(), nullptr, 0
-            )
-        );
-        GFX_THROW_FAILED_VOID(
-            pipeline.context()->IASetInputLayout(
-                pInputLayout_.Get()
-            )
-        );
-    }
+    void bind(GFXPipeline& pipeline) override;
 
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11VertexShader> pVertexShader_;
@@ -74,16 +63,7 @@ class PixelShader : public IBindable {
 public:
     PixelShader( GFXFactory factory,
         const std::filesystem::path& path
-    ) {
-        GFX_THROW_FAILED(
-            D3DReadFileToBlob(path.c_str(), &byteCode_)
-        );
-        GFX_THROW_FAILED(
-            factory.device()->CreatePixelShader( byteCode(),
-                byteCodeLength(), nullptr, &pPixelShader_
-            )
-        );
-    }
+    );
 
     const wrl::ComPtr<ID3DBlob> byteCodeBlob() const noexcept {
         return byteCode_;
@@ -97,13 +77,7 @@ public:
         return byteCodeBlob()->GetBufferSize();
     }
 private:
-    void bind(GFXPipeline& pipeline) override {
-        GFX_THROW_FAILED_VOID(
-            pipeline.context()->PSSetShader(
-                pPixelShader_.Get(), nullptr, 0u
-            )
-        );
-    }
+    void bind(GFXPipeline& pipeline) override;
 
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11PixelShader> pPixelShader_;

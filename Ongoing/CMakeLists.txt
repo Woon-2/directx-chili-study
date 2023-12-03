@@ -50,7 +50,10 @@ add_executable(chili)
 # Application Layer sources
 target_sources(chili PRIVATE
     src/main.cpp
+    src/App/App.cpp
     src/App/ChiliWindow.cpp
+    src/App/Keyboard.cpp
+    src/App/MsgHandlers.cpp
     include/App/App.hpp
     include/App/ChiliWindow.hpp
     include/App/MsgHandlers.hpp
@@ -60,6 +63,10 @@ target_sources(chili PRIVATE
 
 # Game Layer sources
 target_sources(chili PRIVATE
+    src/Game/Box.cpp
+    src/Game/Game.cpp
+    src/Game/InputSystem.cpp
+    src/Game/Renderer.cpp
     include/Game/Game.hpp
     include/Game/Box.hpp
     include/Game/Entity.hpp
@@ -73,7 +80,10 @@ target_sources(chili PRIVATE
 
 # GFX sources
 target_sources(chili PRIVATE
+    src/GFX/Core/GraphicsStorage.cpp
     src/GFX/Core/GraphicsException.cpp
+    src/GFX/Core/GFXSwapChain.cpp
+    src/GFX/Core/Graphics.cpp
     include/GFX/Core/Graphics.hpp
     include/GFX/Core/GFXFactory.hpp
     include/GFX/Core/GFXSwapChain.hpp
@@ -83,6 +93,8 @@ target_sources(chili PRIVATE
     include/GFX/Core/GraphicsNamespaces.hpp
 
     src/GFX/PipelineObjects/DrawContext.cpp
+    src/GFX/PipelineObjects/RenderTarget.cpp
+    src/GFX/PipelineObjects/Shader.cpp
     include/GFX/PipelineObjects/Bindable.hpp
     include/GFX/PipelineObjects/Buffer.hpp
     include/GFX/PipelineObjects/DrawContext.hpp

@@ -17,9 +17,10 @@ class Buffer : public IBindable {
 public:
     Buffer( GFXFactory factory,
         const D3D11_BUFFER_DESC& bufferDesc,
-        const D3D11_SUBRESOURCE_DATA& subresourceData) {
-        factory.device()->CreateBuffer(&bufferDesc, &subresourceData,
-            &data_
+        const D3D11_SUBRESOURCE_DATA& subresourceData
+    ) {
+        factory.device()->CreateBuffer(&bufferDesc,
+            &subresourceData, &data_
         );
     }
 

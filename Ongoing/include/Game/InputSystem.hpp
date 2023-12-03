@@ -6,6 +6,8 @@
 #include "App/Mouse.hpp"
 
 #include <type_traits>
+#include <memory>
+#include <optional>
 
 template <class CharT>
 class InputSystem {
@@ -23,11 +25,11 @@ public:
     }
 
     void plugin(MyKeyboard& kbd) {
-        pKbd_ = kbd;
+        pKbd_ = &kbd;
     }
 
     void plugin(MyMouse& mouse) {
-        pMouse_ = mouse;
+        pMouse_ = &mouse;
     }
 
     template <class T>
@@ -47,7 +49,7 @@ public:
         }
 
         if ( auto ev = pMouse_.value()->peek(); ev.has_value() ) {
-            ic_->receive(ev);
+            ic_->receive(ev.value());
         }
     }
 

@@ -5,7 +5,6 @@
 #include "Renderer.hpp"
 #include "InputSystem.hpp"
 #include "Entity.hpp"
-#include "Box.hpp"
 
 #include <memory>
 
@@ -18,19 +17,9 @@ class Game {
 public:
     using MyChar = ChiliWindow::MyChar;
 
-    Game(const ChiliWindow& wnd, Graphics<ChiliWindow>& gfx,
+    Game(const ChiliWindow& wnd, Graphics& gfx,
         Keyboard<MyChar>& kbd, Mouse& mouse
-    ) : scene_(), renderer_(), inputSystem_(kbd, mouse), entities_() {
-        renderer_.linkPipeline(gfx.pipeline());
-
-        auto box = std::make_unique<Entity<Box>>( Box{} );
-        box->ctDrawComponent(gfx.factory(), scene_, wnd);
-        box->loader().loadAt(scene_);
-
-        entities_.push_back( std::move(box) );
-
-        scene_.sortFor(renderer_);
-    }
+    );
 
     void update() {
 

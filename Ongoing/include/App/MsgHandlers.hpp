@@ -79,8 +79,6 @@ public:
 
         return {};
     }
-private:
-
 };
 
 template <class Wnd>
@@ -148,6 +146,7 @@ public:
 
         return {};
     }
+
 private:
     MyKeyboard* pKbd_;
 };
