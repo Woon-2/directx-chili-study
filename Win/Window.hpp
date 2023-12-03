@@ -88,8 +88,14 @@ concept canUnregist = requires (Args&& ... args) {
     Traits::unregist( std::forward<Args>(args)... );
 };
 
+class IMsgHandler {
+public:
+    virtual ~IMsgHandler() {}
+    virtual std::optional<LRESULT> operator()(const Message& msg) = 0;
+};
+
 template <class Wnd>
-class MsgHandler
+class MsgHandler : public IMsgHandler
 {
 public:
     using MyWindow = Wnd;
@@ -132,7 +138,6 @@ class Window
 {
 public:
     using MyType = Window<Traits>;
-    using MyHandler = MsgHandler< Window<Traits> >;
     using MyTraits = Traits;
     using MyChar = Traits::MyChar;
     using MyString = std::basic_string<MyChar>;
@@ -173,7 +178,7 @@ public:
     void msgLoop();
     std::optional<int> processMessages();
 
-    HWND nativeHandle() noexcept { return hWnd_; }
+    HWND nativeHandle() const noexcept { return hWnd_; }
     auto& msgHandlers() noexcept { return msgHandlers_; }
     const auto& msgHandlers() const noexcept { return msgHandlers_; }
     MyStringView title() const noexcept { return title_; }
@@ -191,14 +196,7 @@ public:
     {
         Traits::show( nativeHandle(), nCmdShow );
     }
-    void setClient(const WndFrame& windowClient)
-    {
-        frame_ = windowClient;
-    }
-    const WndFrame& client() const noexcept
-    {
-        return frame_;
-    }
+    
 private:
     static LRESULT CALLBACK wndProcSetupHandler(HWND hWnd, UINT type,
         WPARAM wParam, LPARAM lParam);
@@ -226,7 +224,7 @@ private:
 
     MyString title_;
     WndFrame frame_;
-    std::list< std::unique_ptr<MyHandler> > msgHandlers_;
+    std::list< std::unique_ptr<IMsgHandler> > msgHandlers_;
     HWND hWnd_;
 };
 

@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(PWin VERSION 2023.10.15 LANGUAGES CXX)
+project(PWin VERSION 2023.12.03 LANGUAGES CXX)
 
 message(STATUS "configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message("Author: @Woon2 (wkdauddns9@gmail.com)")
