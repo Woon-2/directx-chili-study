@@ -191,8 +191,8 @@ public:
         IDIndexBuffer_( scene.storage().cache<MyIndexBuffer>( factory ) ),
         IDTopology_( scene.storage().cache<MyTopology>() ),
         IDViewport_( scene.storage().cache<MyViewport>() ),
-        IDTransform_( scene.storage().load<MyTransform>( factory ) ),
-        IDColor_( scene.storage().load<MyColorBuffer>( factory ) ) {}
+        IDTransform_( scene.storage().cache<MyTransform>( factory ) ),
+        IDColor_( scene.storage().cache<MyColorBuffer>( factory ) ) {}
 
     const RenderDesc renderDesc() const override {
         // assert(vertexShaderID_.has_value());
@@ -267,7 +267,7 @@ public:
         : box_(box), dc_(), ic_() {}
 
     void update(std::chrono::milliseconds elapsed) override {
-        
+
     }
 
     // ct stands for construct

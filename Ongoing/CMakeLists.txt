@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.12.02 LANGUAGES CXX)
+project(POngoing VERSION 2023.12.03 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -63,6 +63,7 @@ target_sources(chili PRIVATE
     include/DrawComponent.hpp
     include/Pipeline.hpp
     include/GFXFactory.hpp
+    include/GFXSwapChain.hpp
     include/Bindable.hpp
     include/DrawContext.hpp
     src/DrawContext.cpp
@@ -75,6 +76,7 @@ target_sources(chili PRIVATE
     include/RenderDesc.hpp
     include/Scene.hpp
     include/Renderer.hpp
+    include/RenderTarget.hpp
     include/Entity.hpp
     include/Box.hpp
     src/GraphicsException.cpp
