@@ -55,6 +55,7 @@ target_sources(chili PRIVATE
     include/Keyboard.hpp
     include/Mouse.hpp
     include/App.hpp
+    include/Game.hpp
     include/InputComponent.hpp
     include/InputSystem.hpp
     include/Graphics.hpp

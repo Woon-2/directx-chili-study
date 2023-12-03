@@ -58,10 +58,7 @@ public:
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
 
-    void render(float angle, float x, float y) {
-        // drawTriangle(angle, x, y);
-        // drawTriangle(-angle, 0.f, 0.f);
-
+    void present() {
         swapchain_.present();
         if (swapchain_.deviceRemoved()) {
             throw GFX_DEVICE_REMOVED_EXCEPT( 
@@ -80,11 +77,6 @@ public:
             // And it's regarded pragma error.
             assert(false);
         }
-    }
-
-    void drawTriangle(float angle, float x, float y) {
-        auto dcb = DrawComponentBase(factory_.device(), pipeline_);
-        dcb.render(angle, x, y);
     }
 
     GFXFactory factory() noexcept {

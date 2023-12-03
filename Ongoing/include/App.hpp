@@ -1,25 +1,12 @@
 #ifndef __APP
 #define __APP
 
-#include "Scene.hpp"
-#include "Entity.hpp"
-#include "Renderer.hpp"
-
-#include "Box.hpp"
-
 #include "ChiliWindow.hpp"
+#include "Graphics.hpp"
 #include "Keyboard.hpp"
 #include "Mouse.hpp"
 #include "MsgHandlers.hpp"
-#include "Graphics.hpp"
-#include "GraphicsStorage.hpp"
-
-#include "Timer.hpp"
-
-#include <memory>
-#include <vector>
-
-#include <cmath>
+#include "Game.hpp"
 
 #include "AdditionalRanges.hpp"
 
@@ -27,18 +14,15 @@ class App {
 public:
     using MyWindow = ChiliWindow;
     using MyChar = typename MyWindow::MyChar;
-    using MyTimer = Timer<float>;
     using MyKeyboard = Keyboard<MyChar>;
     using MyMouse = Mouse;
 
     App(const Win32::WndFrame& client
         = {.x=200, .y=200, .width=800, .height=600}
     ) : wnd_("ChiliWindow", client),
-        gfx_(wnd_), kbd_(), mouse_(), timer_(), scene_(),
-        renderer_(), entities_() {
+        gfx_(wnd_), kbd_(), mouse_(), game_(wnd_, gfx_, kbd_, mouse_) {
         wnd_.setClient(client);
         setupMsgHandlers();
-        loadGFXResources();
     }
 
     [[maybe_unused]] int run() {
@@ -46,7 +30,30 @@ public:
             if (auto returnCode = wnd_.processMessages()) {
                 return returnCode.value();
             }
-            render();
+
+            try {
+                update();
+                render();
+            } catch (const GraphicsException& e) {
+                MessageBoxA(nullptr, e.what(), "Graphics Exception",
+                    MB_OK | MB_ICONEXCLAMATION);
+                wnd_.close();
+            }
+            catch (const Win32::WindowException& e) {
+                MessageBoxA(nullptr, e.what(), "Window Exception",
+                    MB_OK | MB_ICONEXCLAMATION);
+                wnd_.close();
+            }
+            catch (const std::exception& e) {
+                MessageBoxA(nullptr, e.what(), "Standard Exception",
+                    MB_OK | MB_ICONEXCLAMATION);
+                wnd_.close();
+            }
+            catch(...) {
+                MessageBoxA(nullptr, "no details available",
+                    "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+                wnd_.close();
+            }
         }
     }
 
@@ -54,41 +61,14 @@ public:
         ChiliWindow::setHInst(hInst);
     }
 
-    void render() {
-        try {
-            static auto mousePos = MyMouse::Point{};
-            if (auto ev = mouse_.peek()) {
-                mousePos = ev->pos();
-            }
+    void update() {
+        game_.update();
+    }
 
-            const float c = sin( timer_.peek() ) / 2.f + 0.5f;
-            gfx_.clear(c,c,1.f);
-            renderer_.render(scene_);
-            gfx_.render(
-                timer_.peek(),
-                mousePos.x / static_cast<float>(wnd_.client().width) * 2 - 1.f,
-                mousePos.y / static_cast<float>(wnd_.client().height) * -2 + 1.f
-            );
-        } catch (const GraphicsException& e) {
-            MessageBoxA(nullptr, e.what(), "Graphics Exception",
-                MB_OK | MB_ICONEXCLAMATION);
-            wnd_.close();
-        }
-        catch (const Win32::WindowException& e) {
-            MessageBoxA(nullptr, e.what(), "Window Exception",
-                MB_OK | MB_ICONEXCLAMATION);
-            wnd_.close();
-        }
-        catch (const std::exception& e) {
-            MessageBoxA(nullptr, e.what(), "Standard Exception",
-                MB_OK | MB_ICONEXCLAMATION);
-            wnd_.close();
-        }
-        catch(...) {
-            MessageBoxA(nullptr, "no details available",
-                "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
-            wnd_.close();
-        }
+    void render() {
+        gfx_.clear(1.f, 1.f, 1.f);
+        game_.render();
+        gfx_.present();
     }
 private: 
     MyWindow& window() noexcept {
@@ -117,27 +97,11 @@ private:
         );
     }
 
-    void loadGFXResources() {
-        renderer_.linkPipeline( gfx_.pipeline() );
-
-        auto box = std::make_unique<Entity<Box>>( Box{} );
-        box->ctDrawComponent(gfx_.factory(), scene_);
-        box->loader().loadAt(scene_);
-
-        entities_.push_back( std::move(box) );
-
-        scene_.sortFor(renderer_);
-    }
-
     MyWindow wnd_;
     Graphics<MyWindow> gfx_;
     MyKeyboard kbd_;
     MyMouse mouse_;
-    MyTimer timer_;
-    
-    Scene scene_;
-    Renderer renderer_;
-    std::vector< std::unique_ptr<IEntity> > entities_;
+    Game game_;
 };
 
 #endif  // __APP
