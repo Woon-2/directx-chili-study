@@ -24,7 +24,7 @@ public:
         renderer_.linkPipeline(gfx.pipeline());
 
         auto box = std::make_unique<Entity<Box>>( Box{} );
-        box->ctDrawComponent(gfx.factory(), scene_);
+        box->ctDrawComponent(gfx.factory(), scene_, wnd);
         box->loader().loadAt(scene_);
 
         entities_.push_back( std::move(box) );

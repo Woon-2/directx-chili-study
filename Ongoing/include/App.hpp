@@ -21,7 +21,6 @@ public:
         = {.x=200, .y=200, .width=800, .height=600}
     ) : wnd_("ChiliWindow", client),
         gfx_(wnd_), kbd_(), mouse_(), game_(wnd_, gfx_, kbd_, mouse_) {
-        wnd_.setClient(client);
         setupMsgHandlers();
     }
 

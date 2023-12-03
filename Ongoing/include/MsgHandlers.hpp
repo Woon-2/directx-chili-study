@@ -305,9 +305,14 @@ private:
     bool insideClient(Mouse::Point pt) noexcept {
         auto client = window().client();
 
-        return pt.x >= client.x && pt.y >= client.y
-            && pt.x <= client.x + client.width
-            && pt.y <= client.y + client.height;
+        auto cx = static_cast<decltype(pt.x)>(client.x);
+        auto cy = static_cast<decltype(pt.y)>(client.y);
+        auto cw = static_cast<decltype(pt.x)>(client.width);
+        auto ch = static_cast<decltype(pt.y)>(client.height);
+
+        return pt.x >= cx && pt.y >= cy
+            && pt.x <= cx + cw
+            && pt.y <= cy + ch;
     }
 
     MyMouse* pMouse_;

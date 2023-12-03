@@ -168,9 +168,10 @@ private:
         pipeline_.context()->OMSetDepthStencilState( pDSState.Get(), 1u );
 
         // create depth stencil texture
+        auto client = wnd_.client();
         auto dsDesc = D3D11_TEXTURE2D_DESC{
-            .Width = 800u,
-            .Height = 600u,
+            .Width = static_cast<UINT>(client.width),
+            .Height = static_cast<UINT>(client.height),
             .MipLevels = 1u,
             .ArraySize = 1u,
             .Format = DXGI_FORMAT_D32_FLOAT,

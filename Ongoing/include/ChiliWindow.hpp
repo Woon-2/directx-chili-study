@@ -11,6 +11,13 @@
 
 namespace Win32 {
 
+struct Client {
+    UINT x;
+    UINT y;
+    UINT width;
+    UINT height;
+};
+
 template <Win32Char CharT>
 struct ChiliWindowTraits {
     using MyWindow = Window<ChiliWindowTraits>;
@@ -160,9 +167,48 @@ struct ChiliWindowTraits {
 
 };
 
+template <class Traits>
+class BasicChiliWindow : public Win32::Window<Traits>{
+public:
+    using MyType = BasicChiliWindow<Traits>;
+    using MyTraits = Traits;
+    using MyChar = Traits::MyChar;
+    using MyBase = Win32::Window<Traits>;
+    using MyString = std::basic_string<MyChar>;
+    using MyStringView = std::basic_string_view<MyChar>;
+
+    using MyBase::nativeHandle;
+
+    BasicChiliWindow() requires false;
+
+    template <class ... Args>
+        requires canRegist<Traits, HINSTANCE>
+            && canCreate<Traits, HINSTANCE, Window<Traits>*, Args...>
+    BasicChiliWindow(Args&& ... args)
+        : MyBase( std::forward<Args>(args)... ) {}
+
+    BasicChiliWindow(const BasicChiliWindow&) requires false;
+    BasicChiliWindow(BasicChiliWindow&&) requires false;
+    BasicChiliWindow& operator=(const BasicChiliWindow&) = delete;
+    BasicChiliWindow& operator=(BasicChiliWindow&&) = delete;
+
+    const Client client() const {
+        RECT tmp;
+        GetClientRect( nativeHandle(), &tmp );
+        
+        return Client{ .x = static_cast<UINT>(tmp.left),
+            .y = static_cast<UINT>(tmp.top),
+            .width = static_cast<UINT>(tmp.right - tmp.left),
+            .height = static_cast<UINT>(tmp.bottom - tmp.top)
+        };
+    }
+
+private:
+};
+
 }   // namespace Win32
 
-using ChiliWindow = Win32::Window< Win32::ChiliWindowTraits<CHAR> >;
-using WChiliWindow = Win32::Window< Win32::ChiliWindowTraits<WCHAR> >;
+using ChiliWindow = Win32::BasicChiliWindow< Win32::ChiliWindowTraits<CHAR> >;
+using WChiliWindow = Win32::BasicChiliWindow< Win32::ChiliWindowTraits<WCHAR> >;
 
 #endif  // __ChiliWindow

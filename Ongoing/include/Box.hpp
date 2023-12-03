@@ -9,6 +9,7 @@
 #include "InputComponent.hpp"
 #include "GraphicsStorage.hpp"
 
+#include "ChiliWindow.hpp"
 #include "Bindable.hpp"
 #include "GFXFactory.hpp"
 #include "Pipeline.hpp"
@@ -172,31 +173,29 @@ public:
 
     class MyViewport : public Viewport {
     public:
-        MyViewport()
+        MyViewport(const Win32::Client& client)
             : Viewport( D3D11_VIEWPORT{
-                .TopLeftX = 0,
-                .TopLeftY = 0,
-                .Width = 800,
-                .Height = 600,
-                .MinDepth = 0,
-                .MaxDepth = 1
+                .TopLeftX = 0.f,
+                .TopLeftY = 0.f,
+                .Width = static_cast<FLOAT>(client.width),
+                .Height = static_cast<FLOAT>(client.height),
+                .MinDepth = 0.f,
+                .MaxDepth = 1.f
             }) {}
     };
 
-    DrawComponent( GFXFactory factory, Scene& scene )
+    DrawComponent( GFXFactory factory, Scene& scene, const ChiliWindow& wnd )
         : drawContext_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0 ),
         IDVertexShader_( scene.storage().cache<MyVertexShader>( factory ) ),
         IDPixelShader_( scene.storage().cache<MyPixelShader>( factory ) ),
         IDVertexBuffer_( scene.storage().cache<MyVertexBuffer>( factory ) ),
         IDIndexBuffer_( scene.storage().cache<MyIndexBuffer>( factory ) ),
         IDTopology_( scene.storage().cache<MyTopology>() ),
-        IDViewport_( scene.storage().cache<MyViewport>() ),
+        IDViewport_( scene.storage().cache<MyViewport>( wnd.client() ) ),
         IDTransform_( scene.storage().cache<MyTransform>( factory ) ),
         IDColor_( scene.storage().cache<MyColorBuffer>( factory ) ) {}
 
     const RenderDesc renderDesc() const override {
-        // assert(vertexShaderID_.has_value());
-        // assert(pixelShaderID_.has_value());
         return RenderDesc{
             .header = {
                 .typeID = typeid(Box),
@@ -271,8 +270,8 @@ public:
     }
 
     // ct stands for construct
-    void ctDrawComponent(GFXFactory factory, Scene& scene) {
-        dc_.reset( new DrawComponent<Box>(factory, scene) );
+    void ctDrawComponent(GFXFactory factory, Scene& scene, const ChiliWindow& wnd) {
+        dc_.reset( new DrawComponent<Box>(factory, scene, wnd) );
     }
 
     void ctInputComponent() {
