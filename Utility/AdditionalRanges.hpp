@@ -201,6 +201,6 @@ namespace detail {
 
 }
 
-detail::dereference_view_adaptor dereference;
+static detail::dereference_view_adaptor dereference;
 
 #endif  // __AdditionalRanges
