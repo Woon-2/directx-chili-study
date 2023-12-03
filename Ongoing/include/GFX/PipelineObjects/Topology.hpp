@@ -2,10 +2,10 @@
 #define __Topology
 
 #include "Bindable.hpp"
-#include "Pipeline.hpp"
 
-#include "GraphicsNamespaces.hpp"
-#include "GraphicsException.hpp"
+#include "GFX/Core/Pipeline.hpp"
+#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/GraphicsException.hpp"
 #include <d3d11.h>
 
 class Topology : public IBindable {

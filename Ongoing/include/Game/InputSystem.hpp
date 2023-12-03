@@ -2,8 +2,8 @@
 #define __InputSystem
 
 #include "InputComponent.hpp"
-#include "Keyboard.hpp"
-#include "Mouse.hpp"
+#include "App/Keyboard.hpp"
+#include "App/Mouse.hpp"
 
 #include <type_traits>
 

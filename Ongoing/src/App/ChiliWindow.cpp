@@ -1,4 +1,4 @@
-#include "ChiliWindow.hpp"
+#include "App/ChiliWindow.hpp"
 
 template struct Win32::ChiliWindowTraits<CHAR>;
 template struct Win32::ChiliWindowTraits<WCHAR>;

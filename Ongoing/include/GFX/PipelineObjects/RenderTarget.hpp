@@ -2,12 +2,12 @@
 #define __RenderTarget
 
 #include "Bindable.hpp"
-#include "Pipeline.hpp"
-#include "GFXFactory.hpp"
 
+#include "GFX/Core/Pipeline.hpp"
+#include "GFX/Core/GFXFactory.hpp"
 #include <d3d11.h>
-#include "GraphicsNamespaces.hpp"
-#include "GraphicsException.hpp"
+#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/GraphicsException.hpp"
 
 class RenderTarget : public IBindable {
 public:

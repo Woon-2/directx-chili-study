@@ -1,14 +1,13 @@
 #ifndef __Graphics
 #define __Graphics
 
-#include "ChiliWindow.hpp"
-#include "DrawComponent.hpp"
-#include "RenderTarget.hpp"
+#include "App/ChiliWindow.hpp"
 #include "GFXFactory.hpp"
 #include "Pipeline.hpp"
 #include "GFXSwapChain.hpp"
 #include "GraphicsStorage.hpp"
 
+#include "GFX/PipelineObjects/RenderTarget.hpp"
 #include "GraphicsNamespaces.hpp"
 #include "GraphicsException.hpp"
 #include <d3d11.h>
@@ -20,8 +19,6 @@
 #include <cmath>
 #include <unordered_set>
 #include <memory>
-
-#include "ShaderPath.h"
 
 template <class Wnd>
 class Graphics {

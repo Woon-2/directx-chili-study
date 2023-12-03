@@ -1,7 +1,7 @@
 #ifndef __GraphicsException
 #define __GraphicsException
 
-#include "ChiliWindow.hpp"
+#include "App/ChiliWindow.hpp"
 
 #include "GraphicsNamespaces.hpp"
 #ifndef NDEBUG

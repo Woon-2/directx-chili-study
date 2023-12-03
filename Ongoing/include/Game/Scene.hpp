@@ -2,12 +2,13 @@
 #define __Scene
 
 #include "DrawComponent.hpp"
-#include "GraphicsStorage.hpp"
 
 #include <ranges>
 #include <algorithm>
 #include <vector>
 #include <memory>
+
+#include "GFX/Core/GraphicsStorage.hpp"
 
 #include "AdditionalRanges.hpp"
 

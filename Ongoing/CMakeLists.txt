@@ -47,40 +47,50 @@ message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
 
 add_executable(chili)
 
+# Application Layer sources
 target_sources(chili PRIVATE
     src/main.cpp
-    include/ChiliWindow.hpp
-    src/ChiliWindow.cpp
-    include/MsgHandlers.hpp
-    include/Keyboard.hpp
-    include/Mouse.hpp
-    include/App.hpp
-    include/Game.hpp
-    include/InputComponent.hpp
-    include/InputSystem.hpp
-    include/Graphics.hpp
-    include/GraphicsException.hpp
-    include/GraphicsNamespaces.hpp
-    include/DrawComponent.hpp
-    include/Pipeline.hpp
-    include/GFXFactory.hpp
-    include/GFXSwapChain.hpp
-    include/Bindable.hpp
-    include/DrawContext.hpp
-    src/DrawContext.cpp
-    include/GraphicsStorage.hpp
-    include/Buffer.hpp
-    include/Topology.hpp
-    include/Shader.hpp
-    include/Viewport.hpp
-    include/IA.hpp
-    include/RenderDesc.hpp
-    include/Scene.hpp
-    include/Renderer.hpp
-    include/RenderTarget.hpp
-    include/Entity.hpp
-    include/Box.hpp
-    src/GraphicsException.cpp
+    src/App/ChiliWindow.cpp
+    include/App/App.hpp
+    include/App/ChiliWindow.hpp
+    include/App/MsgHandlers.hpp
+    include/App/Keyboard.hpp
+    include/App/Mouse.hpp
+)
+
+# Game Layer sources
+target_sources(chili PRIVATE
+    include/Game/Game.hpp
+    include/Game/Box.hpp
+    include/Game/Entity.hpp
+    include/Game/Renderer.hpp
+    include/Game/Scene.hpp
+    include/Game/InputSystem.hpp
+    include/Game/DrawComponent.hpp
+    include/Game/InputComponent.hpp
+    include/Game/RenderDesc.hpp
+)
+
+# GFX sources
+target_sources(chili PRIVATE
+    src/GFX/Core/GraphicsException.cpp
+    include/GFX/Core/Graphics.hpp
+    include/GFX/Core/GFXFactory.hpp
+    include/GFX/Core/GFXSwapChain.hpp
+    include/GFX/Core/GraphicsStorage.hpp
+    include/GFX/Core/Pipeline.hpp
+    include/GFX/Core/GraphicsException.hpp
+    include/GFX/Core/GraphicsNamespaces.hpp
+
+    src/GFX/PipelineObjects/DrawContext.cpp
+    include/GFX/PipelineObjects/Bindable.hpp
+    include/GFX/PipelineObjects/Buffer.hpp
+    include/GFX/PipelineObjects/DrawContext.hpp
+    include/GFX/PipelineObjects/IA.hpp
+    include/GFX/PipelineObjects/RenderTarget.hpp
+    include/GFX/PipelineObjects/Shader.hpp
+    include/GFX/PipelineObjects/Topology.hpp
+    include/GFX/PipelineObjects/Viewport.hpp
 )
 
 function(auto_configure TARGET_NAME ACCESS_MODIFIER)

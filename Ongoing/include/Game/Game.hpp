@@ -9,10 +9,10 @@
 
 #include <memory>
 
-#include "ChiliWindow.hpp"
-#include "Graphics.hpp"
-#include "Keyboard.hpp"
-#include "Mouse.hpp"
+#include "App/ChiliWindow.hpp"
+#include "App/Keyboard.hpp"
+#include "App/Mouse.hpp"
+#include "GFX/Core/Graphics.hpp"
 
 class Game {
 public:

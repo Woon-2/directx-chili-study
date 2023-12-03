@@ -1,15 +1,14 @@
 #ifndef __Buffer
 #define __Buffer
 
-#include "ChiliWindow.hpp"
-
 #include "Bindable.hpp"
-#include "Pipeline.hpp"
-#include "GFXFactory.hpp"
-#include <d3d11.h>
 
-#include "GraphicsNamespaces.hpp"
-#include "GraphicsException.hpp"
+#include "App/ChiliWindow.hpp"
+#include <d3d11.h>
+#include "GFX/Core/Pipeline.hpp"
+#include "GFX/Core/GFXFactory.hpp"
+#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/GraphicsException.hpp"
 
 #include <ranges>
 #include <type_traits>

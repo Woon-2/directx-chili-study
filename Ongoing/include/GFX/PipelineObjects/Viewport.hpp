@@ -2,11 +2,11 @@
 #define __Viewport
 
 #include "Bindable.hpp"
-#include "Pipeline.hpp"
-#include <d3d11.h>
 
-#include "GraphicsNamespaces.hpp"
-#include "GraphicsException.hpp"
+#include "GFX/Core/Pipeline.hpp"
+#include <d3d11.h>
+#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/GraphicsException.hpp"
 
 class Viewport : public IBindable {
 public:

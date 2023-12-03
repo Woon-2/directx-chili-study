@@ -1,8 +1,8 @@
 #ifndef __Pipeline
 #define __Pipeline
 
-#include "Bindable.hpp"
-#include "DrawContext.hpp"
+#include "GFX/PipelineObjects/Bindable.hpp"
+#include "GFX/PipelineObjects/DrawContext.hpp"
 
 #include "GraphicsNamespaces.hpp"
 #include "GraphicsException.hpp"

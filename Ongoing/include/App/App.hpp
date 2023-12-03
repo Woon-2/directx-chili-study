@@ -2,11 +2,11 @@
 #define __APP
 
 #include "ChiliWindow.hpp"
-#include "Graphics.hpp"
+#include "GFX/Core/Graphics.hpp"
 #include "Keyboard.hpp"
 #include "Mouse.hpp"
 #include "MsgHandlers.hpp"
-#include "Game.hpp"
+#include "Game/Game.hpp"
 
 #include "AdditionalRanges.hpp"
 

@@ -7,21 +7,24 @@
 #include "DrawComponent.hpp"
 #include "InputSystem.hpp"
 #include "InputComponent.hpp"
-#include "GraphicsStorage.hpp"
 
-#include "ChiliWindow.hpp"
-#include "Bindable.hpp"
-#include "GFXFactory.hpp"
-#include "Pipeline.hpp"
-#include "IA.hpp"
-#include "Buffer.hpp"
-#include "Shader.hpp"
-#include "Topology.hpp"
-#include "Viewport.hpp"
+#include "App/ChiliWindow.hpp"
+#include "GFX/Core/GFXFactory.hpp"
+#include "GFX/Core/GraphicsStorage.hpp"
+#include "GFX/Core/Pipeline.hpp"
+
+#include "GFX/PipelineObjects/Bindable.hpp"
+#include "GFX/PipelineObjects/IA.hpp"
+#include "GFX/PipelineObjects/Buffer.hpp"
+#include "GFX/PipelineObjects/Shader.hpp"
+#include "GFX/PipelineObjects/Topology.hpp"
+#include "GFX/PipelineObjects/Viewport.hpp"
 
 #include <vector>
 
-#include "GraphicsNamespaces.hpp"
+#include "GFX/Core/GraphicsNamespaces.hpp"
+
+#include "ShaderPath.h"
 
 class Box {
 

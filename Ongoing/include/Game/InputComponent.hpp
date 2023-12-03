@@ -1,8 +1,8 @@
 #ifndef __InputComponent
 #define __InputComponent
 
-#include "Keyboard.hpp"
-#include "Mouse.hpp"
+#include "App/Keyboard.hpp"
+#include "App/Mouse.hpp"
 
 template <class CharT>
 class IKeyboardInputComponent {

@@ -1,14 +1,15 @@
 #ifndef __GraphicsStorage
 #define __GraphicsStorage
 
-#include "Bindable.hpp"
-#include "LRUCache.hpp"
+#include "GFX/PipelineObjects/Bindable.hpp"
 
 #include <map>
 #include <memory>
 #include <typeindex>
 #include <optional>
 #include <cassert>
+
+#include "LRUCache.hpp"
 
 class GFXStorage {
 public:

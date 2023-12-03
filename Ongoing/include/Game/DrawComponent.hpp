@@ -1,25 +1,9 @@
 #ifndef __DrawComponent
 #define __DrawComponent
 
-//
 #include "RenderDesc.hpp"
-#include "Pipeline.hpp"
-#include "DrawContext.hpp"
-//
 
-#include "Buffer.hpp"
-#include "Topology.hpp"
-#include "Shader.hpp"
-#include "Viewport.hpp"
-
-#include "GraphicsStorage.hpp"
-
-#include "GraphicsNamespaces.hpp"
-#include "GraphicsException.hpp"
-#include <d3d11.h>
-#include <d3dcompiler.h>
-
-#include "ShaderPath.h"
+#include "GFX/PipelineObjects/DrawContext.hpp"
 
 class IDrawComponent {
 public:
