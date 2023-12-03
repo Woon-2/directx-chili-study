@@ -74,6 +74,7 @@ add_library_target(timer INTERFACE Timer.hpp)
 target_compile_features(enum_util INTERFACE cxx_std_20)
 target_compile_features(literal INTERFACE cxx_std_17)
 target_compile_features(aconcepts INTERFACE cxx_std_20)
+target_compile_features(aranges INTERFACE cxx_std_20)
 target_compile_features(string_like INTERFACE cxx_std_20)
 target_compile_features(timer INTERFACE cxx_std_11)
 
