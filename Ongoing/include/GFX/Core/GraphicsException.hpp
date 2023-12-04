@@ -3,10 +3,10 @@
 
 #include "App/ChiliWindow.hpp"
 
-#include "GraphicsNamespaces.hpp"
 #ifndef NDEBUG
 #include <dxgidebug.h>
 #endif  // NDEBUG
+#include "GraphicsNamespaces.hpp"
 
 #include <string>
 

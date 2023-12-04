@@ -1,5 +1,11 @@
 #include "Game/Renderer.hpp"
 
+#include "Game/RenderDesc.hpp"
+#include "GFX/PipelineObjects/Bindable.hpp"
+
+#include <ranges>
+#include <algorithm>
+
 void Renderer::render(Scene& scene) {
     std::ranges::for_each(scene.drawComponents(),
         [&scene, this, prev = decltype(RenderDesc::IDs)()](const auto& dc) mutable {

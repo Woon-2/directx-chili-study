@@ -2,8 +2,8 @@
 #define __Viewport
 
 #include "Bindable.hpp"
-
 #include "GFX/Core/Pipeline.hpp"
+
 #include <d3d11.h>
 #include "GFX/Core/GraphicsNamespaces.hpp"
 #include "GFX/Core/GraphicsException.hpp"

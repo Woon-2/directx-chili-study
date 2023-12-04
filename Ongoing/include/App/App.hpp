@@ -5,7 +5,6 @@
 #include "GFX/Core/Graphics.hpp"
 #include "Keyboard.hpp"
 #include "Mouse.hpp"
-#include "MsgHandlers.hpp"
 #include "Game/Game.hpp"
 
 class App {

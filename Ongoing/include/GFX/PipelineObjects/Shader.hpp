@@ -2,13 +2,13 @@
 #define __Shader
 
 #include "Bindable.hpp"
-
 #include "GFX/Core/GFXFactory.hpp"
 #include "GFX/Core/Pipeline.hpp"
-#include "GFX/Core/GraphicsNamespaces.hpp"
-#include "GFX/Core/GraphicsException.hpp"
+
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/GraphicsException.hpp"
 
 #include <ranges>
 #include <filesystem>

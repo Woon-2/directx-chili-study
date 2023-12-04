@@ -1,7 +1,7 @@
 #ifndef __ChiliMsgHandlers
 #define __ChiliMsgHandlers
 
-#include "ChiliWindow.hpp"
+#include "Window.hpp"
 #include "Keyboard.hpp"
 #include "Mouse.hpp"
 

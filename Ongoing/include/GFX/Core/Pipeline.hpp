@@ -4,9 +4,9 @@
 #include "GFX/PipelineObjects/Bindable.hpp"
 #include "GFX/PipelineObjects/DrawContext.hpp"
 
+#include <d3d11.h>
 #include "GraphicsNamespaces.hpp"
 #include "GraphicsException.hpp"
-#include <d3d11.h>
 
 class GFXPipeline {
 public:

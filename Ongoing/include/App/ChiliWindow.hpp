@@ -1,13 +1,14 @@
 #ifndef __ChiliWindow
 #define __ChiliWindow
 
+#include "Window.hpp"
+
 #include <string>
 #include <string_view>
 #include <type_traits>
 
 #include "Literal.hpp"
-#include "Window.hpp"
-#include "resource.hpp"
+#include "Resource.hpp"
 
 namespace Win32 {
 

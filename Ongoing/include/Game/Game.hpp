@@ -6,12 +6,12 @@
 #include "InputSystem.hpp"
 #include "Entity.hpp"
 
-#include <memory>
-
 #include "App/ChiliWindow.hpp"
 #include "App/Keyboard.hpp"
 #include "App/Mouse.hpp"
 #include "GFX/Core/Graphics.hpp"
+
+#include <memory>
 
 class Game {
 public:

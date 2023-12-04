@@ -2,13 +2,8 @@
 #define __Renderer
 
 #include "Scene.hpp"
-#include "RenderDesc.hpp"
 
 #include "GFX/Core/Pipeline.hpp"
-#include "GFX/PipelineObjects/Bindable.hpp"
-
-#include <ranges>
-#include <algorithm>
 
 class Renderer {
 public:

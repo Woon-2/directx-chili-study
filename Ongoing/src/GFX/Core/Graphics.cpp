@@ -1,10 +1,10 @@
 #include "GFX/Core/Graphics.hpp"
 
+#include "GFX/PipelineObjects/RenderTarget.hpp"
+
+#include <d3d11.h>
 #include "GFX/Core/GraphicsNamespaces.hpp"
 #include "GFX/Core/GraphicsException.hpp"
-#include <d3d11.h>
-
-#include "GFX/PipelineObjects/RenderTarget.hpp"
 
 Graphics::Graphics(MyWindow& wnd)
     : wnd_(wnd), storage_(), factory_(), pipeline_(),
