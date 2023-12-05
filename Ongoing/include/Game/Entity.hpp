@@ -1,11 +1,11 @@
 #ifndef __Entity
 #define __Entity
 
-#include <chrono>
+#include "Chrono.hpp"
 
 class IEntity {
 public:
-    virtual void update(std::chrono::milliseconds elapsed) = 0;
+    virtual void update(milliseconds elapsed) = 0;
 };
 
 // Entity is the game object represented by code.

@@ -5,6 +5,7 @@
 #include "Renderer.hpp"
 #include "InputSystem.hpp"
 #include "Entity.hpp"
+#include "Timer.hpp"
 
 #include "App/ChiliWindow.hpp"
 #include "App/Keyboard.hpp"
@@ -15,24 +16,22 @@
 
 class Game {
 public:
+    using MyTimer = Timer<float>;
     using MyChar = ChiliWindow::MyChar;
 
     Game(const ChiliWindow& wnd, Graphics& gfx,
         Keyboard<MyChar>& kbd, Mouse& mouse
     );
 
-    void update() {
+    void update();
 
-    }
-
-    void render() {
-        renderer_.render(scene_);
-    }
+    void render();
 
 private:
     Scene scene_;
     Renderer renderer_;
     InputSystem<MyChar> inputSystem_;
+    MyTimer timer_;
     std::vector< std::unique_ptr<IEntity> > entities_;
 };
 

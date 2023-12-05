@@ -1,7 +1,6 @@
 #include "Game/Box.hpp"
 
 #include "GFX/Core/GraphicsStorage.hpp"
-#include "GFX/Core/Pipeline.hpp"
 #include "GFX/PipelineObjects/Bindable.hpp"
 #include "GFX/PipelineObjects/Buffer.hpp"
 #include "GFX/PipelineObjects/Shader.hpp"
@@ -9,6 +8,8 @@
 #include "GFX/PipelineObjects/Viewport.hpp"
 
 #include "ShaderPath.h"
+
+#include <cassert>
 
 class DrawComponent<Box>::MyVertexBuffer : public VertexBuffer<MyVertex> {
 public:
@@ -149,8 +150,11 @@ public:
         }) {}
 };
 
-DrawComponent<Box>::DrawComponent( GFXFactory factory, Scene& scene, const ChiliWindow& wnd )
-    : drawContext_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0 ),
+DrawComponent<Box>::DrawComponent( GFXFactory factory, GFXPipeline pipeline,
+    Scene& scene, const ChiliWindow& wnd 
+) : drawContext_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0 ),
+    pipeline_(pipeline),
+    pScene_(&scene),
     IDVertexShader_( scene.storage().cache<MyVertexShader>( factory ) ),
     IDPixelShader_( scene.storage().cache<MyPixelShader>( factory ) ),
     IDVertexBuffer_( scene.storage().cache<MyVertexBuffer>( factory ) ),
@@ -160,29 +164,54 @@ DrawComponent<Box>::DrawComponent( GFXFactory factory, Scene& scene, const Chili
     IDTransform_( scene.storage().cache<MyTransform>( factory ) ),
     IDColor_( scene.storage().cache<MyColorBuffer>( factory ) ) {}
 
+void DrawComponent<Box>::update(const Transform trans) {
+    assert( pScene_->storage().get(IDTransform_).has_value() );
+
+    auto transCBuf = static_cast<MyTransform*>(
+        pScene_->storage().get(IDTransform_).value()
+    );
+
+    transCBuf->dynamicUpdate(pipeline_, [trans](){ return trans.data(); });
+}
+
 void MouseInputComponent<Box>::receive(const Mouse::Event& ev) {
-    static constexpr auto center = Mouse::Point(400, 300);
-    static auto last = Mouse::Point(center);
-    auto cur = ev.pos();
-    deltaPos_ = DeltaPosition {
-        .dx = static_cast<float>( (cur.x - last.x) * 2 ),
-        .dy = static_cast<float>( (cur.y - last.y) * 2 )
-    };
-    last = cur;
+    if (ev.moved()) {
+        curPos_ = pConverter_->convert( ev.pos() );
+    }
 }
 
-void Entity<Box>::update(std::chrono::milliseconds elapsed) {
-
+void MouseInputComponent<Box>::update() {
+    lastPos_ = curPos_;
 }
 
-void Entity<Box>::ctDrawComponent(GFXFactory factory,
+void Entity<Box>::update(milliseconds elapsed) {
+    auto mousePos = ic_->pos();
+    tc_->setTotal(
+        dx::XMMatrixTranspose(
+            tc_->local().get()
+            * dx::XMMatrixRotationY(0.7f)
+            * dx::XMMatrixRotationX(-0.4f)
+            * dx::XMMatrixTranslation( mousePos.x, mousePos.y, 4.f )
+            * dx::XMMatrixPerspectiveLH( 1.f, 3.f/4.f, 0.5f, 10.f )
+        )
+    );
+    dc_->update(tc_->total());
+}
+
+void Entity<Box>::ctDrawComponent(GFXFactory factory, GFXPipeline pipeline,
     Scene& scene, const ChiliWindow& wnd
 ) {
-    dc_.reset( new DrawComponent<Box>(factory, scene, wnd) );
+    dc_.reset( new DrawComponent<Box>(factory, pipeline, scene, wnd) );
 }
 
-void Entity<Box>::ctInputComponent() {
-    ic_.reset( new MouseInputComponent<Box>() );
+void Entity<Box>::ctInputComponent( const MousePointConverter& converter,
+    const AppMousePoint& initialPos
+) {
+    ic_.reset( new MouseInputComponent<Box>(converter, initialPos) );
+}
+
+void Entity<Box>::ctTransformComponent() {
+    tc_.reset( new BasicTransformComponent() );
 }
 
 Loader<Box> Entity<Box>::loader() const noexcept {

@@ -2,35 +2,74 @@
 #define __Buffer
 
 #include "Bindable.hpp"
+#include "GFX/Core/Pipeline.hpp"
+#include "GFX/Core/GFXFactory.hpp"
 
 #include "App/ChiliWindow.hpp"
 #include <d3d11.h>
-#include "GFX/Core/Pipeline.hpp"
-#include "GFX/Core/GFXFactory.hpp"
+#include <DirectXMath.h>
 #include "GFX/Core/GraphicsNamespaces.hpp"
 #include "GFX/Core/GraphicsException.hpp"
 
 #include <ranges>
 #include <type_traits>
+#include <algorithm>
+#include <concepts>
+#include <functional>
 
 class Buffer : public IBindable {
 public:
     Buffer( GFXFactory factory,
         const D3D11_BUFFER_DESC& bufferDesc,
         const D3D11_SUBRESOURCE_DATA& subresourceData
-    ) {
-        factory.device()->CreateBuffer(&bufferDesc,
-            &subresourceData, &data_
+    ) : desc_(bufferDesc), data_() {
+        GFX_THROW_FAILED(
+            factory.device()->CreateBuffer(&bufferDesc,
+                &subresourceData, &data_
+            )
         );
     }
 
-    const wrl::ComPtr<ID3D11Buffer> data() {
+    // https://learn.microsoft.com/en-us/windows/win32/direct3d11/how-to--use-dynamic-resources
+    // there's a room for enhancing performance
+    // by using D3D11_MAP_WRITE_NO_OVERWRITE and D3D11_MAP_WRITE_DISCARD interleaved.
+    template <class BufferGetter>
+        requires std::convertible_to< std::invoke_result_t<BufferGetter>, void* >
+            || std::convertible_to< std::invoke_result_t<BufferGetter>, const void* >
+    void dynamicUpdate( GFXPipeline& pipeline, BufferGetter&& getter ) {
+        // is dynamic usage check to be added
+        auto mapped = D3D11_MAPPED_SUBRESOURCE{};
+        std::fill_n( reinterpret_cast<char*>(&mapped), sizeof(mapped), 0 );
+
+        GFX_THROW_FAILED(
+            pipeline.context()->Map( data().Get(), 0u,
+                D3D11_MAP_WRITE_DISCARD, 0, &mapped
+            )
+        );
+
+        const void* updated = std::invoke( std::forward<BufferGetter>(getter) );
+
+        std::copy_n( static_cast<const char*>(updated),
+            desc_.ByteWidth, static_cast<char*>(mapped.pData)
+        );
+
+        GFX_THROW_FAILED_VOID(
+            pipeline.context()->Unmap( data().Get(), 0 )
+        );
+    }
+
+    const wrl::ComPtr<ID3D11Buffer> data() const {
+        return data_;
+    }
+
+    wrl::ComPtr<ID3D11Buffer> data() {
         return data_;
     }
 
 private:
     virtual void bind(GFXPipeline& pipeline) = 0;
 
+    D3D11_BUFFER_DESC desc_;
     wrl::ComPtr<ID3D11Buffer> data_;
 };
 

@@ -7,9 +7,11 @@
 #include "DrawComponent.hpp"
 #include "InputSystem.hpp"
 #include "InputComponent.hpp"
+#include "Transform.hpp"
 
 #include "App/ChiliWindow.hpp"
 #include "GFX/Core/GFXFactory.hpp"
+#include "GFX/Core/Pipeline.hpp"
 #include "GFX/PipelineObjects/IA.hpp"
 
 #include <vector>
@@ -47,7 +49,11 @@ public:
     class MyPixelShader;
     class MyViewport;
 
-    DrawComponent( GFXFactory factory, Scene& scene, const ChiliWindow& wnd );
+    DrawComponent( GFXFactory factory, GFXPipeline pipeline,
+        Scene& scene, const ChiliWindow& wnd
+    );
+
+    void update(const Transform trans);
 
     const RenderDesc renderDesc() const override {
         return RenderDesc{
@@ -73,6 +79,8 @@ public:
 
 private:
     DrawContextIndexed drawContext_;
+    GFXPipeline pipeline_;
+    Scene* pScene_;
     GFXStorage::ID IDVertexShader_;
     GFXStorage::ID IDPixelShader_;
     GFXStorage::ID IDVertexBuffer_;
@@ -84,21 +92,42 @@ private:
 };
 
 template<>
-class MouseInputComponent<Box> {
+class MouseInputComponent<Box> : public IMouseInputComponent {
 private:
     struct DeltaPosition {
         float dx;
         float dy;
+
+        static const DeltaPosition from(const AppMousePoint& cur,
+            const AppMousePoint& last
+        ) {
+            return DeltaPosition{
+                .dx = cur.x - last.x,
+                .dy = cur.y - last.y
+            };
+        }
     };
 public:
-    DeltaPosition deltaPos() const noexcept {
-        return deltaPos_;
+    MouseInputComponent(const MousePointConverter& converter,
+        const AppMousePoint& initialPos
+    ) : curPos_(initialPos), lastPos_(initialPos), pConverter_(&converter) {}
+
+    DeltaPosition deltaPos() const {
+        return DeltaPosition::from(curPos_, lastPos_);
     }
 
-    void receive(const Mouse::Event& ev);
+    AppMousePoint pos() const noexcept {
+        return curPos_;
+    }
+    
+    void update();
+
+    void receive(const Mouse::Event& ev) override;
 
 private:
-    DeltaPosition deltaPos_;
+    AppMousePoint curPos_;
+    AppMousePoint lastPos_;
+    const MousePointConverter* pConverter_;
 };
 
 template<>
@@ -110,18 +139,39 @@ public:
     Entity(const Box& box) noexcept
         : box_(box), dc_(), ic_() {}
 
-    void update(std::chrono::milliseconds elapsed) override;
+    void update(milliseconds elapsed) override;
 
     // ct stands for construct
-    void ctDrawComponent(GFXFactory factory, Scene& scene, const ChiliWindow& wnd);
-    void ctInputComponent();
+    void ctDrawComponent(GFXFactory factory, GFXPipeline pipeline,
+        Scene& scene, const ChiliWindow& wnd
+    );
+    void ctInputComponent(const MousePointConverter& converter,
+        const AppMousePoint& initialPos
+    );
+    void ctTransformComponent();
 
     Loader<Box> loader() const noexcept;
 
 private:
+    std::shared_ptr< DrawComponent<Box> >
+    drawComponent() const noexcept {
+        return dc_;
+    }
+
+    std::shared_ptr< MouseInputComponent<Box> >
+    inputComponent() const noexcept {
+        return ic_;
+    }
+
+    std::shared_ptr<BasicTransformComponent>
+    transformComponent() const noexcept {
+        return tc_;
+    }
+
     Box box_;
     std::shared_ptr< DrawComponent<Box> > dc_;
     std::shared_ptr< MouseInputComponent<Box> > ic_;
+    std::shared_ptr< BasicTransformComponent > tc_;
 };
 
 template<>
@@ -136,12 +186,12 @@ public:
     Loader& operator=(Loader&&) = delete;
 
     void loadAt(Scene& scene) {
-        scene.addDrawComponent(entity_.dc_);
+        scene.addDrawComponent(entity_.drawComponent());
     }
 
     template <class CharT>
     void loadAt(InputSystem<CharT>& inputSystem) {
-        inputSystem.setListner(entity_.ic_);
+        inputSystem.setListner(entity_.inputComponent());
     }
 
 private:

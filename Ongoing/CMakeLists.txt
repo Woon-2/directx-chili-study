@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.12.04 LANGUAGES CXX)
+project(POngoing VERSION 2023.12.05 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -76,6 +76,8 @@ target_sources(chili PRIVATE
     include/Game/DrawComponent.hpp
     include/Game/InputComponent.hpp
     include/Game/RenderDesc.hpp
+    include/Game/Transform.hpp
+    include/Game/Chrono.hpp
 )
 
 # GFX sources
