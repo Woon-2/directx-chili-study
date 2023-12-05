@@ -10,14 +10,15 @@
 struct RenderDesc {
     struct Header {
         std::type_index typeID;
-        GFXStorage::ID vertexShaderID;
-        GFXStorage::ID pixelShaderID;
+        GFXStorage::ID IDVertexShader;
+        GFXStorage::ID IDPixelShader;
+        GFXStorage::ID IDBuffer;
     };
 
     auto reflect() const noexcept {
         return std::tie(
-            header.vertexShaderID,
-            header.pixelShaderID,
+            header.IDVertexShader,
+            header.IDPixelShader,
             header.typeID
         );
     }

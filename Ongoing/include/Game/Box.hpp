@@ -80,8 +80,9 @@ public:
         return RenderDesc{
             .header = {
                 .typeID = typeid(Box),
-                .vertexShaderID = IDVertexShader_,
-                .pixelShaderID = IDPixelShader_
+                .IDVertexShader = IDVertexShader_,
+                .IDPixelShader = IDPixelShader_,
+                .IDBuffer = IDVertexBuffer_
             },
             .IDs = { IDVertexShader_, IDPixelShader_,
                 IDVertexBuffer_, IDIndexBuffer_, IDTopology_,
