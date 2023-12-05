@@ -189,8 +189,12 @@ void Entity<Box>::update(milliseconds elapsed) {
     tc_->setTotal(
         dx::XMMatrixTranspose(
             tc_->local().get()
-            * dx::XMMatrixRotationY(0.7f)
-            * dx::XMMatrixRotationX(-0.4f)
+            * dx::XMMatrixRotationY(
+                std::chrono::duration_cast<seconds>(elapsed).count()
+            )
+            * dx::XMMatrixRotationX(
+                std::chrono::duration_cast<seconds>(elapsed).count()
+            )
             * dx::XMMatrixTranslation( 0.f, 0.f, 4.f )
             * dx::XMMatrixPerspectiveLH( 1.f, 3.f/4.f, 0.5f, 10.f )
             * dx::XMMatrixTranslation( mousePos.x, mousePos.y, 0.f )
