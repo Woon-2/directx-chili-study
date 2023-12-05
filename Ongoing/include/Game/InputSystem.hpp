@@ -43,8 +43,8 @@ struct AppMousePoint{
 };
 
 // a class responsible for converting
-// the mouse position represented by Window coordinate system
-// to the mouse position represented by Application coordinate system.
+// the mouse position represented in Window coordinate system
+// to the mouse position represented in Application coordinate system.
 class MousePointConverter {
 public:
     MousePointConverter() = default;
