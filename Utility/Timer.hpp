@@ -4,7 +4,7 @@
 #include <chrono>
 #include <ratio>
 
-template < class Rep, class Period = std::ratio<1> >
+template < class Rep, class Period = std::milli >
 class Timer {
 public:
     using time_point = std::chrono::steady_clock::time_point;
@@ -17,18 +17,16 @@ public:
         last_ = clock::now();
     }
 
-    [[maybe_unused]] Rep mark() noexcept {
+    [[maybe_unused]] duration mark() noexcept {
         const auto old = last_;
         last_ = clock::now();
-        const auto elapsed
-            = std::chrono::duration_cast<duration>(last_ - old);
-        return elapsed.count();
+        return std::chrono::duration_cast<duration>(last_ - old);
     }
 
-    Rep peek() const noexcept {
+    duration peek() const noexcept {
         return std::chrono::duration_cast<duration>(
             clock::now() - last_
-        ).count();
+        );
     }
 
 private:
