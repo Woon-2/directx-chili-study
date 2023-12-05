@@ -9,6 +9,7 @@
 #include "InputComponent.hpp"
 #include "GTransformComponent.hpp"
 
+#include "GFX/Primitives/Cube.hpp"
 #include "App/ChiliWindow.hpp"
 #include "GFX/Core/GFXFactory.hpp"
 #include "GFX/Core/GraphicsStorage.hpp"
@@ -16,106 +17,29 @@
 #include "GFX/PipelineObjects/IA.hpp"
 
 #include <vector>
+#include <memory>
 
 #include "GFX/Core/GraphicsNamespaces.hpp"
+
+#include "PrimitiveEntity.hpp"
 
 class Box {
 
 };
 
 template <>
-class DrawComponent<Box> : public IDrawComponent {
+class DrawComponent<Box> : public PEDrawComponent<
+    Box, Cube::CubeVertexBuffer, Cube::CubeIndexBuffer
+> {
 public:
-    using MyType = DrawComponent<Box>;
-    using MyVertex = GFXVertex;
-    using MyIndex = GFXIndex;
-
-    struct MyColor {
-        float r;
-        float g;
-        float b;
-        float a;
-    };
-
-    struct MyConstantBufferColor {
-        MyColor faceColors[6];
-    };
-
-    class MyVertexBuffer;
-    class MyIndexBuffer;
-    class MyTopology;
-    class MyTransformCBuf;
-    class MyColorBuffer;
-    class MyVertexShader;
-    class MyPixelShader;
-    class MyViewport;
-
-    class MyDrawContext : public DrawContextIndexed {
-    public:
-        MyDrawContext( UINT numIndex, UINT startIndexLocation,
-            INT baseVertexLocation, GFXStorage& mappedStorage,
-            GFXStorage::ID IDTransCBuf
-        ) : DrawContextIndexed(numIndex, startIndexLocation, baseVertexLocation),
-            trans_(), mappedStorage_(&mappedStorage), IDTransCBuf_(IDTransCBuf) {}
-
-        void update(const Transform trans) {
-            trans_ = trans;
-        }
-
-    private:
-        void drawCall(GFXPipeline& pipeline) const override;
-
-        Transform trans_;
-        GFXStorage* mappedStorage_;
-        GFXStorage::ID IDTransCBuf_;
-    };
+    using MyBase = PEDrawComponent<
+        Box, Cube::CubeVertexBuffer, Cube::CubeIndexBuffer
+    >;
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
         Scene& scene, const ChiliWindow& wnd
-    );
+    ) : MyBase(factory, pipeline, scene, wnd) {}
 
-    void update(const Transform trans);
-
-    const RenderDesc renderDesc() const override {
-        return RenderDesc{
-            .header = {
-                .typeID = typeid(Box),
-                .IDVertexShader = IDVertexShader_,
-                .IDPixelShader = IDPixelShader_,
-                .IDBuffer = IDVertexBuffer_
-            },
-            .IDs = { IDVertexShader_, IDPixelShader_,
-                IDVertexBuffer_, IDIndexBuffer_, IDTopology_,
-                IDViewport_, IDTransformCBuf_, IDColor_
-            }
-        };
-    }
-
-    const IDrawContext* drawContext() const override {
-        return &drawContext_;
-    }
-
-    IDrawContext* drawContext() override {
-        return &drawContext_;
-    }
-
-private:
-    GFXPipeline pipeline_;
-    Scene* pScene_;
-    GFXStorage::ID IDVertexShader_;
-    GFXStorage::ID IDPixelShader_;
-    GFXStorage::ID IDVertexBuffer_;
-    GFXStorage::ID IDIndexBuffer_;
-    GFXStorage::ID IDTopology_;
-    GFXStorage::ID IDViewport_;
-    GFXStorage::ID IDTransformCBuf_;
-    GFXStorage::ID IDColor_;
-    // draw context is here to guarantee
-    // it is initalized at the last.
-    // since draw context may use other member data,
-    // to protect the program from accessing unitialized data,
-    // sacrifice memory efficiency.
-    MyDrawContext drawContext_;
 };
 
 template<>

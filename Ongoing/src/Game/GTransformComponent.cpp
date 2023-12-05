@@ -19,7 +19,7 @@ void GTransformComponent::update(milliseconds elapsed) {
     setGlobal(
         dx::XMMatrixTranslation( radius_, 0.f, 0.f )
         * dx::XMMatrixRotationRollPitchYaw( theta_, phi_, chi_ )
-        * dx::XMMatrixTranslation( 0.f, 0.f, 25.f )
-        * dx::XMMatrixPerspectiveLH( 1.f, 3.f/4.f, 0.5f, 50.f )
+        * dx::XMMatrixTranslation( 0.f, 0.f, 20.f )
+        * dx::XMMatrixPerspectiveLH( 1.f, 3.f/4.f, 0.5f, 40.f )
     );
 }

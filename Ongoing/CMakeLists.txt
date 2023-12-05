@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.12.05 LANGUAGES CXX)
+project(POngoing VERSION 2023.12.06 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -63,11 +63,13 @@ target_sources(chili PRIVATE
 
 # Game Layer sources
 target_sources(chili PRIVATE
+    src/Game/PrimitiveEntity.cpp
     src/Game/Box.cpp
     src/Game/Game.cpp
     src/Game/InputSystem.cpp
     src/Game/Renderer.cpp
     src/Game/GTransformComponent.cpp
+    include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp
     include/Game/Box.hpp
     include/Game/Entity.hpp
@@ -107,6 +109,12 @@ target_sources(chili PRIVATE
     include/GFX/PipelineObjects/Shader.hpp
     include/GFX/PipelineObjects/Topology.hpp
     include/GFX/PipelineObjects/Viewport.hpp
+
+    include/GFX/Primitives/Cube.hpp
+    include/GFX/Primitives/Plane.hpp
+    include/GFX/Primitives/Prism.hpp
+    include/GFX/Primitives/Cone.hpp
+    include/GFX/Primitives/Sphere.hpp
 )
 
 function(auto_configure TARGET_NAME ACCESS_MODIFIER)
