@@ -45,6 +45,9 @@ public:
         return baseVertexLocation_;
     }
 
+protected:
+    void indexedDrawCall(GFXPipeline& pipeline) const;
+
 private:
     void drawCall(GFXPipeline& pipeline) const override;
 

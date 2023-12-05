@@ -1,6 +1,5 @@
 #include "Game/Box.hpp"
 
-#include "GFX/Core/GraphicsStorage.hpp"
 #include "GFX/PipelineObjects/Bindable.hpp"
 #include "GFX/PipelineObjects/Buffer.hpp"
 #include "GFX/PipelineObjects/Shader.hpp"
@@ -61,10 +60,10 @@ public:
         : Topology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) {}
 };
 
-class DrawComponent<Box>::MyTransform : public VSCBuffer<dx::XMMATRIX> {
+class DrawComponent<Box>::MyTransformCBuf : public VSCBuffer<dx::XMMATRIX> {
 public:
-    MyTransform() = default;
-    MyTransform(GFXFactory factory)
+    MyTransformCBuf() = default;
+    MyTransformCBuf(GFXFactory factory)
         : VSCBuffer<dx::XMMATRIX>(factory, 0u, D3D11_USAGE_DYNAMIC,
             D3D11_CPU_ACCESS_WRITE, initialTransforms()
         ) {}
@@ -81,7 +80,7 @@ private:
             )
         };
     }
-    };
+};
 
 class DrawComponent<Box>::MyColorBuffer : public PSCBuffer<MyConstantBufferColor> {
 public:
@@ -150,10 +149,23 @@ public:
         }) {}
 };
 
+void DrawComponent<Box>::MyDrawContext::
+drawCall(GFXPipeline& pipeline) const {
+    // first adopt transform
+    assert( mappedStorage_->get(IDTransCBuf_).has_value() );
+
+    auto transCBuf = static_cast<MyTransformCBuf*>(
+        mappedStorage_->get(IDTransCBuf_).value()
+    );
+
+    transCBuf->dynamicUpdate(pipeline, [this](){ return trans_.data(); });
+    // then draw
+    DrawContextIndexed::indexedDrawCall(pipeline);
+}
+
 DrawComponent<Box>::DrawComponent( GFXFactory factory, GFXPipeline pipeline,
     Scene& scene, const ChiliWindow& wnd 
-) : drawContext_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0 ),
-    pipeline_(pipeline),
+) : pipeline_(pipeline),
     pScene_(&scene),
     IDVertexShader_( scene.storage().cache<MyVertexShader>( factory ) ),
     IDPixelShader_( scene.storage().cache<MyPixelShader>( factory ) ),
@@ -161,17 +173,14 @@ DrawComponent<Box>::DrawComponent( GFXFactory factory, GFXPipeline pipeline,
     IDIndexBuffer_( scene.storage().cache<MyIndexBuffer>( factory ) ),
     IDTopology_( scene.storage().cache<MyTopology>() ),
     IDViewport_( scene.storage().cache<MyViewport>( wnd.client() ) ),
-    IDTransform_( scene.storage().cache<MyTransform>( factory ) ),
-    IDColor_( scene.storage().cache<MyColorBuffer>( factory ) ) {}
+    IDTransformCBuf_( scene.storage().cache<MyTransformCBuf>( factory ) ),
+    IDColor_( scene.storage().cache<MyColorBuffer>( factory ) ),
+    drawContext_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0,
+        scene.storage(), IDTransformCBuf_
+    ) {}
 
 void DrawComponent<Box>::update(const Transform trans) {
-    assert( pScene_->storage().get(IDTransform_).has_value() );
-
-    auto transCBuf = static_cast<MyTransform*>(
-        pScene_->storage().get(IDTransform_).value()
-    );
-
-    transCBuf->dynamicUpdate(pipeline_, [trans](){ return trans.data(); });
+    drawContext_.update(trans);
 }
 
 void MouseInputComponent<Box>::receive(const Mouse::Event& ev) {
@@ -185,21 +194,10 @@ void MouseInputComponent<Box>::update() {
 }
 
 void Entity<Box>::update(milliseconds elapsed) {
-    auto mousePos = ic_->pos();
-    tc_->setTotal(
-        dx::XMMatrixTranspose(
-            tc_->local().get()
-            * dx::XMMatrixRotationY(
-                std::chrono::duration_cast<seconds>(elapsed).count()
-            )
-            * dx::XMMatrixRotationX(
-                std::chrono::duration_cast<seconds>(elapsed).count()
-            )
-            * dx::XMMatrixTranslation( 0.f, 0.f, 4.f )
-            * dx::XMMatrixPerspectiveLH( 1.f, 3.f/4.f, 0.5f, 10.f )
-            * dx::XMMatrixTranslation( mousePos.x, mousePos.y, 0.f )
-        )
-    );
+    tc_->update(elapsed);
+    tc_->setTotal( dx::XMMatrixTranspose(
+        (tc_->local() * tc_->global()).get()
+    ) );
     dc_->update(tc_->total());
 }
 
@@ -215,8 +213,15 @@ void Entity<Box>::ctInputComponent( const MousePointConverter& converter,
     ic_.reset( new MouseInputComponent<Box>(converter, initialPos) );
 }
 
-void Entity<Box>::ctTransformComponent() {
-    tc_.reset( new BasicTransformComponent() );
+void Entity<Box>::ctTransformComponent(
+    Distribution& distRadius,
+    Distribution& distCTP,  // chi, theta, phi
+    Distribution& distDeltaCTP, // chi, theta, phi
+    Distribution& distDeltaRTY   // roll, yaw, pitch
+) {
+    tc_.reset( new GTransformComponent(
+        distRadius, distCTP, distDeltaCTP, distDeltaRTY
+    ) );
 }
 
 Loader<Box> Entity<Box>::loader() const noexcept {

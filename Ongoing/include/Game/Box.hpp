@@ -7,10 +7,11 @@
 #include "DrawComponent.hpp"
 #include "InputSystem.hpp"
 #include "InputComponent.hpp"
-#include "Transform.hpp"
+#include "GTransformComponent.hpp"
 
 #include "App/ChiliWindow.hpp"
 #include "GFX/Core/GFXFactory.hpp"
+#include "GFX/Core/GraphicsStorage.hpp"
 #include "GFX/Core/Pipeline.hpp"
 #include "GFX/PipelineObjects/IA.hpp"
 
@@ -43,11 +44,31 @@ public:
     class MyVertexBuffer;
     class MyIndexBuffer;
     class MyTopology;
-    class MyTransform;
+    class MyTransformCBuf;
     class MyColorBuffer;
     class MyVertexShader;
     class MyPixelShader;
     class MyViewport;
+
+    class MyDrawContext : public DrawContextIndexed {
+    public:
+        MyDrawContext( UINT numIndex, UINT startIndexLocation,
+            INT baseVertexLocation, GFXStorage& mappedStorage,
+            GFXStorage::ID IDTransCBuf
+        ) : DrawContextIndexed(numIndex, startIndexLocation, baseVertexLocation),
+            trans_(), mappedStorage_(&mappedStorage), IDTransCBuf_(IDTransCBuf) {}
+
+        void update(const Transform trans) {
+            trans_ = trans;
+        }
+
+    private:
+        void drawCall(GFXPipeline& pipeline) const override;
+
+        Transform trans_;
+        GFXStorage* mappedStorage_;
+        GFXStorage::ID IDTransCBuf_;
+    };
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
         Scene& scene, const ChiliWindow& wnd
@@ -64,7 +85,7 @@ public:
             },
             .IDs = { IDVertexShader_, IDPixelShader_,
                 IDVertexBuffer_, IDIndexBuffer_, IDTopology_,
-                IDViewport_, IDTransform_, IDColor_
+                IDViewport_, IDTransformCBuf_, IDColor_
             }
         };
     }
@@ -78,7 +99,6 @@ public:
     }
 
 private:
-    DrawContextIndexed drawContext_;
     GFXPipeline pipeline_;
     Scene* pScene_;
     GFXStorage::ID IDVertexShader_;
@@ -87,8 +107,14 @@ private:
     GFXStorage::ID IDIndexBuffer_;
     GFXStorage::ID IDTopology_;
     GFXStorage::ID IDViewport_;
-    GFXStorage::ID IDTransform_;
+    GFXStorage::ID IDTransformCBuf_;
     GFXStorage::ID IDColor_;
+    // draw context is here to guarantee
+    // it is initalized at the last.
+    // since draw context may use other member data,
+    // to protect the program from accessing unitialized data,
+    // sacrifice memory efficiency.
+    MyDrawContext drawContext_;
 };
 
 template<>
@@ -136,7 +162,7 @@ public:
     friend class Loader<Box>;
 
     Entity() = default;
-    Entity(const Box& box) noexcept
+    Entity(const Box& box)
         : box_(box), dc_(), ic_() {}
 
     void update(milliseconds elapsed) override;
@@ -148,7 +174,11 @@ public:
     void ctInputComponent(const MousePointConverter& converter,
         const AppMousePoint& initialPos
     );
-    void ctTransformComponent();
+    void ctTransformComponent( Distribution& distRadius,
+        Distribution& distCTP,  // chi, theta, phi
+        Distribution& distDeltaCTP, // chi, theta, phi
+        Distribution& distDeltaRTY   // roll, yaw, pitch
+    );
 
     Loader<Box> loader() const noexcept;
 
@@ -171,7 +201,7 @@ private:
     Box box_;
     std::shared_ptr< DrawComponent<Box> > dc_;
     std::shared_ptr< MouseInputComponent<Box> > ic_;
-    std::shared_ptr< BasicTransformComponent > tc_;
+    std::shared_ptr< GTransformComponent > tc_;
 };
 
 template<>

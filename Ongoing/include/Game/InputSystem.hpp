@@ -158,7 +158,7 @@ public:
     }
 
     void update() {
-        if (!pMouse_.has_value()) {
+        if (!pMouse_.has_value() || !ic_) {
             return;
         }
 

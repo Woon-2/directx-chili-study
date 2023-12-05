@@ -67,6 +67,7 @@ target_sources(chili PRIVATE
     src/Game/Game.cpp
     src/Game/InputSystem.cpp
     src/Game/Renderer.cpp
+    src/Game/GTransformComponent.cpp
     include/Game/Game.hpp
     include/Game/Box.hpp
     include/Game/Entity.hpp
@@ -78,6 +79,7 @@ target_sources(chili PRIVATE
     include/Game/RenderDesc.hpp
     include/Game/Transform.hpp
     include/Game/Chrono.hpp
+    include/Game/GTransformComponent.hpp
 )
 
 # GFX sources

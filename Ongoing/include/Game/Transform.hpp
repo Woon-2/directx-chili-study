@@ -62,12 +62,20 @@ public:
         local_ *= trans;
     }
 
+    void setLocal(const Transform trans) noexcept {
+        local_ = trans;
+    }
+
     const Transform local() const noexcept {
         return local_;
     }
 
     void adjustGlobal(const Transform trans) noexcept {
         global_ *= trans;
+    }
+
+    void setGlobal(const Transform trans) noexcept {
+        global_ = trans;
     }
 
     const Transform global() const noexcept {

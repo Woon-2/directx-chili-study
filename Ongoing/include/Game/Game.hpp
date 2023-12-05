@@ -28,6 +28,14 @@ public:
     void render();
 
 private:
+    void createObjects(std::size_t n, const ChiliWindow& wnd,
+        Graphics& gfx, Keyboard<MyChar>& kbd, Mouse& mouse
+    );
+    template <class T, class ... Args>
+    void createConcreteObject( const ChiliWindow& wnd, Graphics& gfx,
+        Keyboard<MyChar>& kbd, Mouse& mouse, Args&& ... args
+    );
+
     Scene scene_;
     Renderer renderer_;
     InputSystem<MyChar> inputSystem_;
