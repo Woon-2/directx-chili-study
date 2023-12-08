@@ -266,6 +266,8 @@ PRIVATE
     Utility::timer
     Utility::aconcepts
     Utility::aranges
+    Utility::onehot_encode
+    Utility::enum_util
     Resource::resource
     woon2cache::LRUCache
     d3d11.lib

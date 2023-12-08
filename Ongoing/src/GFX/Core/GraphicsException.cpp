@@ -32,6 +32,8 @@ const char* GraphicsException::what() const noexcept
     oss << "[Error Code] " << errorCode() << '\n'
         << "[Description] " << errorStr() << '\n';
 
+    oss << metaStr() << '\n';
+
     if (!emptyInfo()) {
         oss << "\n[Error Info] " << info() << '\n';
     }
@@ -42,7 +44,11 @@ const char* GraphicsException::what() const noexcept
     return whatBuffer_.c_str();
 }
 
-DXGIInfoMsgContainer<std::string> BasicDXGIDebugLogger::peekMessages() const {
+DXGIInfoMsgContainer<std::string> BasicDXGIDebugLogger::peekMessages(
+    SeverityFlags severityFlags
+) const {
+    auto f = ScopedSeverityFilter( pDXGIInfoQueue_.Get(), severityFlags );
+
     auto ret = DXGIInfoMsgContainer<std::string>();
     auto nMsgs = pDXGIInfoQueue_->GetNumStoredMessages(DXGI_DEBUG_ALL);
     ret.reserve(nMsgs);
@@ -69,8 +75,10 @@ DXGIInfoMsgContainer<std::string> BasicDXGIDebugLogger::peekMessages() const {
     return ret;
 }
 
-DXGIInfoMsgContainer<std::string> BasicDXGIDebugLogger::getMessages() {
-    auto ret = peekMessages();
+DXGIInfoMsgContainer<std::string> BasicDXGIDebugLogger::getMessages(
+    SeverityFlags severityFlags
+) {
+    auto ret = peekMessages(severityFlags);
     clear();
     return ret;
 }

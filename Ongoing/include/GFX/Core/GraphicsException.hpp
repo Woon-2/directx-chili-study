@@ -9,6 +9,14 @@
 #include "GraphicsNamespaces.hpp"
 
 #include <string>
+#include <bitset>
+#include <vector>
+#include <ranges>
+#include <concepts>
+#include <type_traits>
+
+#include "OneHotEncode.hpp"
+#include "EnumUtil.hpp"
 
 #define GFX_EXCEPT_NOINFO(hr) GraphicsException(__LINE__, __FILE__, (hr))
 #define GFX_THROW_FAILED_NOINFO(hrcall) \
@@ -32,10 +40,16 @@
         throw GFX_EXCEPT(hr)
 #define GFX_THROW_FAILED_VOID(voidcall) \
     [&]() {  \
-        auto __LoggedMessageSize = getLogger().size();    \
+        auto __LoggedMessageSize = getLogger().size(    \
+            DXGIDebugLogSeverity::Error | DXGIDebugLogSeverity::Corruption    \
+        );    \
         (voidcall); \
-        if ( getLogger().size() != __LoggedMessageSize )   \
+        if ( getLogger().size(  \
+                DXGIDebugLogSeverity::Error | DXGIDebugLogSeverity::Corruption  \
+            ) != __LoggedMessageSize    \
+        ) { \
             throw GFX_EXCEPT_VOID();    \
+        }   \
     }()
 #define GFX_CLEAR_LOG() getLogger().clear()
 #endif  // NDEBUG
@@ -78,7 +92,67 @@ private:
 };
 
 #ifndef NDEBUG
+
+enum class DXGIDebugLogSeverity {
+    ONEHOT_ENCODE(Warning, Error, Corruption)
+};
+
+DEFINE_ENUM_LOGICAL_OP_ALL(DXGIDebugLogSeverity)
+DEFINE_ENUM_COMPARE_OP_ALL(DXGIDebugLogSeverity)
+
 class BasicDXGIDebugLogger {
+public:
+    using SeverityFlags = std::bitset<3>;
+    using Severity = DXGIDebugLogSeverity;
+
+private:
+    class ScopedSeverityFilter {
+    public:
+        ScopedSeverityFilter( IDXGIInfoQueue* pInfoQueue, SeverityFlags flags )
+            : pDXGIInfoQueue_(pInfoQueue) {
+            auto allowedSeverities = std::vector<
+                DXGI_INFO_QUEUE_MESSAGE_SEVERITY
+            >();
+
+            if ( flags.to_ulong() | Severity::Warning ) {
+                allowedSeverities.push_back(
+                    DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING
+                );
+            }
+
+            if ( flags.to_ulong() | Severity::Error ) {
+                allowedSeverities.push_back(
+                    DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR
+                );
+            }
+
+            if ( flags.to_ulong() | Severity::Corruption ) {
+                allowedSeverities.push_back(
+                    DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION
+                );
+            }
+
+            auto filter = DXGI_INFO_QUEUE_FILTER{
+                .AllowList = DXGI_INFO_QUEUE_FILTER_DESC{
+                    .NumSeverities = static_cast<UINT>( allowedSeverities.size() ),
+                    .pSeverityList = allowedSeverities.data()
+                },
+                .DenyList = DXGI_INFO_QUEUE_FILTER_DESC{}
+            };
+
+            pDXGIInfoQueue_->PushRetrievalFilter(
+                DXGI_DEBUG_ALL, &filter
+            );
+        }
+
+        ~ScopedSeverityFilter() {
+            pDXGIInfoQueue_->PopRetrievalFilter(DXGI_DEBUG_ALL);
+        }
+
+    private:
+        IDXGIInfoQueue* pDXGIInfoQueue_;
+    };
+
 public:
     BasicDXGIDebugLogger(const BasicDXGIDebugLogger&) = default;
     BasicDXGIDebugLogger& operator=(const BasicDXGIDebugLogger&) = default;
@@ -90,16 +164,28 @@ public:
         pDXGIInfoQueue_->ClearStoredMessages(DXGI_DEBUG_ALL);
     }
 
-    std::size_t size() const noexcept {
-        return pDXGIInfoQueue_->GetNumStoredMessages(DXGI_DEBUG_ALL);
+    std::size_t size(SeverityFlags severityFlags
+        = Severity::Warning | Severity::Error | Severity::Corruption
+    ) const noexcept {
+        auto f = ScopedSeverityFilter( pDXGIInfoQueue_.Get(), severityFlags );
+        return pDXGIInfoQueue_->GetNumStoredMessagesAllowedByRetrievalFilters(
+            DXGI_DEBUG_ALL
+        );
     }
 
-    bool empty() const noexcept {
+    bool empty(SeverityFlags severityFlags
+        = Severity::Warning | Severity::Error | Severity::Corruption
+    ) const noexcept {
         return size() == 0u;
     }
 
-    DXGIInfoMsgContainer<std::string> peekMessages() const;
-    DXGIInfoMsgContainer<std::string> getMessages();
+    DXGIInfoMsgContainer<std::string> peekMessages( SeverityFlags severityFlags
+        = Severity::Warning | Severity::Error | Severity::Corruption
+    ) const;
+    DXGIInfoMsgContainer<std::string> getMessages( SeverityFlags severityFlags
+        = Severity::Warning | Severity::Error | Severity::Corruption
+    );
+
     friend BasicDXGIDebugLogger& getLogger();
 
 private:
@@ -110,7 +196,6 @@ private:
 };
 
 BasicDXGIDebugLogger& getLogger();
-
 #endif  // NDEBUG
 
 #endif  // __GraphicsException
