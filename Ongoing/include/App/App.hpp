@@ -29,7 +29,7 @@ public:
     }
 
     void render() {
-        gfx_.clear(1.f, 1.f, 1.f);
+        gfx_.clear(0.f, 0.f, 0.f);
         game_.render();
         gfx_.present();
     }

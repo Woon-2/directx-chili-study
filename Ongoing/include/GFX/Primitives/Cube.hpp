@@ -1,5 +1,5 @@
-#ifndef __Cube
-#define __Cube
+#ifndef __PCube
+#define __PCube
 
 #include "GFX/Core/GFXFactory.hpp"
 #include "GFX/PipelineObjects/IA.hpp"
@@ -8,6 +8,8 @@
 #include <ranges>
 #include <iterator>
 #include <algorithm>
+
+namespace Primitives {
 
 struct Cube {
     using MyVertex = GFXVertex;
@@ -20,6 +22,10 @@ struct Cube {
             : VertexBuffer<MyVertex>( factory,
                 Cube::modelPositions< std::vector<MyVertex> >()
             ) {}
+
+        static constexpr std::size_t size() {
+            return 8u;
+        }
     };
 
     class CubeIndexBuffer : public IndexBuffer<MyIndex> {
@@ -42,7 +48,7 @@ struct Cube {
         VertexPosContainer ret;
         auto out = std::back_inserter(ret);
 
-        constexpr float side = 0.5f;
+        static constexpr auto side = 0.5f;
 
 		out = pos_type( -side,-side,-side ); // 0
 		out = pos_type( side,-side,-side ); // 1
@@ -75,4 +81,6 @@ struct Cube {
     }
 };
 
-#endif  // __Cube
+}   // namespace Primitives
+
+#endif  // __PCube

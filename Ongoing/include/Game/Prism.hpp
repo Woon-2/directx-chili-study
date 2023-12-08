@@ -1,27 +1,27 @@
-#ifndef __Box
-#define __Box
+#ifndef __Prism
+#define __Prism
 
 #include "PrimitiveEntity.hpp"
 #include "Scene.hpp"
 #include "DrawComponent.hpp"
 
-#include "GFX/Primitives/Cube.hpp"
+#include "GFX/Primitives/Prism.hpp"
 #include "App/ChiliWindow.hpp"
 #include "GFX/Core/GFXFactory.hpp"
 
-class Box {
+class Prism {
 
 };
 
 template <>
-class DrawComponent<Box> : public PEDrawComponent<
-    Box, Primitives::Cube::CubeVertexBuffer,
-    Primitives::Cube::CubeIndexBuffer
+class DrawComponent<Prism> : public PEDrawComponent<
+    Prism, Primitives::Prism::PrismVertexBuffer,
+    Primitives::Prism::PrismIndexBuffer
 > {
 public:
     using MyBase = PEDrawComponent<
-        Box, Primitives::Cube::CubeVertexBuffer,
-        Primitives::Cube::CubeIndexBuffer
+        Prism, Primitives::Prism::PrismVertexBuffer,
+        Primitives::Prism::PrismIndexBuffer
     >;
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
@@ -31,8 +31,8 @@ public:
 };
 
 template<>
-class Entity<Box> : public PrimitiveEntity<Box> {
+class Entity<Prism> : public PrimitiveEntity<Prism> {
 
 };
 
-#endif  // __Box
+#endif  // __Prism

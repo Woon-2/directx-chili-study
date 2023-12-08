@@ -1,27 +1,27 @@
-#ifndef __Box
-#define __Box
+#ifndef __Cone
+#define __Cone
 
 #include "PrimitiveEntity.hpp"
 #include "Scene.hpp"
 #include "DrawComponent.hpp"
 
-#include "GFX/Primitives/Cube.hpp"
+#include "GFX/Primitives/Cone.hpp"
 #include "App/ChiliWindow.hpp"
 #include "GFX/Core/GFXFactory.hpp"
 
-class Box {
+class Cone {
 
 };
 
 template <>
-class DrawComponent<Box> : public PEDrawComponent<
-    Box, Primitives::Cube::CubeVertexBuffer,
-    Primitives::Cube::CubeIndexBuffer
+class DrawComponent<Cone> : public PEDrawComponent<
+    Cone, Primitives::Cone::ConeVertexBuffer,
+    Primitives::Cone::ConeIndexBuffer
 > {
 public:
     using MyBase = PEDrawComponent<
-        Box, Primitives::Cube::CubeVertexBuffer,
-        Primitives::Cube::CubeIndexBuffer
+        Cone, Primitives::Cone::ConeVertexBuffer,
+        Primitives::Cone::ConeIndexBuffer
     >;
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
@@ -31,8 +31,8 @@ public:
 };
 
 template<>
-class Entity<Box> : public PrimitiveEntity<Box> {
+class Entity<Cone> : public PrimitiveEntity<Cone> {
 
 };
 
-#endif  // __Box
+#endif  // __Cone
