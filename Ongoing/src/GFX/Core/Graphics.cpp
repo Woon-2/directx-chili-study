@@ -6,6 +6,8 @@
 #include "GFX/Core/GraphicsNamespaces.hpp"
 #include "GFX/Core/GraphicsException.hpp"
 
+#include <cassert>
+
 Graphics::Graphics(MyWindow& wnd)
     : wnd_(wnd), storage_(), factory_(), pipeline_(),
     swapchain_(nullptr), IDAppRenderTarget_() {
@@ -38,6 +40,14 @@ void Graphics::present() {
             factory_.device()->GetDeviceRemovedReason() 
         );
     }
+
+    // https://devblogs.microsoft.com/directx/dxgi-flip-model/
+    // When using flip swap-effect model,
+    // After Present calls,
+    // the back buffer needs to explicitly be re-bound
+    // to the D3D11 immediate context before it can be used again.
+    assert( storage_.get(IDAppRenderTarget_).has_value() );
+    pipeline_.bind( storage_.get(IDAppRenderTarget_).value() );
 }
 
 void Graphics::clear(float r, float g, float b) {

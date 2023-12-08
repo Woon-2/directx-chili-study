@@ -51,10 +51,10 @@ private:
                 .Quality = 0
             },
             .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
-            .BufferCount = 1,
+            .BufferCount = 2,
             .OutputWindow = wnd_.nativeHandle(),
             .Windowed = true,
-            .SwapEffect = DXGI_SWAP_EFFECT_DISCARD,
+            .SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
             .Flags = 0
         };
     }
