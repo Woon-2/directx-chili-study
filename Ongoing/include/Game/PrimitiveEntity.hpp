@@ -134,20 +134,29 @@ public:
     using MyViewport = PEViewport;
     using MyDrawContext = PEDrawContext;
 
+    template <class ... TesselationFactors>
     PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
-        Scene& scene, const ChiliWindow& wnd
+        Scene& scene, const ChiliWindow& wnd,
+        TesselationFactors&& ... tesselationFactors
     ) : pipeline_(pipeline),
         pScene_(&scene),
         IDVertexShader_( scene.storage().cache<MyVertexShader>( factory ) ),
         IDPixelShader_( scene.storage().cache<MyPixelShader>( factory ) ),
-        IDVertexBuffer_( scene.storage().cache<MyVertexBuffer>( factory ) ),
-        IDIndexBuffer_( scene.storage().cache<MyIndexBuffer>( factory ) ),
+        IDVertexBuffer_( scene.storage().load<MyVertexBuffer>(
+            factory, tesselationFactors...
+        ) ),
+        IDIndexBuffer_( scene.storage().load<MyIndexBuffer>(
+            factory, tesselationFactors...
+        ) ),
         IDTopology_( scene.storage().cache<MyTopology>() ),
         IDViewport_( scene.storage().cache<MyViewport>( wnd.client() ) ),
         IDTransformCBuf_( scene.storage().cache<MyTransformCBuf>( factory ) ),
         IDColor_( scene.storage().cache<MyColorBuffer>( factory ) ),
-        drawContext_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0,
-            scene.storage(), IDTransformCBuf_
+        drawContext_(
+            static_cast<UINT>( MyIndexBuffer::size(
+                std::forward<TesselationFactors>(tesselationFactors)...
+            ) ),
+            0u, 0, scene.storage(), IDTransformCBuf_
         ) {}
 
     void update(const Transform trans) {
@@ -213,10 +222,14 @@ public:
     }
 
     // ct stands for construct
+    template <class ... TesselationFactors>
     void ctDrawComponent(GFXFactory factory, GFXPipeline pipeline,
-        Scene& scene, const ChiliWindow& wnd
+        Scene& scene, const ChiliWindow& wnd,
+        TesselationFactors&& ... tesselationFactors
     ) {
-        dc_.reset( new DrawComponent<T>(factory, pipeline, scene, wnd) );
+        dc_.reset( new DrawComponent<T>(factory, pipeline, scene, wnd,
+            std::forward<TesselationFactors>(tesselationFactors)...
+        ) );
     }
 
     void ctInputComponent(const MousePointConverter& converter,

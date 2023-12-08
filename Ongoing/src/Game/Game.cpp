@@ -50,6 +50,7 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
     };
 
     auto distType = std::uniform_int_distribution<>(0, SIZE - 1);
+    auto distTesselation = std::uniform_int_distribution<std::size_t>(3u, 48u);
 
     for (auto i = decltype(n)(0); i < n; ++i)  {
 
@@ -59,19 +60,27 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
             break;
 
         case MAKE_CONE:
-            createConcreteObject<Cone>(wnd, gfx, kbd, mouse);
+            createConcreteObject<Cone>(wnd, gfx, kbd, mouse,
+                distTesselation(rng)
+            );
             break;
 
         case MAKE_PLANE:
-            createConcreteObject<Plane>(wnd, gfx, kbd, mouse);
+            createConcreteObject<Plane>(wnd, gfx, kbd, mouse,
+                distTesselation(rng), distTesselation(rng)
+            );
             break;
 
         case MAKE_PRISM:
-            createConcreteObject<Prism>(wnd, gfx, kbd, mouse);
+            createConcreteObject<Prism>(wnd, gfx, kbd, mouse,
+                distTesselation(rng)
+            );
             break;
 
         case MAKE_SPHERE:
-            createConcreteObject<Sphere>(wnd, gfx, kbd, mouse);
+            createConcreteObject<Sphere>(wnd, gfx, kbd, mouse,
+                distTesselation(rng), distTesselation(rng)
+            );
             break;;
 
         default:
@@ -81,9 +90,10 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
     }
 }
 
-template <class T, class ... Args>
+template <class T, class ... TesselationFactors>
 void Game::createConcreteObject( const ChiliWindow& wnd, Graphics& gfx,
-    Keyboard<MyChar>& kbd, Mouse& mouse, Args&& ... args
+    Keyboard<MyChar>& kbd, Mouse& mouse,
+    TesselationFactors&& ... tesselationFactors
 ) {
     static constexpr auto pi = 3.14159f;
 
@@ -92,9 +102,11 @@ void Game::createConcreteObject( const ChiliWindow& wnd, Graphics& gfx,
     auto distDeltaCTP = Distribution(0.03f * pi, 0.01f * pi);
     auto distDeltaRTY = Distribution(0.5f * pi, 0.2f * pi);
 
-    auto obj = std::make_unique<Entity<T>>( std::forward<Args>(args)... );
+    auto obj = std::make_unique<Entity<T>>();
 
-    obj->ctDrawComponent(gfx.factory(), gfx.pipeline(), scene_, wnd);
+    obj->ctDrawComponent(gfx.factory(), gfx.pipeline(), scene_, wnd,
+        std::forward<TesselationFactors>(tesselationFactors)...
+    );
     obj->ctTransformComponent(distRadius, distCTP, distDeltaCTP, distDeltaRTY);
 
     obj->loader().loadAt(scene_);

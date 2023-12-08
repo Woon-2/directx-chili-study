@@ -28,7 +28,7 @@ struct Cone {
         ConeVertexBuffer( GFXFactory factory,
             std::size_t nTesselation = defNTesselation
         ) : VertexBuffer<MyVertex>( factory,
-                Cone::modelPositions< std::vector<MyVertex> >( nTesselation )
+                Cone::modelPositions< std::vector<MyVertex> >(nTesselation)
             ) {}
             
         static constexpr std::size_t size(

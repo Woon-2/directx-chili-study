@@ -25,8 +25,12 @@ public:
     >;
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
-        Scene& scene, const ChiliWindow& wnd
-    ) : MyBase(factory, pipeline, scene, wnd) {}
+        Scene& scene, const ChiliWindow& wnd,
+        std::size_t nTesselationX = Primitives::Plane::defNTesselation,
+        std::size_t nTesselationY = Primitives::Plane::defNTesselation
+    ) : MyBase(factory, pipeline, scene, wnd,
+        nTesselationX, nTesselationY
+    ) {}
 
 };
 

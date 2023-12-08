@@ -13,6 +13,7 @@ class Sphere {
 
 };
 
+
 template <>
 class DrawComponent<Sphere> : public PEDrawComponent<
     Sphere, Primitives::Sphere::SphereVertexBuffer,
@@ -25,8 +26,12 @@ public:
     >;
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
-        Scene& scene, const ChiliWindow& wnd
-    ) : MyBase(factory, pipeline, scene, wnd) {}
+        Scene& scene, const ChiliWindow& wnd,
+        std::size_t nTesselationLat = Primitives::Sphere::defNTesselation,
+        std::size_t nTesselationLong = Primitives::Sphere::defNTesselation
+    ) : MyBase(factory, pipeline, scene, wnd,
+        nTesselationLat, nTesselationLong
+    ) {}
 
 };
 
