@@ -3,7 +3,7 @@
 #include "GFX/Core/GraphicsException.hpp"
 
 void GFXSwapChain::present() {
-    if ( auto hr = pSwapChain_->Present(2u, 0u); FAILED(hr) ) {
+    if ( auto hr = pSwapChain_->Present(1u, 0u); FAILED(hr) ) {
         if (hr == DXGI_ERROR_DEVICE_REMOVED) {
             setDeviceRemoved(true);
         }
