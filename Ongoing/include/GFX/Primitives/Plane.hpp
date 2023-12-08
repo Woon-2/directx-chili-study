@@ -55,7 +55,7 @@ struct Plane {
             std::size_t nTesselationX = defNTesselation,
             std::size_t nTesselationY = defNTesselation
         ) {
-            return (nTesselationX + 1) * (nTesselationY + 1) * 6;
+            return nTesselationX * nTesselationY * 6;
         }
     };
 
