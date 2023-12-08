@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.12.06 LANGUAGES CXX)
+project(POngoing VERSION 2023.12.08 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -64,7 +64,6 @@ target_sources(chili PRIVATE
 # Game Layer sources
 target_sources(chili PRIVATE
     src/Game/PrimitiveEntity.cpp
-    src/Game/Box.cpp
     src/Game/Game.cpp
     src/Game/InputSystem.cpp
     src/Game/Renderer.cpp
@@ -72,6 +71,9 @@ target_sources(chili PRIVATE
     include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp
     include/Game/Box.hpp
+    include/Game/Cone.hpp
+    include/Game/Plane.hpp
+    include/Game/Prism.hpp
     include/Game/Entity.hpp
     include/Game/Renderer.hpp
     include/Game/Scene.hpp

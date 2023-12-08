@@ -9,7 +9,7 @@ void GTransformComponent::update(milliseconds elapsed) {
     pitch_ += dPitch_ * elapsedCnt;
     yaw_ += dYaw_ * elapsedCnt;
     chi_ += dChi_ * elapsedCnt;
-    theta_ += dRoll_ * elapsedCnt;
+    theta_ += dTheta_ * elapsedCnt;
     phi_ += dPhi_ * elapsedCnt;
 
     setLocal(
