@@ -12,8 +12,6 @@
 #include <iterator>
 #include <algorithm>
 
-#include <cassert>
-
 namespace Primitives {
 
 struct Prism {
@@ -58,9 +56,12 @@ struct Prism {
     static VertexPosContainer modelPositions(
         std::size_t nTesselation = defNTesselation
     ) {
-        // Base aspect must have area,
-        // when nTesselation is 3, it means base aspect is a triangle.
-        assert( nTesselation >= 3 );
+        if (nTesselation < 3) {
+            throw GFX_EXCEPT_CUSTOM(
+                "Prism is not definable with nTesselation value less than 3.\n"
+                "(When nTesselation is 3, it means base aspect is a triangle.)\n"
+            );
+        }
 
         constexpr auto pi = 3.14159f;
         constexpr auto radius = 1.f;
@@ -107,9 +108,12 @@ struct Prism {
     static VertexIdxContainer modelIndices(
         std::size_t nTesselation = defNTesselation
     ) {
-        // Base aspect must have area,
-        // when nTesselation is 3, it means base aspect is a triangle.
-        assert( nTesselation >= 3 );
+        if (nTesselation < 3) {
+            throw GFX_EXCEPT_CUSTOM(
+                "Prism is not definable with nTesselation value less than 3.\n"
+                "(When nTesselation is 3, it means base aspect is a triangle.)\n"
+            );
+        }
 
         static constexpr auto pi = 3.14159f;
         using idx_type = typename VertexIdxContainer::value_type;

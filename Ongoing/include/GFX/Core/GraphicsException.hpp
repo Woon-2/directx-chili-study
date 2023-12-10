@@ -28,6 +28,7 @@
 #define GFX_DEVICE_REMOVED_EXCEPT(hr) DeviceRemovedException(__LINE__, __FILE__, (hr))
 #define GFX_EXCEPT(hr) GFX_EXCEPT_NOINFO((hr))
 #define GFX_EXCEPT_VOID() GFX_EXCEPT(E_INVALIDARG)
+#define GFX_EXCEPT_CUSTOM(description)
 #define GFX_THROW_FAILED(hrcall) GFX_THROW_FAILED_NOINFO((hrcall))
 #define GFX_THROW_FAILED_VOID(voidcall) (voidcall)
 #else
@@ -35,6 +36,9 @@
     DeviceRemovedException(__LINE__, __FILE__, (hr), getLogger().getMessages())
 #define GFX_EXCEPT(hr) GraphicsException(__LINE__, __FILE__, (hr), getLogger().getMessages())
 #define GFX_EXCEPT_VOID() GFX_EXCEPT(E_INVALIDARG)
+#define GFX_EXCEPT_CUSTOM(description) GraphicsException(__LINE__, __FILE__, \
+        E_INVALIDARG, DXGIInfoMsgContainer<std::string>(1, description) \
+    )
 #define GFX_THROW_FAILED(hrcall) \
     if ( HRESULT hr = (hrcall); hr < 0 )  \
         throw GFX_EXCEPT(hr)

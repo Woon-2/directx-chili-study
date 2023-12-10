@@ -9,8 +9,6 @@
 #include <iterator>
 #include <algorithm>
 
-#include <cassert>
-
 namespace Primitives {
 
 struct Plane {
@@ -64,8 +62,12 @@ struct Plane {
         std::size_t nTesselationX = defNTesselation,
         std::size_t nTesselationY = defNTesselation
     ) {
-        assert(nTesselationX >= 1);
-        assert(nTesselationY >= 1);
+        if (nTesselationX < 2 || nTesselationY < 2) {
+            throw GFX_EXCEPT_CUSTOM(
+                "Plane is not definable with nTesselation less than 2.\n"
+                "(Setting nTesselation to n means a side of plane contains n points.)\n"
+            );
+        }
 
         using pos_type = typename VertexPosContainer::value_type;
 
@@ -100,8 +102,12 @@ struct Plane {
         std::size_t nTesselationX = defNTesselation,
         std::size_t nTesselationY = defNTesselation
     ) {
-        assert(nTesselationX >= 1);
-        assert(nTesselationY >= 1);
+        if (nTesselationX < 2 || nTesselationY < 2) {
+            throw GFX_EXCEPT_CUSTOM(
+                "Plane is not definable with nTesselation less than 2.\n"
+                "(Setting nTesselation to n means a side of plane contains n points.)\n"
+            );
+        }
 
         using idx_type = typename VertexIdxContainer::value_type;
 

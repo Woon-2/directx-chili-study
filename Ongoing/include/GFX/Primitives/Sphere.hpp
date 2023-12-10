@@ -12,8 +12,6 @@
 #include <iterator>
 #include <algorithm>
 
-#include <cassert>
-
 namespace Primitives {
 
 struct Sphere {
@@ -67,10 +65,12 @@ struct Sphere {
         std::size_t nTesselationLat = defNTesselation,
         std::size_t nTesselationLong = defNTesselation
     ) {
-        // Base aspect must have area,
-        // when nTesselation is 3, it means base aspect is a triangle.
-        assert(nTesselationLat >= 3);
-        assert(nTesselationLong >= 3);
+        if (nTesselationLat < 3 || nTesselationLong < 3) {
+            throw GFX_EXCEPT_CUSTOM(
+                "Sphere is not definable with nTesselation value less than 3.\n"
+                "(When nTesselation is 3, it means base aspect is a triangle.)\n"
+            );
+        }
 
         constexpr auto pi = 3.14159f;
         constexpr float radius = 1.0f;
@@ -117,10 +117,12 @@ struct Sphere {
          std::size_t nTesselationLat = defNTesselation,
         std::size_t nTesselationLong = defNTesselation
     ) {
-        // Base aspect must have area,
-        // when nTesselation is 3, it means base aspect is a triangle.
-        assert(nTesselationLat >= 3);
-        assert(nTesselationLong >= 3);
+        if (nTesselationLat < 3 || nTesselationLong < 3) {
+            throw GFX_EXCEPT_CUSTOM(
+                "Sphere is not definable with nTesselation value less than 3.\n"
+                "(When nTesselation is 3, it means base aspect is a triangle.)\n"
+            );
+        }
 
         static constexpr auto pi = 3.14159f;
         using idx_type = typename VertexIdxContainer::value_type;

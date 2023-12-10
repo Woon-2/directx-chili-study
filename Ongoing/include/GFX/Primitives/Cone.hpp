@@ -6,13 +6,12 @@
 #include "GFX/PipelineObjects/Buffer.hpp"
 
 #include <DirectXMath.h>
+#include "GFX/Core/GraphicsException.hpp"
 #include "GFX/Core/GraphicsNamespaces.hpp"
 
 #include <ranges>
 #include <iterator>
 #include <algorithm>
-
-#include <cassert>
 
 namespace Primitives {
 
@@ -58,9 +57,12 @@ struct Cone {
     static VertexPosContainer modelPositions(
         std::size_t nTesselation = defNTesselation
     ) {
-        // Base aspect must have area,
-        // when nTesselation is 3, it means base aspect is a triangle.
-        assert( nTesselation >= 3 );
+        if (nTesselation < 3) {
+            throw GFX_EXCEPT_CUSTOM(
+                "Cone is not definable with nTesselation value less than 3.\n"
+                "(When nTesselation is 3, it means base aspect is a triangle.)\n"
+            );
+        }
 
         static constexpr auto pi = 3.14159f;
         using pos_type = typename VertexPosContainer::value_type;
@@ -98,9 +100,12 @@ struct Cone {
     static VertexIdxContainer modelIndices(
         std::size_t nTesselation = defNTesselation
     ) {
-        // Base aspect must have area,
-        // when nTesselation is 3, it means base aspect is a triangle.
-        assert( nTesselation >= 3 );
+        if (nTesselation < 3) {
+            throw GFX_EXCEPT_CUSTOM(
+                "Cone is not definable with nTesselation value less than 3.\n"
+                "(When nTesselation is 3, it means base aspect is a triangle.)\n"
+            );
+        }
 
         static constexpr auto pi = 3.14159f;
         using idx_type = typename VertexIdxContainer::value_type;
