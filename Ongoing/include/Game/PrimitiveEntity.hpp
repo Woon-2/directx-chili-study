@@ -3,7 +3,7 @@
 
 #include "Entity.hpp"
 #include "Scene.hpp"
-#include "RenderDesc.hpp"
+#include "RenderObjectDesc.hpp"
 #include "GTransformComponent.hpp"
 #include "InputComponent.hpp"
 #include "InputSystem.hpp"
@@ -62,27 +62,6 @@ private:
     static std::vector<PEFaceColorData> initialColors();
 };
 
-class PEVertexShader : public VertexShader {
-public:
-    PEVertexShader() = default;
-    PEVertexShader(GFXFactory factory)
-        : VertexShader(factory, inputElemDescs(),
-            compiledShaderPath/L"VertexShader.cso"
-        ) {}
-
-private:
-    static std::vector<D3D11_INPUT_ELEMENT_DESC> inputElemDescs();
-};
-
-class PEPixelShader : public PixelShader {
-public:
-    PEPixelShader() = default;
-    PEPixelShader(GFXFactory factory)
-        : PixelShader( factory, compiledShaderPath/L"PixelShader.cso" ) {}
-
-private:
-};
-
 class PEViewport : public Viewport {
 public:
     PEViewport(const Win32::Client& client)
@@ -129,8 +108,6 @@ public:
     using MyTopology = PETopology;
     using MyTransformCBuf = PETransformCBuf;
     using MyColorBuffer = PEColorCBuf;
-    using MyVertexShader = PEVertexShader;
-    using MyPixelShader = PEPixelShader;
     using MyViewport = PEViewport;
     using MyDrawContext = PEDrawContext;
 
@@ -140,8 +117,6 @@ public:
         TesselationFactors&& ... tesselationFactors
     ) : pipeline_(pipeline),
         pScene_(&scene),
-        IDVertexShader_( scene.storage().cache<MyVertexShader>( factory ) ),
-        IDPixelShader_( scene.storage().cache<MyPixelShader>( factory ) ),
         IDVertexBuffer_( scene.storage().load<MyVertexBuffer>(
             factory, tesselationFactors...
         ) ),
@@ -163,15 +138,13 @@ public:
         drawContext_.update(trans);
     }
 
-    const RenderDesc renderDesc() const override {
-        return RenderDesc{
+    const RenderObjectDesc renderObjectDesc() const override {
+        return RenderObjectDesc{
             .header = {
-                .typeID = typeid(T),
-                .IDVertexShader = IDVertexShader_,
-                .IDPixelShader = IDPixelShader_,
-                .IDBuffer = IDVertexBuffer_
+                .IDBuffer = IDVertexBuffer_,
+                .IDType = typeid(T)
             },
-            .IDs = { IDVertexShader_, IDPixelShader_,
+            .IDs = {
                 IDVertexBuffer_, IDIndexBuffer_, IDTopology_,
                 IDViewport_, IDTransformCBuf_, IDColor_
             }
@@ -189,8 +162,6 @@ public:
 private:
     GFXPipeline pipeline_;
     Scene* pScene_;
-    GFXStorage::ID IDVertexShader_;
-    GFXStorage::ID IDPixelShader_;
     GFXStorage::ID IDVertexBuffer_;
     GFXStorage::ID IDIndexBuffer_;
     GFXStorage::ID IDTopology_;

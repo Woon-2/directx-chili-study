@@ -12,22 +12,14 @@
 
 #include "AdditionalRanges.hpp"
 
+#include <cassert>
+
 class Scene {
 public:
-    template <class T>
-    void addDrawComponent(T* pDC) {
-        pDCs_.push_back( std::shared_ptr<IDrawComponent>(pDC) );
-    }
-
     void addDrawComponent(std::shared_ptr<IDrawComponent> pDC) {
-        pDCs_.push_back( std::move(pDC) );
-    }
+        assert( std::ranges::find(pDCs_, pDC) == pDCs_.end() );
 
-    template <class RendererT>
-    void sortFor(const RendererT& renderer) {
-        std::ranges::sort(pDCs_, std::less<>{},
-            &IDrawComponent::renderDesc
-        );
+        pDCs_.push_back( std::move(pDC) );
     }
 
     GFXStorage& storage() noexcept {

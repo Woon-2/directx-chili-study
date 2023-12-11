@@ -10,13 +10,11 @@
 
 Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse
-) : scene_(), renderer_(), inputSystem_(kbd, mouse, wnd.client()),
-    timer_(), entities_() {
-    renderer_.linkPipeline(gfx.pipeline());
+) : scene_(), renderer_(gfx.pipeline()), rendererStorage_(),
+    inputSystem_(kbd, mouse, wnd.client()), timer_(), entities_() {
+    renderer_.sync(rendererStorage_, gfx.factory());
 
     createObjects(80u, wnd, gfx, kbd, mouse);
-
-    scene_.sortFor(renderer_);
 }
 
 void Game::update() {

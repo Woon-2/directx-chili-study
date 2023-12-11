@@ -23,20 +23,6 @@ std::vector<PEFaceColorData> PEColorCBuf::initialColors() {
     }};
 }
 
-std::vector<D3D11_INPUT_ELEMENT_DESC>
-PEVertexShader::inputElemDescs() {
-    return std::vector<D3D11_INPUT_ELEMENT_DESC>{
-        { .SemanticName = "Position",
-            .SemanticIndex = 0,
-            .Format = DXGI_FORMAT_R32G32B32_FLOAT,
-            .InputSlot = 0,
-            .AlignedByteOffset = 0,
-            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-            .InstanceDataStepRate = 0
-        }
-    };
-}
-
 void PEDrawContext::drawCall(GFXPipeline& pipeline) const {
     // first adopt transform
     assert( mappedStorage_->get(IDTransCBuf_).has_value() );

@@ -1,7 +1,7 @@
 #ifndef __DrawComponent
 #define __DrawComponent
 
-#include "RenderDesc.hpp"
+#include "RenderObjectDesc.hpp"
 
 #include "GFX/PipelineObjects/DrawContext.hpp"
 
@@ -9,13 +9,13 @@ class IDrawComponent {
 public:
     virtual ~IDrawComponent() {}
 
-    virtual const RenderDesc renderDesc() const = 0;
+    virtual const RenderObjectDesc renderObjectDesc() const = 0;
     virtual IDrawContext* drawContext() = 0;
     virtual const IDrawContext* drawContext() const = 0;
 
     friend auto operator<=>(const IDrawComponent& lhs,
         const IDrawComponent& rhs) {
-        return lhs.renderDesc() <=> rhs.renderDesc();
+        return lhs.renderObjectDesc() <=> rhs.renderObjectDesc();
     }
 };
 

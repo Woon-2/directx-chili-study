@@ -11,6 +11,7 @@
 #include "App/Keyboard.hpp"
 #include "App/Mouse.hpp"
 #include "GFX/Core/Graphics.hpp"
+#include "GFX/Core/GraphicsStorage.hpp"
 
 #include <memory>
 
@@ -37,7 +38,8 @@ private:
     );
 
     Scene scene_;
-    Renderer renderer_;
+    IndexedRenderer renderer_;
+    GFXStorage rendererStorage_;
     InputSystem<MyChar> inputSystem_;
     MyTimer timer_;
     std::vector< std::unique_ptr<IEntity> > entities_;

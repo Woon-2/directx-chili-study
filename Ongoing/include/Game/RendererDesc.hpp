@@ -1,5 +1,5 @@
-#ifndef __RenderDesc
-#define __RenderDesc
+#ifndef __RendererDesc
+#define __RendererDesc
 
 #include "GFX/Core/GraphicsStorage.hpp"
 
@@ -7,23 +7,22 @@
 #include <tuple>
 #include <unordered_set>
 
-struct RenderDesc {
+struct RendererDesc {
     struct Header {
-        std::type_index typeID;
         GFXStorage::ID IDVertexShader;
         GFXStorage::ID IDPixelShader;
-        GFXStorage::ID IDBuffer;
+        std::type_index IDType;
     };
 
     auto reflect() const noexcept {
         return std::tie(
             header.IDVertexShader,
             header.IDPixelShader,
-            header.typeID
+            header.IDType
         );
     }
 
-    auto operator<=>(const RenderDesc& rhs) const noexcept {
+    auto operator<=>(const RendererDesc& rhs) const noexcept {
         return reflect() <=> rhs.reflect();
     }
 
@@ -31,4 +30,4 @@ struct RenderDesc {
     std::unordered_set<GFXStorage::ID> IDs;
 };
 
-#endif  // __RenderDesc
+#endif  // __RendererDesc
