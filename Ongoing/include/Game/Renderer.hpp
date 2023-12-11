@@ -36,6 +36,7 @@ public:
         loadBindables(std::move(factory));
     }
 
+protected:
     GFXStorage& mappedStorage() noexcept {
         return *pStorage_;
     }
