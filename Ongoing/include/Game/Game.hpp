@@ -1,8 +1,7 @@
 #ifndef __Game
 #define __Game
 
-#include "Scene.hpp"
-#include "Renderer.hpp"
+#include "RendererSystem.hpp"
 #include "InputSystem.hpp"
 #include "Entity.hpp"
 #include "Timer.hpp"
@@ -37,8 +36,7 @@ private:
         Keyboard<MyChar>& kbd, Mouse& mouse, Args&& ... args
     );
 
-    Scene scene_;
-    IndexedRenderer renderer_;
+    RendererSystem rendererSystem_;
     GFXStorage rendererStorage_;
     InputSystem<MyChar> inputSystem_;
     MyTimer timer_;

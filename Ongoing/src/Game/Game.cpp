@@ -10,9 +10,14 @@
 
 Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse
-) : scene_(), renderer_(gfx.pipeline()), rendererStorage_(),
+) : rendererSystem_(), rendererStorage_(),
     inputSystem_(kbd, mouse, wnd.client()), timer_(), entities_() {
-    renderer_.sync(rendererStorage_, gfx.factory());
+    auto slotIndexedRender = rendererSystem_.addRenderer(
+        std::make_unique<IndexedRenderer>(gfx.pipeline())
+    );
+
+    rendererSystem_.renderer(slotIndexedRender)
+        .sync( rendererStorage_, gfx.factory() );
 
     createObjects(80u, wnd, gfx, kbd, mouse);
 }
@@ -32,7 +37,7 @@ void Game::update() {
 }
 
 void Game::render() {
-    renderer_.render(scene_);
+    rendererSystem_.render();
 }
 
 void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
@@ -102,12 +107,12 @@ void Game::createConcreteObject( const ChiliWindow& wnd, Graphics& gfx,
 
     auto obj = std::make_unique<Entity<T>>();
 
-    obj->ctDrawComponent(gfx.factory(), gfx.pipeline(), scene_, wnd,
+    obj->ctDrawComponent(gfx.factory(), gfx.pipeline(), rendererSystem_.scene(0), wnd,
         std::forward<TesselationFactors>(tesselationFactors)...
     );
     obj->ctTransformComponent(distRadius, distCTP, distDeltaCTP, distDeltaRTY);
 
-    obj->loader().loadAt(scene_);
+    obj->loader().loadAt(rendererSystem_.scene(0));
 
     entities_.push_back( std::move(obj) );
 }
