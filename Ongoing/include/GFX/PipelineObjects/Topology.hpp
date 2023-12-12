@@ -28,7 +28,7 @@ public:
     }
 
 private:
-    void bind(GFXPipeline& pipeline) override {
+    void bind(GFXPipeline& pipeline) override final {
         GFX_THROW_FAILED_VOID(
             pipeline.context()->IASetPrimitiveTopology(get())
         );

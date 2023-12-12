@@ -52,7 +52,7 @@ public:
     }
 
 private:
-    void bind(GFXPipeline& pipeline) override;
+    void bind(GFXPipeline& pipeline) override final;
 
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11VertexShader> pVertexShader_;
@@ -77,7 +77,7 @@ public:
         return byteCodeBlob()->GetBufferSize();
     }
 private:
-    void bind(GFXPipeline& pipeline) override;
+    void bind(GFXPipeline& pipeline) override final;
 
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11PixelShader> pPixelShader_;

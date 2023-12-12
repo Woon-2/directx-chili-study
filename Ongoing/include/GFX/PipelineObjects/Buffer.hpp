@@ -101,7 +101,7 @@ public:
         ) {}
 
 private:
-    void bind(GFXPipeline& pipeline) override {
+    void bind(GFXPipeline& pipeline) override final {
         const auto stride = static_cast<UINT>( sizeof(MyVertex) );
         const auto offset = static_cast<UINT>( 0u );
 
@@ -140,7 +140,7 @@ public:
         }
     ) {}
 private:
-    void bind(GFXPipeline& pipeline) override {
+    void bind(GFXPipeline& pipeline) override final {
         GFX_THROW_FAILED_VOID(
             pipeline.context()->IASetIndexBuffer(
                 data().Get(), indexFormat(), 0u
@@ -218,7 +218,7 @@ public:
     ), slot_(slot) {}
 
 private:
-    void bind(GFXPipeline& pipeline) override {
+    void bind(GFXPipeline& pipeline) override final {
         GFX_THROW_FAILED_VOID(
             pipeline.context()->VSSetConstantBuffers(
                 slot_, 1u, data().GetAddressOf()
@@ -243,7 +243,7 @@ public:
     ), slot_(slot) {}
 
 private:
-    void bind(GFXPipeline& pipeline) override {
+    void bind(GFXPipeline& pipeline) override final {
         GFX_THROW_FAILED_VOID(
             pipeline.context()->PSSetConstantBuffers(
                 slot_, 1u, data().GetAddressOf()

@@ -57,7 +57,7 @@ private:
     // defClearColor must be addressable, so it cannot be constexpr.
     static const dx::XMFLOAT4 defClearColor;
 
-    void bind(GFXPipeline& pipeline) override;
+    void bind(GFXPipeline& pipeline) override final;
 
     void linkPipeline(GFXPipeline pipeline) noexcept {
         pipeline_ = pipeline;
