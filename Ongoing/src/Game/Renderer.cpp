@@ -17,23 +17,21 @@ void Renderer::render(Scene& scene) {
         }
     );
 
-    std::ranges::for_each(scene.drawComponents(),
-        [&scene, this, prev = decltype(RenderObjectDesc::IDs)()](const auto& dc) mutable {
-        auto cur = std::move(dc.renderObjectDesc().IDs);
+    std::ranges::for_each( scene.drawComponents(),
+        [this, &scene](const auto& dc) mutable {
+            auto IDs = std::move(dc.renderObjectDesc().IDs);
 
-        std::ranges::for_each(cur,
-            [&](auto&& id) {
-                if (!prev.contains(id)) {
+            std::ranges::for_each(IDs,
+                [&](auto&& id) {
                     pipeline_.bind(scene.storage().get(
                         std::forward<decltype(id)>(id)
                     ).value() );
                 }
-            }
-        );
+            );
 
         pipeline_.drawCall(dc.drawContext());
-        prev = std::move(cur);
-    });
+        }
+    );
 }
 
 IndexedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)

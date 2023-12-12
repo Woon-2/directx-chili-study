@@ -8,8 +8,21 @@
 #include <d3d11.h>
 #include "GFX/Core/GraphicsNamespaces.hpp"
 
-class RenderTarget : public IBindable {
+class RenderTargetBinder : public BinderInterface<RenderTargetBinder> {
 public:
+    friend class BinderInterface<RenderTargetBinder>;
+
+private:
+    void doBind(GFXPipeline& pipeline, ID3D11RenderTargetView** pRTVs,
+        ID3D11DepthStencilView* pDSV
+    );
+};
+
+class RenderTarget : public IBindable,
+    public LocalRebindInterface<RenderTarget> {
+public:
+    friend class LocalRebindInterface<RenderTarget>;
+
     RenderTarget(GFXFactory factory, ID3D11Resource* pRTBuffer);
 
     RenderTarget(GFXFactory factory, ID3D11Resource* pRTBuffer,
@@ -66,6 +79,7 @@ private:
     GFXPipeline pipeline_;
     wrl::ComPtr<ID3D11RenderTargetView> pRTV_;
     wrl::ComPtr<ID3D11DepthStencilView> pDSV_;
+    RenderTargetBinder binder_;
 };
 
 #endif  // __RenderTarget

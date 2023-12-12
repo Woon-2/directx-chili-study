@@ -2,6 +2,16 @@
 
 #include "GFX/Core/GraphicsException.hpp"
 
+void RenderTargetBinder::doBind(GFXPipeline& pipeline,
+    ID3D11RenderTargetView** pRTVs, ID3D11DepthStencilView* pDSV
+) {
+    GFX_THROW_FAILED_VOID(
+        pipeline.context()->OMSetRenderTargets(
+            1u, pRTVs, pDSV
+        )
+    );
+}
+
 RenderTarget::RenderTarget(GFXFactory factory, ID3D11Resource* pRTBuffer)
     : pipeline_(), pRTV_(), pDSV_() {
     GFX_THROW_FAILED(
@@ -83,11 +93,7 @@ void RenderTarget::bind(GFXPipeline& pipeline) {
     // should store pipeline for later use of it in clear function.
     linkPipeline(pipeline);
 
-    GFX_THROW_FAILED_VOID(
-        pipeline_.context()->OMSetRenderTargets(1u,
-            pRTV_.GetAddressOf(), pDSV_.Get()
-        )
-    );
+    binder_.bind( pipeline, pRTV_.GetAddressOf(), pDSV_.Get() );
 }
 
 const dx::XMFLOAT4 RenderTarget::defClearColor

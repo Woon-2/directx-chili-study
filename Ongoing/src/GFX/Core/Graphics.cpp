@@ -152,5 +152,11 @@ void Graphics::constructAppRenderTarget() {
         }
     );
 
-    pipeline_.bind( storage_.get(IDAppRenderTarget_).value() );
+    auto pRenderTarget = static_cast<RenderTarget*>(
+        storage_.get(IDAppRenderTarget_).value()
+    );
+
+    pRenderTarget->enableLocalRebind();
+
+    pipeline_.bind(pRenderTarget);
 }

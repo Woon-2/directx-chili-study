@@ -13,8 +13,21 @@
 #include <ranges>
 #include <filesystem>
 
-class VertexShader : public IBindable {
+class VertexShaderBinder : public BinderInterface<VertexShaderBinder> {
 public:
+    friend class BinderInterface<VertexShaderBinder>; 
+
+private:
+    void doBind(GFXPipeline& pipeline, ID3D11VertexShader* pShader,
+        ID3D11InputLayout* pIA
+    );
+};
+
+class VertexShader : public IBindable,
+    public LocalRebindInterface<VertexShader> {
+public:
+    friend class LocalRebindInterface<VertexShader>;
+
     template <std::ranges::contiguous_range InputElemDescArray>
     VertexShader( GFXFactory factory,
         const InputElemDescArray& ieDescs,
@@ -57,10 +70,22 @@ private:
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11VertexShader> pVertexShader_;
     wrl::ComPtr<ID3D11InputLayout> pInputLayout_;
+    VertexShaderBinder binder_;
 };
 
-class PixelShader : public IBindable {
+class PixelShaderBinder : public BinderInterface<PixelShaderBinder> {
 public:
+    friend class BinderInterface<PixelShaderBinder>;
+
+private:
+    void doBind(GFXPipeline& pipeline, ID3D11PixelShader* pShader);
+};
+
+class PixelShader : public IBindable,
+    public LocalRebindInterface<PixelShader> {
+public:
+    friend class LocalRebindInterface<PixelShader>;
+
     PixelShader( GFXFactory factory,
         const std::filesystem::path& path
     );
@@ -81,6 +106,7 @@ private:
 
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11PixelShader> pPixelShader_;
+    PixelShaderBinder binder_;
 };
 
 #endif  // __Shader

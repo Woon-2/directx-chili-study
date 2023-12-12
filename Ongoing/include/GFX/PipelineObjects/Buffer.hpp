@@ -73,11 +73,23 @@ private:
     wrl::ComPtr<ID3D11Buffer> data_;
 };
 
+class VertexBufferBinder : public BinderInterface<VertexBufferBinder> {
+public:
+    friend class BinderInterface<VertexBufferBinder>;
+
+private:
+    void doBind(GFXPipeline& pipeline, ID3D11Buffer** pBuffers,
+        const UINT* strides, const UINT* offsets
+    );
+};
+
 
 template <class VertexT>
-class VertexBuffer : public Buffer {
+class VertexBuffer : public Buffer,
+    public LocalRebindInterface< VertexBuffer<VertexT> > {
 public:
     using MyVertex = VertexT;
+    friend class LocalRebindInterface< VertexBuffer<VertexT> >;
 
     template <std::ranges::contiguous_range R>
     VertexBuffer( GFXFactory factory,
@@ -105,19 +117,30 @@ private:
         const auto stride = static_cast<UINT>( sizeof(MyVertex) );
         const auto offset = static_cast<UINT>( 0u );
 
-        GFX_THROW_FAILED_VOID(
-            pipeline.context()->IASetVertexBuffers(
-                0u, 1u, data().GetAddressOf(),
-                &stride, &offset
-            )
+        binder_.bind(pipeline, data().GetAddressOf(),
+            &stride, &offset
         );
     } 
+
+    VertexBufferBinder binder_;
+};
+
+class IndexBufferBinder : public BinderInterface<IndexBufferBinder> {
+public:
+    friend class BinderInterface<IndexBufferBinder>;
+
+private:
+    void doBind(GFXPipeline& pipeline, ID3D11Buffer* pBuffer,
+        DXGI_FORMAT indexFormat
+    );
 };
 
 template <class IndexT>
-class IndexBuffer : public Buffer {
+class IndexBuffer : public Buffer,
+    public LocalRebindInterface< IndexBuffer<IndexT> >{
 public:
     using MyIndex = IndexT;
+    friend class LocalRebindInterface< IndexBuffer<IndexT> >;
 
     template <std::ranges::contiguous_range R>
     IndexBuffer( GFXFactory factory,
@@ -139,13 +162,10 @@ public:
             .SysMemSlicePitch = 0u
         }
     ) {}
+
 private:
     void bind(GFXPipeline& pipeline) override final {
-        GFX_THROW_FAILED_VOID(
-            pipeline.context()->IASetIndexBuffer(
-                data().Get(), indexFormat(), 0u
-            )
-        );
+        binder_.bind(pipeline, data().Get(), indexFormat());
     }
 
     static consteval DXGI_FORMAT indexFormat() noexcept {
@@ -172,6 +192,8 @@ private:
                 "supported index types are [unsigned char, char, unsigned short, short, unsigned int, int].");
         }
     }
+
+    IndexBufferBinder binder_;
 };
 
 template <class ValT>
@@ -204,11 +226,21 @@ private:
     virtual void bind(GFXPipeline& pipeline) = 0;
 };
 
+class VSCBufferBinder : public BinderInterface<VSCBufferBinder> {
+public:
+    friend class BinderInterface<VSCBufferBinder>;
+
+private:
+    void doBind(GFXPipeline& pipeline, UINT slot, ID3D11Buffer** pBuffers);
+};
+
 template <class ValT>
-class VSCBuffer : public CBuffer<ValT> {
+class VSCBuffer : public CBuffer<ValT>,
+    public LocalRebindInterface< VSCBuffer<ValT> > {
 public:
     using MyValue = ValT;
     using Buffer::data;
+    friend class LocalRebindInterface< VSCBuffer<ValT> >;
 
     template <std::ranges::contiguous_range R>
     VSCBuffer( GFXFactory factory,
@@ -219,21 +251,28 @@ public:
 
 private:
     void bind(GFXPipeline& pipeline) override final {
-        GFX_THROW_FAILED_VOID(
-            pipeline.context()->VSSetConstantBuffers(
-                slot_, 1u, data().GetAddressOf()
-            )
-        );
+        binder_.bind( pipeline, slot_, data().GetAddressOf() );
     }
 
     UINT slot_;
+    VSCBufferBinder binder_;
+};
+
+class PSCBufferBinder : public BinderInterface<PSCBufferBinder> {
+public:
+    friend class BinderInterface<PSCBufferBinder>;
+
+private:
+    void doBind(GFXPipeline& pipeline, UINT slot, ID3D11Buffer** pBuffers);
 };
 
 template <class ValT>
-class PSCBuffer : public CBuffer<ValT> {
+class PSCBuffer : public CBuffer<ValT>,
+    public LocalRebindInterface< PSCBuffer<ValT> > {
 public:
     using MyValue = ValT;
     using Buffer::data;
+    friend class LocalRebindInterface< PSCBuffer<ValT> >;
 
     template <std::ranges::contiguous_range R>
     PSCBuffer( GFXFactory factory,
@@ -244,14 +283,11 @@ public:
 
 private:
     void bind(GFXPipeline& pipeline) override final {
-        GFX_THROW_FAILED_VOID(
-            pipeline.context()->PSSetConstantBuffers(
-                slot_, 1u, data().GetAddressOf()
-            )
-        );
+        binder_.bind( pipeline, slot_, data().GetAddressOf() );
     }
 
     UINT slot_;
+    PSCBufferBinder binder_;
 };
 
 #endif  // __Buffer

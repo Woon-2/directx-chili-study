@@ -8,8 +8,23 @@
 #include "GFX/Core/GraphicsNamespaces.hpp"
 #include "GFX/Core/GraphicsException.hpp"
 
-class Viewport : public IBindable {
+class ViewportBinder : public BinderInterface<ViewportBinder> {
 public:
+    friend class BinderInterface<ViewportBinder>;
+
+private:
+    void doBind(GFXPipeline& pipeline, D3D11_VIEWPORT* pViewport) {
+        GFX_THROW_FAILED_VOID(
+            pipeline.context()->RSSetViewports(1u, pViewport)
+        );
+    }
+};
+
+class Viewport : public IBindable,
+    public LocalRebindInterface<Viewport> {
+public:
+    friend class LocalRebindInterface<Viewport>;
+
     Viewport(const D3D11_VIEWPORT& data)
         : data_(data) {}
 
@@ -26,12 +41,11 @@ public:
 
 private:
     void bind(GFXPipeline& pipeline) override final {
-        GFX_THROW_FAILED_VOID(
-            pipeline.context()->RSSetViewports(1u, data())
-        );
+        binder_.bind( pipeline, data() );
     }
 
     D3D11_VIEWPORT data_;
+    ViewportBinder binder_;
 };
 
 #endif  // __Viewport

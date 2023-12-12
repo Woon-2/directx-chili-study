@@ -5,7 +5,7 @@
 
 #include <typeindex>
 #include <tuple>
-#include <unordered_set>
+#include <vector>
 
 struct RendererDesc {
     struct Header {
@@ -27,7 +27,7 @@ struct RendererDesc {
     }
 
     Header header;
-    std::unordered_set<GFXStorage::ID> IDs;
+    std::vector<GFXStorage::ID> IDs;
 };
 
 #endif  // __RendererDesc

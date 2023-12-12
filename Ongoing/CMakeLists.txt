@@ -104,6 +104,7 @@ target_sources(chili PRIVATE
     include/GFX/Core/GraphicsException.hpp
     include/GFX/Core/GraphicsNamespaces.hpp
 
+    src/GFX/PipelineObjects/Buffer.cpp
     src/GFX/PipelineObjects/DrawContext.cpp
     src/GFX/PipelineObjects/RenderTarget.cpp
     src/GFX/PipelineObjects/Shader.cpp

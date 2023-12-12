@@ -111,6 +111,21 @@ public:
     using MyViewport = PEViewport;
     using MyDrawContext = PEDrawContext;
 
+    PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
+        Scene& scene, const ChiliWindow& wnd
+    ) : pipeline_(pipeline),
+        pScene_(&scene),
+        IDVertexBuffer_( scene.storage().cache<MyVertexBuffer>(factory) ),
+        IDIndexBuffer_( scene.storage().cache<MyIndexBuffer>(factory) ),
+        IDTopology_( scene.storage().cache<MyTopology>() ),
+        IDViewport_( scene.storage().cache<MyViewport>( wnd.client() ) ),
+        IDTransformCBuf_( scene.storage().cache<MyTransformCBuf>( factory ) ),
+        IDColor_( scene.storage().cache<MyColorBuffer>( factory ) ),
+        drawContext_(
+            static_cast<UINT>( MyIndexBuffer::size() ),
+            0u, 0, scene.storage(), IDTransformCBuf_
+        ) {}
+
     template <class ... TesselationFactors>
     PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
         Scene& scene, const ChiliWindow& wnd,

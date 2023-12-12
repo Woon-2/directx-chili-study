@@ -1,14 +1,28 @@
 #include "GFX/PipelineObjects/Shader.hpp"
 
-void VertexShader::bind(GFXPipeline& pipeline) {
+void VertexShaderBinder::doBind(GFXPipeline& pipeline,
+    ID3D11VertexShader* pShader, ID3D11InputLayout* pIA
+) {
     GFX_THROW_FAILED_VOID(
         pipeline.context()->VSSetShader(
-            pVertexShader_.Get(), nullptr, 0
+            pShader, nullptr, 0
         )
     );
     GFX_THROW_FAILED_VOID(
-        pipeline.context()->IASetInputLayout(
-            pInputLayout_.Get()
+        pipeline.context()->IASetInputLayout(pIA)
+    );
+}
+
+void VertexShader::bind(GFXPipeline& pipeline) {
+    binder_.bind( pipeline, pVertexShader_.Get(), pInputLayout_.Get() );
+}
+
+void PixelShaderBinder::doBind(
+    GFXPipeline& pipeline, ID3D11PixelShader* pShader
+) {
+    GFX_THROW_FAILED_VOID(
+        pipeline.context()->PSSetShader(
+            pShader, nullptr, 0u
         )
     );
 }
@@ -27,9 +41,5 @@ PixelShader::PixelShader( GFXFactory factory,
 }
 
 void PixelShader::bind(GFXPipeline& pipeline) {
-    GFX_THROW_FAILED_VOID(
-        pipeline.context()->PSSetShader(
-            pPixelShader_.Get(), nullptr, 0u
-        )
-    );
+    binder_.bind( pipeline, pPixelShader_.Get() );
 }

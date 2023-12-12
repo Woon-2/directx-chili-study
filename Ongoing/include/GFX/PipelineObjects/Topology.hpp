@@ -8,9 +8,23 @@
 #include "GFX/Core/GraphicsNamespaces.hpp"
 #include "GFX/Core/GraphicsException.hpp"
 
-class Topology : public IBindable {
+class TopologyBinder : public BinderInterface<TopologyBinder> {
+public:
+    friend class BinderInterface<TopologyBinder>;
+
+private:
+    void doBind(GFXPipeline& pipeline, D3D11_PRIMITIVE_TOPOLOGY topology) {
+        GFX_THROW_FAILED_VOID(
+            pipeline.context()->IASetPrimitiveTopology(topology)
+        );
+    }
+};
+
+class Topology : public IBindable,
+    public LocalRebindInterface<Topology> {
 public:
     using MyValue = D3D11_PRIMITIVE_TOPOLOGY;
+    friend class LocalRebindInterface<Topology>;
 
     Topology(const MyValue& topology)
         : data_(topology) {}
@@ -29,12 +43,11 @@ public:
 
 private:
     void bind(GFXPipeline& pipeline) override final {
-        GFX_THROW_FAILED_VOID(
-            pipeline.context()->IASetPrimitiveTopology(get())
-        );
+        binder_.bind( pipeline, get() );
     }
 
     MyValue data_;
+    TopologyBinder binder_;
 };
 
 #endif  // __Topology
