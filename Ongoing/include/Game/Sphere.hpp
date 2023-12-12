@@ -15,12 +15,12 @@ class Sphere {
 
 
 template <>
-class DrawComponent<Sphere> : public PEDrawComponent<
+class DrawComponent<Sphere> : public PEDrawComponentIndexed<
     Sphere, Primitives::Sphere::SphereVertexBuffer,
     Primitives::Sphere::SphereIndexBuffer
 > {
 public:
-    using MyBase = PEDrawComponent<
+    using MyBase = PEDrawComponentIndexed<
         Sphere, Primitives::Sphere::SphereVertexBuffer,
         Primitives::Sphere::SphereIndexBuffer
     >;

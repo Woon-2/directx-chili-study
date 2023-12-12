@@ -14,12 +14,12 @@ class Cone {
 };
 
 template <>
-class DrawComponent<Cone> : public PEDrawComponent<
+class DrawComponent<Cone> : public PEDrawComponentIndexed<
     Cone, Primitives::Cone::ConeVertexBuffer,
     Primitives::Cone::ConeIndexBuffer
 > {
 public:
-    using MyBase = PEDrawComponent<
+    using MyBase = PEDrawComponentIndexed<
         Cone, Primitives::Cone::ConeVertexBuffer,
         Primitives::Cone::ConeIndexBuffer
     >;

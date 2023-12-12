@@ -14,19 +14,19 @@ class Prism {
 };
 
 template <>
-class DrawComponent<Prism> : public PEDrawComponent<
+class DrawComponent<Prism> : public PEDrawComponentIndexed<
     Prism, Primitives::Prism::PrismVertexBuffer,
     Primitives::Prism::PrismIndexBuffer
 > {
 public:
-    using MyBase = PEDrawComponent<
+    using MyBase = PEDrawComponentIndexed<
         Prism, Primitives::Prism::PrismVertexBuffer,
         Primitives::Prism::PrismIndexBuffer
     >;
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
         Scene& scene, const ChiliWindow& wnd,
-        std::size_t nTesselation = Primitives::Cone::defNTesselation
+        std::size_t nTesselation = Primitives::Prism::defNTesselation
     ) : MyBase(factory, pipeline, scene, wnd, nTesselation) {}
 
 };

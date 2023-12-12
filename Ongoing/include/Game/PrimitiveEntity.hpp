@@ -3,6 +3,7 @@
 
 #include "Entity.hpp"
 #include "Scene.hpp"
+#include "Renderer.hpp"
 #include "RenderObjectDesc.hpp"
 #include "GTransformComponent.hpp"
 #include "InputComponent.hpp"
@@ -95,8 +96,8 @@ private:
     GFXStorage::ID IDTransCBuf_;
 };
 
-template <class T, class VertexBufferT, class IndexBufferT>
-class PEDrawComponent : public IDrawComponent {
+template < class T, class VertexBufferT, class IndexBufferT >
+class PEDrawComponentIndexed : public IDrawComponent {
 public:
     using MyType = DrawComponent<T>;
     using MyVertex = GFXVertex;
@@ -111,7 +112,7 @@ public:
     using MyViewport = PEViewport;
     using MyDrawContext = PEDrawContext;
 
-    PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
+    PEDrawComponentIndexed( GFXFactory factory, GFXPipeline pipeline,
         Scene& scene, const ChiliWindow& wnd
     ) : pipeline_(pipeline),
         pScene_(&scene),
@@ -127,7 +128,7 @@ public:
         ) {}
 
     template <class ... TesselationFactors>
-    PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
+    PEDrawComponentIndexed( GFXFactory factory, GFXPipeline pipeline,
         Scene& scene, const ChiliWindow& wnd,
         TesselationFactors&& ... tesselationFactors
     ) : pipeline_(pipeline),

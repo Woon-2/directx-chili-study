@@ -14,12 +14,12 @@ class Box {
 };
 
 template <>
-class DrawComponent<Box> : public PEDrawComponent<
+class DrawComponent<Box> : public PEDrawComponentIndexed<
     Box, Primitives::Cube::CubeVertexBuffer,
     Primitives::Cube::CubeIndexBuffer
 > {
 public:
-    using MyBase = PEDrawComponent<
+    using MyBase = PEDrawComponentIndexed<
         Box, Primitives::Cube::CubeVertexBuffer,
         Primitives::Cube::CubeIndexBuffer
     >;

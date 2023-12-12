@@ -14,12 +14,12 @@ class Plane {
 };
 
 template <>
-class DrawComponent<Plane> : public PEDrawComponent<
+class DrawComponent<Plane> : public PEDrawComponentIndexed<
     Plane, Primitives::Plane::PlaneVertexBuffer,
     Primitives::Plane::PlaneIndexBuffer
 > {
 public:
-    using MyBase = PEDrawComponent<
+    using MyBase = PEDrawComponentIndexed<
         Plane, Primitives::Plane::PlaneVertexBuffer,
         Primitives::Plane::PlaneIndexBuffer
     >;
