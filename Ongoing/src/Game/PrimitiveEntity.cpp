@@ -12,7 +12,7 @@ std::vector<dx::XMMATRIX> PETransformCBuf::initialTransforms() {
     };
 }
 
-std::vector<PEFaceColorData> PEColorCBuf::initialColors() {
+std::vector<PEFaceColorData> PEIndexedColorCBuf::initialColors() {
     return std::vector<PEFaceColorData>{{
         GFXColor{1.f, 0.f, 1.f, 1.f},
         GFXColor{1.f, 0.f, 0.f, 1.f},

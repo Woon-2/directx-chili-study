@@ -50,10 +50,10 @@ private:
     static std::vector<dx::XMMATRIX> initialTransforms();
 };
 
-class PEColorCBuf : public PSCBuffer<PEFaceColorData> {
+class PEIndexedColorCBuf : public PSCBuffer<PEFaceColorData> {
 public:
-    PEColorCBuf() = default;
-    PEColorCBuf(GFXFactory factory)
+    PEIndexedColorCBuf() = default;
+    PEIndexedColorCBuf(GFXFactory factory)
         : PSCBuffer<PEFaceColorData>(
             factory, 0u, D3D11_USAGE_DEFAULT, 0u, initialColors()
         ) {}
@@ -107,7 +107,7 @@ public:
     using MyIndexBuffer = IndexBufferT;
     using MyTopology = PETopology;
     using MyTransformCBuf = PETransformCBuf;
-    using MyColorBuffer = PEColorCBuf;
+    using MyColorBuffer = PEIndexedColorCBuf;
     using MyViewport = PEViewport;
     using MyDrawContext = PEDrawContext;
 
