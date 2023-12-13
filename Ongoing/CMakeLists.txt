@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.12.12 LANGUAGES CXX)
+project(POngoing VERSION 2023.12.13 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -249,12 +249,20 @@ set(COMPILED_SHADER_PATH "${PROJECT_BINARY_DIR}/shader" CACHE PATH
 )
 
 include(find_hlsl_compiler)
-compile_hlsl("${PROJECT_SOURCE_DIR}/shader/VertexShader.hlsl"
-    "${COMPILED_SHADER_PATH}/VertexShader.cso"
+compile_hlsl("${PROJECT_SOURCE_DIR}/shader/VertexShaderIndexed.hlsl"
+    "${COMPILED_SHADER_PATH}/VertexShaderIndexed.cso"
     "vs_4_0"
 )
-compile_hlsl("${PROJECT_SOURCE_DIR}/shader/PixelShader.hlsl"
-    "${COMPILED_SHADER_PATH}/PixelShader.cso"
+compile_hlsl("${PROJECT_SOURCE_DIR}/shader/PixelShaderIndexed.hlsl"
+    "${COMPILED_SHADER_PATH}/PixelShaderIndexed.cso"
+    "ps_4_0"
+)
+compile_hlsl("${PROJECT_SOURCE_DIR}/shader/VertexShaderBlended.hlsl"
+    "${COMPILED_SHADER_PATH}/VertexShaderBlended.cso"
+    "vs_4_0"
+)
+compile_hlsl("${PROJECT_SOURCE_DIR}/shader/PixelShaderBlended.hlsl"
+    "${COMPILED_SHADER_PATH}/PixelShaderBlended.cso"
     "ps_4_0"
 )
 add_hlsl_target("${HLSL_COMPILED_SHADERS}")

@@ -17,7 +17,7 @@ class Renderer {
 public:
     Renderer() = default;
     Renderer(GFXPipeline pipeline)
-        : pipeline_( std::move(pipeline) ) {}
+        : pipeline_( std::move(pipeline) ), pStorage_(nullptr) {}
 
     virtual ~Renderer() {}
 
@@ -72,9 +72,57 @@ public:
         std::filesystem::path csoPath() const noexcept;
     };
 
+    static consteval UINT slotPosBuffer() {
+        return 0u;
+    }
+
     IndexedRenderer() = default;
     IndexedRenderer(GFXPipeline pipeline)
         : Renderer(std::move(pipeline)) {}
+
+private:
+    const RendererDesc rendererDesc() const override;
+
+    void loadBindables(GFXFactory factory) override {
+        IDVertexShader_ = mappedStorage().cache<MyVertexShader>(factory);
+        IDPixelShader_ = mappedStorage().cache<MyPixelShader>(factory);
+    }
+
+    GFXStorage* pStorage_;
+    GFXStorage::ID IDVertexShader_;
+    GFXStorage::ID IDPixelShader_;
+};
+
+class BlendedRenderer : public Renderer {
+public:
+    class MyVertexShader : public VertexShader {
+    public:
+        MyVertexShader(GFXFactory factory);
+
+    private:
+        std::vector<D3D11_INPUT_ELEMENT_DESC> inputElemDescs() const noexcept;
+        std::filesystem::path csoPath() const noexcept;
+    };
+
+    class MyPixelShader : public PixelShader {
+    public:
+        MyPixelShader(GFXFactory factory);
+
+    private:
+        std::filesystem::path csoPath() const noexcept;
+    };
+
+    BlendedRenderer() = default;
+    BlendedRenderer(GFXPipeline pipeline)
+        : Renderer(std::move(pipeline)) {}
+
+    static consteval UINT slotPosBuffer() {
+        return 0u;
+    }
+
+    static consteval UINT slotColorBuffer() {
+        return 1u;
+    }
 
 private:
     const RendererDesc rendererDesc() const override;

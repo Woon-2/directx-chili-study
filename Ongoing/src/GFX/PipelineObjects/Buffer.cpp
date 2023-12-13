@@ -1,11 +1,11 @@
 #include "GFX/PipelineObjects/Buffer.hpp"
 
-void VertexBufferBinder::doBind( GFXPipeline& pipeline,
+void VertexBufferBinder::doBind( GFXPipeline& pipeline, UINT slot,
     ID3D11Buffer** pBuffers, const UINT* strides, const UINT* offsets
 ) {
     GFX_THROW_FAILED_VOID(
         pipeline.context()->IASetVertexBuffers(
-            0u, 1u, pBuffers, strides, offsets
+            slot, 1u, pBuffers, strides, offsets
         )
     );
 }

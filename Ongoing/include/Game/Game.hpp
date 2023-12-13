@@ -37,7 +37,6 @@ private:
     );
 
     RendererSystem rendererSystem_;
-    GFXStorage rendererStorage_;
     InputSystem<MyChar> inputSystem_;
     MyTimer timer_;
     std::vector< std::unique_ptr<IEntity> > entities_;

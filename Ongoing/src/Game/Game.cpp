@@ -10,14 +10,13 @@
 
 Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse
-) : rendererSystem_(), rendererStorage_(),
-    inputSystem_(kbd, mouse, wnd.client()), timer_(), entities_() {
-    auto slotIndexedRender = rendererSystem_.addRenderer(
-        std::make_unique<IndexedRenderer>(gfx.pipeline())
-    );
-
-    rendererSystem_.renderer(slotIndexedRender)
-        .sync( rendererStorage_, gfx.factory() );
+) : rendererSystem_( gfx.factory(), gfx.pipeline() ),
+    inputSystem_( kbd, mouse, wnd.client() ),
+    timer_(), entities_() {
+    auto slotIndexedRender = rendererSystem_
+        .addRenderer<IndexedRenderer>();
+    auto slotBlendedRender = rendererSystem_
+        .addRenderer<BlendedRenderer>();
 
     createObjects(80u, wnd, gfx, kbd, mouse);
 }
@@ -84,7 +83,7 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
             createConcreteObject<Sphere>(wnd, gfx, kbd, mouse,
                 distTesselation(rng), distTesselation(rng)
             );
-            break;;
+            break;
 
         default:
             break;
@@ -104,15 +103,17 @@ void Game::createConcreteObject( const ChiliWindow& wnd, Graphics& gfx,
     auto distCTP = Distribution(0.f, 2.f * pi);
     auto distDeltaCTP = Distribution(0.03f * pi, 0.01f * pi);
     auto distDeltaRTY = Distribution(0.5f * pi, 0.2f * pi);
+    auto distScene = std::uniform_int_distribution<>(0, 1);
 
     auto obj = std::make_unique<Entity<T>>();
 
-    obj->ctDrawComponent(gfx.factory(), gfx.pipeline(), rendererSystem_.scene(0), wnd,
+    obj->ctDrawComponent( gfx.factory(), gfx.pipeline(),
+        rendererSystem_.storage(), wnd,
         std::forward<TesselationFactors>(tesselationFactors)...
     );
     obj->ctTransformComponent(distRadius, distCTP, distDeltaCTP, distDeltaRTY);
 
-    obj->loader().loadAt(rendererSystem_.scene(0));
+    obj->loader().loadAt(rendererSystem_.scene( distScene(rng) ));
 
     entities_.push_back( std::move(obj) );
 }

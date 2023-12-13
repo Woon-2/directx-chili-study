@@ -14,20 +14,20 @@ class Cone {
 };
 
 template <>
-class DrawComponent<Cone> : public PEDrawComponentIndexed<
+class DrawComponent<Cone> : public PEDrawComponent<
     Cone, Primitives::Cone::ConeVertexBuffer,
     Primitives::Cone::ConeIndexBuffer
 > {
 public:
-    using MyBase = PEDrawComponentIndexed<
+    using MyBase = PEDrawComponent<
         Cone, Primitives::Cone::ConeVertexBuffer,
         Primitives::Cone::ConeIndexBuffer
     >;
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
-        Scene& scene, const ChiliWindow& wnd,
+        GFXStorage& storage, const ChiliWindow& wnd,
         std::size_t nTesselation = Primitives::Cone::defNTesselation
-    ) : MyBase(factory, pipeline, scene, wnd, nTesselation) {}
+    ) : MyBase(factory, pipeline, storage, wnd, nTesselation) {}
 
 };
 

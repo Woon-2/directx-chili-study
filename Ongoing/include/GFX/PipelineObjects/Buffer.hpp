@@ -78,7 +78,7 @@ public:
     friend class BinderInterface<VertexBufferBinder>;
 
 private:
-    void doBind(GFXPipeline& pipeline, ID3D11Buffer** pBuffers,
+    void doBind(GFXPipeline& pipeline, UINT slot, ID3D11Buffer** pBuffers,
         const UINT* strides, const UINT* offsets
     );
 };
@@ -110,19 +110,28 @@ public:
                 .SysMemPitch = 0,
                 .SysMemSlicePitch = 0
             }
-        ) {}
+        ), binder_(), slot_() {}
+
+        UINT slot() const noexcept {
+            return slot_;
+        }
+
+        void setSlot(UINT val) noexcept {
+            slot_ = val;
+        }
 
 private:
     void bind(GFXPipeline& pipeline) override final {
         const auto stride = static_cast<UINT>( sizeof(MyVertex) );
         const auto offset = static_cast<UINT>( 0u );
 
-        binder_.bind(pipeline, data().GetAddressOf(),
+        binder_.bind(pipeline, slot_, data().GetAddressOf(),
             &stride, &offset
         );
     } 
 
     VertexBufferBinder binder_;
+    UINT slot_;
 };
 
 class IndexBufferBinder : public BinderInterface<IndexBufferBinder> {

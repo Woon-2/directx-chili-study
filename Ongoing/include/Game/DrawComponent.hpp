@@ -5,6 +5,8 @@
 
 #include "GFX/PipelineObjects/DrawContext.hpp"
 
+class Renderer;
+
 class IDrawComponent {
 public:
     virtual ~IDrawComponent() {}
@@ -12,6 +14,7 @@ public:
     virtual const RenderObjectDesc renderObjectDesc() const = 0;
     virtual IDrawContext* drawContext() = 0;
     virtual const IDrawContext* drawContext() const = 0;
+    virtual void sync(const Renderer& pRenderer) = 0;
 
     friend auto operator<=>(const IDrawComponent& lhs,
         const IDrawComponent& rhs) {

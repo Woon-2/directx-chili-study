@@ -23,6 +23,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/GraphicsException.hpp"
 
 #include <vector>
 #include <memory>
@@ -63,6 +64,15 @@ private:
     static std::vector<PEFaceColorData> initialColors();
 };
 
+class PEColorBuffer : public VertexBuffer<GFXColor> {
+public:
+    PEColorBuffer(GFXFactory factory, std::size_t size)
+        : VertexBuffer<GFXColor>( factory, makeRandom(size) ) {}
+
+private:
+    static std::vector<GFXColor> makeRandom(std::size_t size);
+};
+
 class PEViewport : public Viewport {
 public:
     PEViewport(const Win32::Client& client)
@@ -96,58 +106,65 @@ private:
     GFXStorage::ID IDTransCBuf_;
 };
 
-template < class T, class VertexBufferT, class IndexBufferT >
-class PEDrawComponentIndexed : public IDrawComponent {
+template < class T, class PosBufferT, class IndexBufferT >
+class PEDrawComponent : public IDrawComponent {
 public:
     using MyType = DrawComponent<T>;
     using MyVertex = GFXVertex;
     using MyIndex = GFXIndex;
     using MyColor = GFXColor;
     using MyConstantBufferColor = PEFaceColorData;
-    using MyVertexBuffer = VertexBufferT;
+    using MyPosBuffer = PosBufferT;
     using MyIndexBuffer = IndexBufferT;
     using MyTopology = PETopology;
     using MyTransformCBuf = PETransformCBuf;
-    using MyColorBuffer = PEIndexedColorCBuf;
+    using MyIndexedColorCBuf = PEIndexedColorCBuf;
+    using MyBlendedColorBuffer = PEColorBuffer;
     using MyViewport = PEViewport;
     using MyDrawContext = PEDrawContext;
 
-    PEDrawComponentIndexed( GFXFactory factory, GFXPipeline pipeline,
-        Scene& scene, const ChiliWindow& wnd
-    ) : pipeline_(pipeline),
-        pScene_(&scene),
-        IDVertexBuffer_( scene.storage().cache<MyVertexBuffer>(factory) ),
-        IDIndexBuffer_( scene.storage().cache<MyIndexBuffer>(factory) ),
-        IDTopology_( scene.storage().cache<MyTopology>() ),
-        IDViewport_( scene.storage().cache<MyViewport>( wnd.client() ) ),
-        IDTransformCBuf_( scene.storage().cache<MyTransformCBuf>( factory ) ),
-        IDColor_( scene.storage().cache<MyColorBuffer>( factory ) ),
+    PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
+        GFXStorage& storage, const ChiliWindow& wnd
+    ) : RODesc_(), pipeline_(pipeline), pStorage_(&storage),
+        IDPosBuffer_( storage.cache<MyPosBuffer>(factory) ),
+        IDIndexBuffer_( storage.cache<MyIndexBuffer>(factory) ),
+        IDTopology_( storage.cache<MyTopology>() ),
+        IDViewport_( storage.cache<MyViewport>( wnd.client() ) ),
+        IDTransformCBuf_( storage.cache<MyTransformCBuf>( factory ) ),
+        IDIndexedColorCBuf_( storage.cache<MyIndexedColorCBuf>( factory ) ),
+        IDBlendedColorBuffer_( storage.cache<MyBlendedColorBuffer>(
+            factory, MyPosBuffer::size()
+        ) ),
         drawContext_(
             static_cast<UINT>( MyIndexBuffer::size() ),
-            0u, 0, scene.storage(), IDTransformCBuf_
+            0u, 0, storage, IDTransformCBuf_
         ) {}
 
     template <class ... TesselationFactors>
-    PEDrawComponentIndexed( GFXFactory factory, GFXPipeline pipeline,
-        Scene& scene, const ChiliWindow& wnd,
+    PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
+        GFXStorage& storage, const ChiliWindow& wnd,
         TesselationFactors&& ... tesselationFactors
-    ) : pipeline_(pipeline),
-        pScene_(&scene),
-        IDVertexBuffer_( scene.storage().load<MyVertexBuffer>(
-            factory, tesselationFactors...
+    ) : RODesc_(), pipeline_(pipeline), pStorage_(&storage),
+        IDPosBuffer_( storage.load<MyPosBuffer>(
+            factory, std::forward<TesselationFactors>(tesselationFactors)...
         ) ),
-        IDIndexBuffer_( scene.storage().load<MyIndexBuffer>(
-            factory, tesselationFactors...
+        IDIndexBuffer_( storage.load<MyIndexBuffer>(
+            factory, std::forward<TesselationFactors>(tesselationFactors)...
         ) ),
-        IDTopology_( scene.storage().cache<MyTopology>() ),
-        IDViewport_( scene.storage().cache<MyViewport>( wnd.client() ) ),
-        IDTransformCBuf_( scene.storage().cache<MyTransformCBuf>( factory ) ),
-        IDColor_( scene.storage().cache<MyColorBuffer>( factory ) ),
+        IDTopology_( storage.cache<MyTopology>() ),
+        IDViewport_( storage.cache<MyViewport>( wnd.client() ) ),
+        IDTransformCBuf_( storage.cache<MyTransformCBuf>( factory ) ),
+        IDIndexedColorCBuf_( storage.cache<MyIndexedColorCBuf>( factory ) ),
+        IDBlendedColorBuffer_( storage.load<MyBlendedColorBuffer>(
+            factory, MyPosBuffer::size(
+                std::forward<TesselationFactors>(tesselationFactors)...
+            )
+        ) ),
         drawContext_(
             static_cast<UINT>( MyIndexBuffer::size(
                 std::forward<TesselationFactors>(tesselationFactors)...
             ) ),
-            0u, 0, scene.storage(), IDTransformCBuf_
+            0u, 0, storage, IDTransformCBuf_
         ) {}
 
     void update(const Transform trans) {
@@ -155,14 +172,57 @@ public:
     }
 
     const RenderObjectDesc renderObjectDesc() const override {
-        return RenderObjectDesc{
+        if (!RODesc_.has_value()) {
+            throw GFX_EXCEPT_CUSTOM("DrawComponent is not synchronized with any renderer.\n");
+        }
+        return RODesc_.value();
+    }
+
+    void sync(const Renderer& renderer) override {
+        if ( typeid(renderer) == typeid(IndexedRenderer) ) {
+            sync( static_cast<const IndexedRenderer&>(renderer) );
+        }
+        else if ( typeid(renderer) == typeid(BlendedRenderer) ) {
+            sync( static_cast<const BlendedRenderer&>(renderer) );
+        }
+        else {
+            throw GFX_EXCEPT_CUSTOM("DrawComponent tried to synchronize with incompatible renderer.\n");
+        }
+    }
+    
+    void sync(const IndexedRenderer& renderer) {
+        assert(pStorage_->get(IDPosBuffer_).has_value());
+        static_cast<MyPosBuffer*>( pStorage_->get(IDPosBuffer_).value() )
+            ->setSlot( IndexedRenderer::slotPosBuffer() );
+
+        RODesc_ = RenderObjectDesc{
             .header = {
-                .IDBuffer = IDVertexBuffer_,
+                .IDBuffer = IDPosBuffer_,
                 .IDType = typeid(T)
             },
             .IDs = {
-                IDVertexBuffer_, IDIndexBuffer_, IDTopology_,
-                IDViewport_, IDTransformCBuf_, IDColor_
+                IDPosBuffer_, IDIndexBuffer_, IDTopology_,
+                IDViewport_, IDTransformCBuf_, IDIndexedColorCBuf_
+            }
+        };
+    }
+
+    void sync(const BlendedRenderer& renderer) {
+        assert(pStorage_->get(IDPosBuffer_).has_value());
+        static_cast<MyPosBuffer*>( pStorage_->get(IDPosBuffer_).value() )
+            ->setSlot( BlendedRenderer::slotPosBuffer() );
+        static_cast<MyBlendedColorBuffer*>(
+            pStorage_->get(IDBlendedColorBuffer_).value()
+        )->setSlot( BlendedRenderer::slotColorBuffer() );
+
+        RODesc_ = RenderObjectDesc{
+            .header = {
+                .IDBuffer = IDPosBuffer_,
+                .IDType = typeid(T)
+            },
+            .IDs = {
+                IDPosBuffer_, IDBlendedColorBuffer_, IDIndexBuffer_, IDTopology_,
+                IDViewport_, IDTransformCBuf_
             }
         };
     }
@@ -176,14 +236,16 @@ public:
     }
 
 private:
+    std::optional<RenderObjectDesc> RODesc_;
     GFXPipeline pipeline_;
-    Scene* pScene_;
-    GFXStorage::ID IDVertexBuffer_;
+    GFXStorage* pStorage_;
+    GFXStorage::ID IDPosBuffer_;
     GFXStorage::ID IDIndexBuffer_;
     GFXStorage::ID IDTopology_;
     GFXStorage::ID IDViewport_;
     GFXStorage::ID IDTransformCBuf_;
-    GFXStorage::ID IDColor_;
+    GFXStorage::ID IDIndexedColorCBuf_;
+    GFXStorage::ID IDBlendedColorBuffer_;
     // draw context is here to guarantee
     // it is initalized at the last.
     // since draw context may use other member data,
@@ -211,10 +273,10 @@ public:
     // ct stands for construct
     template <class ... TesselationFactors>
     void ctDrawComponent(GFXFactory factory, GFXPipeline pipeline,
-        Scene& scene, const ChiliWindow& wnd,
+        GFXStorage& storage, const ChiliWindow& wnd,
         TesselationFactors&& ... tesselationFactors
     ) {
-        dc_.reset( new DrawComponent<T>(factory, pipeline, scene, wnd,
+        dc_.reset( new DrawComponent<T>(factory, pipeline, storage, wnd,
             std::forward<TesselationFactors>(tesselationFactors)...
         ) );
     }

@@ -22,10 +22,6 @@ public:
         pDCs_.push_back( std::move(pDC) );
     }
 
-    GFXStorage& storage() noexcept {
-        return storage_;
-    }
-
     decltype(auto) drawComponents() noexcept {
         return pDCs_ | dereference();
     }
@@ -35,7 +31,6 @@ public:
     }
 
 private:
-    GFXStorage storage_;
     std::vector< std::shared_ptr<IDrawComponent> > pDCs_;
 };
 

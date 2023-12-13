@@ -15,21 +15,21 @@ class Sphere {
 
 
 template <>
-class DrawComponent<Sphere> : public PEDrawComponentIndexed<
+class DrawComponent<Sphere> : public PEDrawComponent<
     Sphere, Primitives::Sphere::SphereVertexBuffer,
     Primitives::Sphere::SphereIndexBuffer
 > {
 public:
-    using MyBase = PEDrawComponentIndexed<
+    using MyBase = PEDrawComponent<
         Sphere, Primitives::Sphere::SphereVertexBuffer,
         Primitives::Sphere::SphereIndexBuffer
     >;
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
-        Scene& scene, const ChiliWindow& wnd,
+        GFXStorage& storage, const ChiliWindow& wnd,
         std::size_t nTesselationLat = Primitives::Sphere::defNTesselation,
         std::size_t nTesselationLong = Primitives::Sphere::defNTesselation
-    ) : MyBase(factory, pipeline, scene, wnd,
+    ) : MyBase(factory, pipeline, storage, wnd,
         nTesselationLat, nTesselationLong
     ) {}
 

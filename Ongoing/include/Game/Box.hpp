@@ -14,19 +14,19 @@ class Box {
 };
 
 template <>
-class DrawComponent<Box> : public PEDrawComponentIndexed<
+class DrawComponent<Box> : public PEDrawComponent<
     Box, Primitives::Cube::CubeVertexBuffer,
     Primitives::Cube::CubeIndexBuffer
 > {
 public:
-    using MyBase = PEDrawComponentIndexed<
+    using MyBase = PEDrawComponent<
         Box, Primitives::Cube::CubeVertexBuffer,
         Primitives::Cube::CubeIndexBuffer
     >;
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
-        Scene& scene, const ChiliWindow& wnd
-    ) : MyBase(factory, pipeline, scene, wnd) {}
+        GFXStorage& storage, const ChiliWindow& wnd
+    ) : MyBase(factory, pipeline, storage, wnd) {}
 
 };
 

@@ -23,6 +23,20 @@ std::vector<PEFaceColorData> PEIndexedColorCBuf::initialColors() {
     }};
 }
 
+std::vector<GFXColor> PEColorBuffer::makeRandom(std::size_t size) {
+    auto dist = std::uniform_real_distribution<float>(0.f, 1.f);
+    auto ret = std::vector<GFXColor>();
+    ret.reserve(size);
+
+    while (size--) {
+        ret.push_back( GFXColor{
+            .r = dist(rng), .g = dist(rng), .b = dist(rng), .a = dist(rng)
+        } );
+    }
+
+    return ret;
+}
+
 void PEDrawContext::drawCall(GFXPipeline& pipeline) const {
     // first adopt transform
     assert( mappedStorage_->get(IDTransCBuf_).has_value() );

@@ -14,21 +14,21 @@ class Plane {
 };
 
 template <>
-class DrawComponent<Plane> : public PEDrawComponentIndexed<
+class DrawComponent<Plane> : public PEDrawComponent<
     Plane, Primitives::Plane::PlaneVertexBuffer,
     Primitives::Plane::PlaneIndexBuffer
 > {
 public:
-    using MyBase = PEDrawComponentIndexed<
+    using MyBase = PEDrawComponent<
         Plane, Primitives::Plane::PlaneVertexBuffer,
         Primitives::Plane::PlaneIndexBuffer
     >;
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
-        Scene& scene, const ChiliWindow& wnd,
+        GFXStorage& storage, const ChiliWindow& wnd,
         std::size_t nTesselationX = Primitives::Plane::defNTesselation,
         std::size_t nTesselationY = Primitives::Plane::defNTesselation
-    ) : MyBase(factory, pipeline, scene, wnd,
+    ) : MyBase(factory, pipeline, storage, wnd,
         nTesselationX, nTesselationY
     ) {}
 
