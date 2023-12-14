@@ -203,4 +203,18 @@ namespace detail {
 
 static detail::dereference_view_adaptor dereference;
 
+template <std::ranges::range R>
+[[maybe_unused]] constexpr bool reserve_if_possible(R&& r, std::size_t new_cap) {
+    return false;
+}
+
+template <std::ranges::range R>
+    requires requires (R& r, std::size_t n) {
+        r.reserve(n);
+    }
+[[maybe_unused]] constexpr bool reserve_if_possible(R&& r, std::size_t new_cap) {
+    r.reserve(new_cap);
+    return true;
+}
+
 #endif  // __AdditionalRanges
