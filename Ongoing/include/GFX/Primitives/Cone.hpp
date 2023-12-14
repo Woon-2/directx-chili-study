@@ -13,6 +13,8 @@
 #include <iterator>
 #include <algorithm>
 
+#include "AdditionalRanges.hpp"
+
 namespace Primitives {
 
 struct Cone {
@@ -68,6 +70,7 @@ struct Cone {
         using pos_type = typename VertexPosContainer::value_type;
 
         VertexPosContainer ret;
+        reserve_if_possible( ret, ConeVertexBuffer::size(nTesselation) );
         auto out = std::back_inserter(ret);
 
         const auto base = dx::XMVectorSet( 1.0f,0.0f,-1.0f,0.0f );
@@ -111,6 +114,7 @@ struct Cone {
         using idx_type = typename VertexIdxContainer::value_type;
 
         VertexIdxContainer ret;
+        reserve_if_possible( ret, ConeIndexBuffer::size(nTesselation) );
         auto out = std::back_inserter(ret);
 
         // base indices

@@ -77,6 +77,9 @@ struct Sphere {
         using pos_type = typename VertexPosContainer::value_type;
 
         VertexPosContainer ret;
+        reserve_if_possible( ret, SphereVertexBuffer::size(
+            nTesselationLat, nTesselationLong
+        ) );
         auto out = std::back_inserter(ret);
 
         const auto base = dx::XMVectorSet( 0.f, 0.f, radius, 0.f );
@@ -131,6 +134,9 @@ struct Sphere {
         const auto iSouthPole = (nTesselationLat - 1) * nTesselationLong + 1u;
 
         VertexIdxContainer ret;
+        reserve_if_possible( ret, SphereIndexBuffer::size(
+            nTesselationLat, nTesselationLong
+        ) );
         auto out = std::back_inserter(ret);
 
         auto dispatchIdx = [nTesselationLong](auto iLat, auto iLong) {

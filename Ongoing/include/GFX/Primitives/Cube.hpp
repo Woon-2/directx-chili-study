@@ -46,6 +46,7 @@ struct Cube {
         using pos_type = typename VertexPosContainer::value_type;
 
         VertexPosContainer ret;
+        reserve_if_possible( ret, 8u );
         auto out = std::back_inserter(ret);
 
         static constexpr auto side = 0.5f;
@@ -67,6 +68,7 @@ struct Cube {
         using idx_type = typename VertexIdxContainer::value_type;
 
         VertexIdxContainer ret;
+        reserve_if_possible( ret, 36u );
         auto out = std::back_inserter(ret);
 
         // each line represents a face of a cube.

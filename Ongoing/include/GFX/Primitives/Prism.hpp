@@ -69,6 +69,7 @@ struct Prism {
         using pos_type = typename VertexPosContainer::value_type;
 
         VertexPosContainer ret;
+        reserve_if_possible( ret, PrismVertexBuffer::size(nTesselation) );
         auto out = std::back_inserter(ret);
 
         // near center
@@ -122,6 +123,7 @@ struct Prism {
         const auto iFarCenter = idx_type(1u);
 
         VertexIdxContainer ret;
+        reserve_if_possible( ret, PrismIndexBuffer::size(nTesselation) );
         auto out = std::back_inserter(ret);
 
         // side indices

@@ -72,6 +72,9 @@ struct Plane {
         using pos_type = typename VertexPosContainer::value_type;
 
         VertexPosContainer ret;
+        reserve_if_possible( ret, PlaneVertexBuffer::size(
+            nTesselationX, nTesselationY
+        ) );
         auto out = std::back_inserter(ret);
 
         static constexpr auto width = 2.f;
@@ -112,6 +115,9 @@ struct Plane {
         using idx_type = typename VertexIdxContainer::value_type;
 
         VertexIdxContainer ret;
+        reserve_if_possible( ret, PlaneIndexBuffer::size(
+            nTesselationX, nTesselationY
+        ) );
         auto out = std::back_inserter(ret);
 
         const auto nVerticesX = nTesselationX + 1;
