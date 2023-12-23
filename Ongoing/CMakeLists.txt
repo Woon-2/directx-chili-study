@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.12.13 LANGUAGES CXX)
+project(POngoing VERSION 2023.12.15 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -270,6 +270,7 @@ add_hlsl_target("${HLSL_COMPILED_SHADERS}")
 add_dependencies(chili hlsl)
 
 # link modules
+find_package(imgui REQUIRED PATHS "${CMAKE_MODULE_PATH}")
 
 target_link_libraries(chili
 PRIVATE
@@ -285,6 +286,7 @@ PRIVATE
     d3d11.lib
     D3DCompiler.lib
     $<$<CONFIG:DEBUG>:dxguid.lib>
+    imgui::imgui_win32_dx11
 )
 
 target_include_directories(chili PRIVATE include shader)

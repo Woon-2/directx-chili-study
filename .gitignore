@@ -19,6 +19,8 @@
 *.so
 *.dylib
 *.dll
+!extern/imgui_win32_dx11/lib/*.lib
+!extern/imgui_win32_dx11/bin/*.dll
 
 # Fortran module files
 *.mod
