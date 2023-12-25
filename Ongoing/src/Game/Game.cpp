@@ -6,6 +6,9 @@
 #include "Game/Prism.hpp"
 #include "Game/Sphere.hpp"
 
+#include "Game/GFXCMDLogger.hpp"
+#include "Game/GFXCMDLogFileView.hpp"
+
 #include "AdditionalRanges.hpp"
 
 Game::Game(const ChiliWindow& wnd, Graphics& gfx,
@@ -15,8 +18,13 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     timer_(), entities_() {
     auto slotIndexedRender = rendererSystem_
         .addRenderer<IndexedRenderer>();
+    rendererSystem_.enableLog(slotIndexedRender);
+    rendererSystem_.sync(slotIndexedRender);
+
     auto slotBlendedRender = rendererSystem_
         .addRenderer<BlendedRenderer>();
+    rendererSystem_.enableLog(slotBlendedRender);
+    rendererSystem_.sync(slotBlendedRender);
 
     createObjects(80u, wnd, gfx, kbd, mouse);
 }
@@ -37,6 +45,8 @@ void Game::update() {
 
 void Game::render() {
     rendererSystem_.render();
+    GFXCMDLOG.advance();
+    GFXCMDLOG_FILEVIEW.report();
 }
 
 void Game::createObjects(std::size_t n, const ChiliWindow& wnd,

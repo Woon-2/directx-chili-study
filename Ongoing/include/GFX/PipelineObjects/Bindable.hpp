@@ -1,6 +1,10 @@
 #ifndef __Bindable
 #define __Bindable
 
+#define ACTIVATE_BINDABLE_LOG
+
+#include "Game/GFXCMDLogger.hpp"
+
 #include <utility>
 
 class GFXPipeline;
@@ -46,6 +50,18 @@ public:
         pLastBinder = this;
 
         static_cast<T*>(this)->doBind( std::forward<Args>(args)... );
+
+    #ifdef ACTIVATE_BINDABLE_LOG
+        GFXCMDLOG.logCMD( GFXCMDDesc{
+            .cmdType = GFXCMDType::Bind,
+            .sources = { GFXCMDSource{
+                // temporarily use literal,
+                // replace it later.
+                .category = "Bindable",
+                .pSource = this
+            } }
+        } );
+    #endif  // ACTIVATE_BINDABLE_LOG
     }
 
 private:

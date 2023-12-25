@@ -3,10 +3,43 @@
 
 #include "GFX/PipelineObjects/Bindable.hpp"
 
+#include "Game/GFXCMDLogger.hpp"
+
 #include <ranges>
 #include <algorithm>
 
 #include "ShaderPath.h"
+
+#ifdef ACTIVATE_RENDERER_LOG
+namespace {
+void logImpl(GFXCMDType cmdType, auto logEnabled, auto logSrc) {
+    // log if logging is enabled.
+    if (logEnabled) {
+        GFXCMDLOG.logCMD( GFXCMDDesc{
+            .cmdType = cmdType,
+            .sources = { GFXCMDSource{
+                // temporarily use literal,
+                // replace it later.
+                .category = "Renderer",
+                .pSource = logSrc
+            } }
+        } );
+    }
+}
+}   // anonymous namespace
+
+void Renderer::LogComponent::logCreate() {
+    logImpl(GFXCMDType::Create, logEnabled(), logSrc_);
+}
+
+void Renderer::LogComponent::logBind() {
+    logImpl(GFXCMDType::Bind, logEnabled(), logSrc_);
+}
+
+void Renderer::LogComponent::logDraw() {
+    logImpl(GFXCMDType::Draw, logEnabled(), logSrc_);
+}
+#endif  // ACTIVATE_RENDERER_LOG
 
 void Renderer::render(Scene& scene) {
     std::ranges::for_each( std::move(rendererDesc().IDs),
@@ -30,6 +63,9 @@ void Renderer::render(Scene& scene) {
                 }
             );
 
+        #ifdef ACTIVATE_RENDERER_LOG
+            logComponent().logDraw();
+        #endif
             pipeline_.drawCall(dc.drawContext());
         }
     );
@@ -76,6 +112,27 @@ const RendererDesc IndexedRenderer::rendererDesc() const {
                 IDVertexShader_, IDPixelShader_
             }
         };
+}
+
+void IndexedRenderer::loadBindables(GFXFactory factory) {
+#ifdef ACTIVATE_RENDERER_LOG
+    if ( logComponent().logEnabled() ) {
+        // if the vertex shader not cached yet,
+        // creation will take place, so log it if logging is enabled.
+        if ( !mappedStorage().get<MyVertexShader>() ) {
+            logComponent().logCreate();
+        }
+
+        // if the pixel shader not cached yet,
+        // creation will take place, so log it if logging is enabled.
+        if ( !mappedStorage().get<MyPixelShader>() ) {
+            logComponent().logCreate();
+        }
+    }
+#endif
+    // do cache.
+    IDVertexShader_ = mappedStorage().cache<MyVertexShader>(factory);
+    IDPixelShader_ = mappedStorage().cache<MyPixelShader>(factory);
 }
 
 BlendedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
@@ -127,4 +184,25 @@ const RendererDesc BlendedRenderer::rendererDesc() const {
                 IDVertexShader_, IDPixelShader_
             }
         };
+}
+
+void BlendedRenderer::loadBindables(GFXFactory factory) {
+#ifdef ACTIVATE_RENDERER_LOG
+    if ( logComponent().logEnabled() ) {
+        // if the vertex shader not cached yet,
+        // creation will take place, so log it if logging is enabled.
+        if ( !mappedStorage().get<MyVertexShader>() ) {
+            logComponent().logCreate();
+        }
+
+        // if the pixel shader not cached yet,
+        // creation will take place, so log it if logging is enabled.
+        if ( !mappedStorage().get<MyPixelShader>() ) {
+            logComponent().logCreate();
+        }
+    }
+#endif
+    // do cache.
+    IDVertexShader_ = mappedStorage().cache<MyVertexShader>(factory);
+    IDPixelShader_ = mappedStorage().cache<MyPixelShader>(factory);
 }

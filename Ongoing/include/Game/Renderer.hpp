@@ -1,6 +1,8 @@
 #ifndef __Renderer
 #define __Renderer
 
+#define ACTIVATE_RENDERER_LOG
+
 #include "Scene.hpp"
 #include "RendererDesc.hpp"
 
@@ -14,10 +16,51 @@
 #include <filesystem>
 
 class Renderer {
+#ifdef ACTIVATE_RENDERER_LOG
+private:
+    class LogComponent {
+    public:
+        LogComponent() noexcept
+            : logSrc_(nullptr), bLogEnabled_(false) {}
+        
+        LogComponent(const Renderer* parent) noexcept
+            : logSrc_(parent), bLogEnabled_(false) {}
+
+        void enableLog() noexcept {
+            bLogEnabled_ = true;
+        }
+
+        void disableLog() noexcept {
+            bLogEnabled_ = false;
+        }
+
+        bool logEnabled() const noexcept {
+            return bLogEnabled_;
+        }
+
+        void logCreate();
+        void logBind();
+        void logDraw();
+
+    private:
+        const Renderer* logSrc_;
+        bool bLogEnabled_;
+    };
+#endif  // ACTIVATE_RENDERER_LOG
 public:
-    Renderer() = default;
+    Renderer()
+        : pipeline_(), pStorage_(nullptr)
+    #ifdef ACTIVATE_RENDERER_LOG
+        ,logComponent_(this)
+    #endif
+        {}
+
     Renderer(GFXPipeline pipeline)
-        : pipeline_( std::move(pipeline) ), pStorage_(nullptr) {}
+        : pipeline_( std::move(pipeline) ), pStorage_(nullptr)
+    #ifdef ACTIVATE_RENDERER_LOG
+        ,logComponent_(this)
+    #endif
+        {}
 
     virtual ~Renderer() {}
 
@@ -36,7 +79,30 @@ public:
         loadBindables(std::move(factory));
     }
 
+#ifdef ACTIVATE_RENDERER_LOG
+    void enableLog() noexcept {
+        logComponent().enableLog();
+    }
+
+    void disableLog() noexcept {
+        logComponent().disableLog();
+    }
+
+    bool logEnabled() const noexcept {
+        return logComponent().logEnabled();
+    }
+#endif
+
 protected:
+#ifdef ACTIVATE_RENDERER_LOG
+    LogComponent& logComponent() noexcept {
+        return logComponent_;
+    }
+
+    const LogComponent& logComponent() const noexcept {
+        return logComponent_;
+    }
+#endif  // ACTIVATE_RENDERER_LOG
     GFXStorage& mappedStorage() noexcept {
         return *pStorage_;
     }
@@ -51,6 +117,9 @@ private:
 
     GFXPipeline pipeline_;
     GFXStorage* pStorage_;
+#ifdef ACTIVATE_RENDERER_LOG
+    LogComponent logComponent_;
+#endif // ACTIVATE_RENDERER_LOG
 };
 
 class IndexedRenderer : public Renderer {
@@ -83,10 +152,7 @@ public:
 private:
     const RendererDesc rendererDesc() const override;
 
-    void loadBindables(GFXFactory factory) override {
-        IDVertexShader_ = mappedStorage().cache<MyVertexShader>(factory);
-        IDPixelShader_ = mappedStorage().cache<MyPixelShader>(factory);
-    }
+    void loadBindables(GFXFactory factory) override;
 
     GFXStorage* pStorage_;
     GFXStorage::ID IDVertexShader_;
@@ -126,11 +192,7 @@ public:
 
 private:
     const RendererDesc rendererDesc() const override;
-
-    void loadBindables(GFXFactory factory) override {
-        IDVertexShader_ = mappedStorage().cache<MyVertexShader>(factory);
-        IDPixelShader_ = mappedStorage().cache<MyPixelShader>(factory);
-    }
+    void loadBindables(GFXFactory factory) override;
 
     GFXStorage* pStorage_;
     GFXStorage::ID IDVertexShader_;

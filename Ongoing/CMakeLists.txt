@@ -69,6 +69,9 @@ target_sources(chili PRIVATE
     src/Game/Renderer.cpp
     src/Game/RendererSystem.cpp
     src/Game/GTransformComponent.cpp
+    src/Game/GFXCMDLogger.cpp
+    src/Game/GFXCMDSummarizer.cpp
+    src/Game/GFXCMDLogFileView.cpp
     include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp
     include/Game/Box.hpp
@@ -88,6 +91,9 @@ target_sources(chili PRIVATE
     include/Game/Transform.hpp
     include/Game/Chrono.hpp
     include/Game/GTransformComponent.hpp
+    include/Game/GFXCMDLogger.hpp
+    include/Game/GFXCMDSummarizer.hpp
+    include/Game/GFXCMDLogFileView.hpp
 )
 
 # GFX sources

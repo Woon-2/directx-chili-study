@@ -25,11 +25,31 @@ public:
 
     template <class RendererT>
     Slot addRenderer() {
-        auto renderer = std::make_unique<RendererT>(pipeline_);
-        renderer->sync(resourceStorage_, factory_);
-        pairs_.emplace_back( std::move(renderer), Scene{} );
+        pairs_.emplace_back( std::make_unique<RendererT>(pipeline_), Scene{} );
         return pairs_.size() - 1u;
     }
+
+    void sync(Slot slot) {
+        auto& [pRenderer, _] = pairs_.at(slot);
+        pRenderer->sync(resourceStorage_, factory_);
+    }
+
+#ifdef ACTIVATE_RENDERER_LOG
+    void enableLog(Slot slot) noexcept {
+        auto& [pRenderer, _] = pairs_.at(slot);
+        pRenderer->enableLog();
+    }
+
+    void disableLog(Slot slot) noexcept {
+        auto& [pRenderer, _] = pairs_.at(slot);
+        pRenderer->disableLog();
+    }
+
+    bool logEnabled(Slot slot) const noexcept {
+        auto& [pRenderer, _] = pairs_.at(slot);
+        return pRenderer->logEnabled();
+    }
+#endif // ACTIVATE_RENDERER_LOG
 
     void render() {
         for (auto slot = Slot(0); slot < pairs_.size(); ++slot) {
