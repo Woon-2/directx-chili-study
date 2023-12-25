@@ -357,7 +357,16 @@ public:
     }
 
     void logCMD(const GFXCMDDesc& desc) {
+        // log for received sources.
         std::ranges::for_each( desc.sources,
+            [this, cmdType = desc.cmdType](auto&& source) {
+                checkCategory(source.category);
+                storage_[source.category].log(cmdType, source.pSource);
+            }
+        );
+
+        // additionally log for current entry stack.
+        std::ranges::for_each( entryStack_,
             [this, cmdType = desc.cmdType](auto&& source) {
                 checkCategory(source.category);
                 storage_[source.category].log(cmdType, source.pSource);
@@ -373,6 +382,22 @@ public:
         std::ranges::for_each( storage_, [](auto& pair) {
             pair.second.advance();
         } );
+    }
+
+    void entryStackPush(const GFXCMDSource& cmdSrc) {
+        entryStack_.push_back(cmdSrc);
+    }
+
+    const GFXCMDSource& entryStackPeek(
+        const GFXCMDSource& cmdSrc
+    ) const noexcept {
+        return entryStack_.back();
+    }
+
+    [[maybe_unused]] const GFXCMDSource entryStackPop() noexcept {
+        auto ret = std::move(entryStack_.back());
+        entryStack_.pop_back();
+        return ret;
     }
 
     Count CMDCnt(GFXCMDFilter cmdFilter) const {
@@ -568,6 +593,7 @@ private:
     mutable std::unordered_map< GFXCMDSourceCategory,
         History, GFXCMDSourceCategory::Hash
     > storage_;
+    std::vector<GFXCMDSource> entryStack_;
 };
 
 GFXCMDLogger& getGFXCMDLogger();

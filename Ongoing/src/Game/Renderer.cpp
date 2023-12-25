@@ -39,9 +39,25 @@ void Renderer::LogComponent::logBind() {
 void Renderer::LogComponent::logDraw() {
     logImpl(GFXCMDType::Draw, logEnabled(), logSrc_);
 }
+
+void Renderer::LogComponent::entryStackPush() {
+    GFXCMDLOG.entryStackPush( GFXCMDSource{
+        .category = "Renderer",
+        .pSource = logSrc_
+    } );
+}
+
+void Renderer::LogComponent::entryStackPop() noexcept {
+    GFXCMDLOG.entryStackPop();
+}
+
 #endif  // ACTIVATE_RENDERER_LOG
 
 void Renderer::render(Scene& scene) {
+#ifdef ACTIVATE_RENDERER_LOG
+    logComponent().entryStackPush();
+#endif
+
     std::ranges::for_each( std::move(rendererDesc().IDs),
         [this](auto&& id) {
             pipeline_.bind( mappedStorage().get(
@@ -69,6 +85,10 @@ void Renderer::render(Scene& scene) {
             pipeline_.drawCall(dc.drawContext());
         }
     );
+
+#ifdef ACTIVATE_RENDERER_LOG
+    logComponent().entryStackPop();
+#endif
 }
 
 IndexedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)

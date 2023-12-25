@@ -41,6 +41,8 @@ private:
         void logCreate();
         void logBind();
         void logDraw();
+        void entryStackPush();
+        void entryStackPop() noexcept;
 
     private:
         const Renderer* logSrc_;
