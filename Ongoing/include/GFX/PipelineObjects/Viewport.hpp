@@ -25,11 +25,39 @@ class Viewport : public IBindable,
 public:
     friend class LocalRebindInterface<Viewport>;
 
-    Viewport(const D3D11_VIEWPORT& data)
-        : data_(data) {}
+    Viewport( const D3D11_VIEWPORT& data
+    #ifdef ACTIVATE_BINDABLE_LOG
+        , bool enableLogOnCreation = true
+    #endif
+    ) :
+    #ifdef ACTIVATE_BINDABLE_LOG
+        logComponent_( this, GFXCMDSourceCategory("Topology") ),
+    #endif
+        data_(data) {
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (enableLogOnCreation) {
+            logComponent_.enableLog();
+        }
+        logComponent_.logCreate();
+    #endif
+    }
 
-    Viewport(D3D11_VIEWPORT&& data)
-        : data_(std::move(data)) {}
+    Viewport( D3D11_VIEWPORT&& data
+    #ifdef ACTIVATE_BINDABLE_LOG
+        , bool enableLogOnCreation = true
+    #endif
+    ) :
+    #ifdef ACTIVATE_BINDABLE_LOG
+        logComponent_( this, GFXCMDSourceCategory("Topology") ),
+    #endif
+        data_(std::move(data)) {
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (enableLogOnCreation) {
+            logComponent_.enableLog();
+        }
+        logComponent_.logCreate();
+    #endif
+    }
 
     D3D11_VIEWPORT* data() noexcept {
         return &data_;
@@ -41,9 +69,20 @@ public:
 
 private:
     void bind(GFXPipeline& pipeline) override final {
-        binder_.bind( pipeline, data() );
+        [[maybe_unused]] auto bBindOccured = binder_.bind(
+            pipeline, data()
+        );
+
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (bBindOccured) {
+            logComponent_.logBind();
+        }
+    #endif 
     }
 
+#ifdef ACTIVATE_BINDABLE_LOG
+    IBindable::LogComponent logComponent_;
+#endif
     D3D11_VIEWPORT data_;
     ViewportBinder binder_;
 };

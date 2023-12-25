@@ -14,7 +14,15 @@ void VertexShaderBinder::doBind(GFXPipeline& pipeline,
 }
 
 void VertexShader::bind(GFXPipeline& pipeline) {
-    binder_.bind( pipeline, pVertexShader_.Get(), pInputLayout_.Get() );
+    [[maybe_unused]] auto bBindOccured = binder_.bind(
+        pipeline, pVertexShader_.Get(), pInputLayout_.Get()
+    );
+
+#ifdef ACTIVATE_BINDABLE_LOG
+    if (bBindOccured) {
+        logComponent_.logBind();
+    }
+#endif 
 }
 
 void PixelShaderBinder::doBind(
@@ -29,7 +37,15 @@ void PixelShaderBinder::doBind(
 
 PixelShader::PixelShader( GFXFactory factory,
     const std::filesystem::path& path
-) {
+#ifdef ACTIVATE_BINDABLE_LOG
+    , bool enableLogOnCreation
+#endif
+) :
+#ifdef ACTIVATE_BINDABLE_LOG
+    logComponent_( this, GFXCMDSourceCategory("PixelShader") ),
+#endif
+    byteCode_(), pPixelShader_(), binder_()
+{
     GFX_THROW_FAILED(
         D3DReadFileToBlob(path.c_str(), &byteCode_)
     );
@@ -38,8 +54,23 @@ PixelShader::PixelShader( GFXFactory factory,
             byteCodeLength(), nullptr, &pPixelShader_
         )
     );
+
+#ifdef ACTIVATE_BINDABLE_LOG
+    if (enableLogOnCreation) {
+        logComponent_.enableLog();
+    }
+    logComponent_.logCreate();
+#endif
 }
 
 void PixelShader::bind(GFXPipeline& pipeline) {
-    binder_.bind( pipeline, pPixelShader_.Get() );
+    [[maybe_unused]] auto bBindOccured = binder_.bind(
+        pipeline, pPixelShader_.Get()
+    );
+
+#ifdef ACTIVATE_BINDABLE_LOG
+    if (bBindOccured) {
+        logComponent_.logBind();
+    }
+#endif 
 }

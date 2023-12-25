@@ -32,7 +32,15 @@ public:
     VertexShader( GFXFactory factory,
         const InputElemDescArray& ieDescs,
         const std::filesystem::path& path
-    ) {
+    #ifdef ACTIVATE_BINDABLE_LOG
+        , bool enableLogOnCreation = true
+    #endif
+    ) :
+    #ifdef ACTIVATE_BINDABLE_LOG
+        logComponent_( this, GFXCMDSourceCategory("VertexShader") ),
+    #endif
+        byteCode_(), pVertexShader_(), pInputLayout_(), binder_()
+    {
         GFX_THROW_FAILED(
             D3DReadFileToBlob(path.c_str(), &byteCode_)
         );
@@ -50,6 +58,13 @@ public:
                 &pInputLayout_
             )
         );
+
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (enableLogOnCreation) {
+            logComponent_.enableLog();
+        }
+        logComponent_.logCreate();
+    #endif
     }
 
     const wrl::ComPtr<ID3DBlob> byteCodeBlob() const noexcept {
@@ -67,6 +82,9 @@ public:
 private:
     void bind(GFXPipeline& pipeline) override final;
 
+#ifdef ACTIVATE_BINDABLE_LOG
+    IBindable::LogComponent logComponent_;
+#endif
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11VertexShader> pVertexShader_;
     wrl::ComPtr<ID3D11InputLayout> pInputLayout_;
@@ -88,6 +106,9 @@ public:
 
     PixelShader( GFXFactory factory,
         const std::filesystem::path& path
+    #ifdef ACTIVATE_BINDABLE_LOG
+        , bool enableLogOnCreation = true
+    #endif
     );
 
     const wrl::ComPtr<ID3DBlob> byteCodeBlob() const noexcept {
@@ -104,6 +125,9 @@ public:
 private:
     void bind(GFXPipeline& pipeline) override final;
 
+#ifdef ACTIVATE_BINDABLE_LOG
+    IBindable::LogComponent logComponent_;
+#endif
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11PixelShader> pPixelShader_;
     PixelShaderBinder binder_;

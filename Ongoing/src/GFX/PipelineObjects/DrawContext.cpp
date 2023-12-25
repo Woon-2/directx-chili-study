@@ -9,6 +9,10 @@ void DrawContextIndexed::indexedDrawCall(GFXPipeline& pipeline) const {
             startIndexLocation_, baseVertexLocation_
         )
     );
+
+#ifdef ACTIVATE_DRAWCONTEXT_LOG
+    logComponent_.logDraw();
+#endif
 }
 
 void DrawContextIndexed::drawCall(GFXPipeline& pipeline) const {

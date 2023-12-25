@@ -94,6 +94,9 @@ public:
     template <std::ranges::contiguous_range R>
     VertexBuffer( GFXFactory factory,
         R&& range
+    #ifdef ACTIVATE_BINDABLE_LOG
+        , bool enableLogOnCreation = true
+    #endif
     ) : Buffer( std::move(factory),
             D3D11_BUFFER_DESC{
                 .ByteWidth = static_cast<UINT>(
@@ -110,7 +113,18 @@ public:
                 .SysMemPitch = 0,
                 .SysMemSlicePitch = 0
             }
-        ), binder_(), slot_() {}
+        ),
+    #ifdef ACTIVATE_BINDABLE_LOG
+        logComponent_( this, GFXCMDSourceCategory("VertexBuffer") ),
+    #endif
+        binder_(), slot_() {
+        #ifdef ACTIVATE_BINDABLE_LOG
+            if (enableLogOnCreation) {
+                logComponent_.enableLog();
+            }
+            logComponent_.logCreate();
+        #endif
+        }
 
         UINT slot() const noexcept {
             return slot_;
@@ -125,11 +139,21 @@ private:
         const auto stride = static_cast<UINT>( sizeof(MyVertex) );
         const auto offset = static_cast<UINT>( 0u );
 
-        binder_.bind(pipeline, slot_, data().GetAddressOf(),
-            &stride, &offset
+        [[maybe_unused]] auto bBindOccured = binder_.bind(
+            pipeline, slot_, data().GetAddressOf(), &stride, &offset
         );
+
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (bBindOccured) {
+            logComponent_.logBind();
+        }
+    #endif
+
     } 
 
+#ifdef ACTIVATE_BINDABLE_LOG
+    IBindable::LogComponent logComponent_;
+#endif
     VertexBufferBinder binder_;
     UINT slot_;
 };
@@ -154,6 +178,9 @@ public:
     template <std::ranges::contiguous_range R>
     IndexBuffer( GFXFactory factory,
         R&& range
+    #ifdef ACTIVATE_BINDABLE_LOG
+        , bool enableLogOnCreation = true
+    #endif
     ) : Buffer( std::move(factory),
         D3D11_BUFFER_DESC{
             .ByteWidth = static_cast<UINT>(
@@ -170,11 +197,29 @@ public:
             .SysMemPitch = 0u,
             .SysMemSlicePitch = 0u
         }
-    ) {}
+    )
+    #ifdef ACTIVATE_BINDABLE_LOG
+        ,logComponent_( this, GFXCMDSourceCategory("IndexBuffer") )
+    #endif
+    {
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (enableLogOnCreation) {
+            logComponent_.enableLog();
+        }
+        logComponent_.logCreate();
+    #endif
+    }
 
 private:
     void bind(GFXPipeline& pipeline) override final {
-        binder_.bind(pipeline, data().Get(), indexFormat());
+        [[maybe_unused]] auto bBindOccured = binder_.bind(
+            pipeline, data().Get(), indexFormat()
+        );
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (bBindOccured) {
+            logComponent_.logBind();
+        }
+    #endif
     }
 
     static consteval DXGI_FORMAT indexFormat() noexcept {
@@ -202,6 +247,9 @@ private:
         }
     }
 
+#ifdef ACTIVATE_BINDABLE_LOG
+    IBindable::LogComponent logComponent_;
+#endif
     IndexBufferBinder binder_;
 };
 
@@ -254,15 +302,40 @@ public:
     template <std::ranges::contiguous_range R>
     VSCBuffer( GFXFactory factory,
         UINT slot, D3D11_USAGE usage, UINT CPUAccessFlags, R&& range
+    #ifdef ACTIVATE_BINDABLE_LOG
+        , bool enableLogOnCreation = true
+    #endif
     ) : CBuffer<ValT>( std::move(factory), usage,
         CPUAccessFlags, std::forward<R>(range)
-    ), slot_(slot) {}
+    ), 
+    #ifdef ACTIVATE_BINDABLE_LOG
+        logComponent_( this, GFXCMDSourceCategory("VSCBuffer") ),
+    #endif
+        slot_(slot) {
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (enableLogOnCreation) {
+            logComponent_.enableLog();
+        }
+        logComponent_.logCreate();
+    #endif
+    }
 
 private:
     void bind(GFXPipeline& pipeline) override final {
-        binder_.bind( pipeline, slot_, data().GetAddressOf() );
+        [[maybe_unused]] auto bBindOccured = binder_.bind(
+            pipeline, slot_, data().GetAddressOf()
+        );
+
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (bBindOccured) {
+            logComponent_.logBind();
+        }
+    #endif
     }
 
+#ifdef ACTIVATE_BINDABLE_LOG
+    IBindable::LogComponent logComponent_;
+#endif
     UINT slot_;
     VSCBufferBinder binder_;
 };
@@ -286,15 +359,40 @@ public:
     template <std::ranges::contiguous_range R>
     PSCBuffer( GFXFactory factory,
         UINT slot, D3D11_USAGE usage, UINT CPUAccessFlags, R&& range
+    #ifdef ACTIVATE_BINDABLE_LOG
+        , bool enableLogOnCreation = true
+    #endif
     ) : CBuffer<ValT>( std::move(factory), usage,
         CPUAccessFlags, std::forward<R>(range)
-    ), slot_(slot) {}
+    ),
+    #ifdef ACTIVATE_BINDABLE_LOG
+        logComponent_( this, GFXCMDSourceCategory("PSCBuffer") ),
+    #endif
+    slot_(slot) {
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (enableLogOnCreation) {
+            logComponent_.enableLog();
+        }
+        logComponent_.logCreate();
+    #endif
+    }
 
 private:
     void bind(GFXPipeline& pipeline) override final {
-        binder_.bind( pipeline, slot_, data().GetAddressOf() );
+        [[maybe_unused]] auto bBindOccured = binder_.bind(
+            pipeline, slot_, data().GetAddressOf()
+        );
+
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (bBindOccured) {
+            logComponent_.logBind();
+        }
+    #endif
     }
 
+#ifdef ACTIVATE_BINDABLE_LOG
+    IBindable::LogComponent logComponent_;
+#endif
     UINT slot_;
     PSCBufferBinder binder_;
 };

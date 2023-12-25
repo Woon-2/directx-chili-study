@@ -13,6 +13,61 @@ class IBindable {
 public:
     friend class GFXPipeline;
 
+#ifdef ACTIVATE_BINDABLE_LOG
+protected:
+    class LogComponent {
+    public:
+        LogComponent() noexcept
+            : category_(), logSrc_(nullptr), bLogEnabled_(false) {}
+        
+        LogComponent( const void* parent,
+            const GFXCMDSourceCategory& category
+        ) noexcept
+            : category_(category), logSrc_(parent), bLogEnabled_(false) {}
+
+        LogComponent( const void* parent,
+            GFXCMDSourceCategory&& category
+        ) noexcept
+            : category_( std::move(category) ),
+            logSrc_(parent), bLogEnabled_(false) {}
+
+        void enableLog() noexcept {
+            bLogEnabled_ = true;
+        }
+
+        void disableLog() noexcept {
+            bLogEnabled_ = false;
+        }
+
+        bool logEnabled() const noexcept {
+            return bLogEnabled_;
+        }
+
+        void logCreate() const {
+            logImpl(GFXCMDType::Create);
+        }
+
+        void logBind() const {
+            logImpl(GFXCMDType::Bind);
+        }
+
+    private:
+        void logImpl(GFXCMDType cmdType) const {
+            GFXCMDLOG.logCMD( GFXCMDDesc{
+                .cmdType = cmdType,
+                .sources = { GFXCMDSource{
+                    .category = category_,
+                    .pSource = logSrc_
+                } }
+            } );
+        }
+
+        GFXCMDSourceCategory category_;
+        const void* logSrc_;
+        bool bLogEnabled_;
+    };
+#endif  // ACTIVATE_BINDABLE_LOG
+
 private:
     virtual void bind(GFXPipeline& pipeline) = 0;
 };
@@ -40,10 +95,10 @@ public:
     }
 
     template <class ... Args>
-    void bind(Args&& ... args) {
+    [[maybe_unused]] bool bind(Args&& ... args) {
         if (pLastBinder == this) {
             if ( !(bGlobalRebindEnabled || bLocalRebindEnabled_) ) {
-                return;
+                return false;
             }
         }
 
@@ -51,17 +106,7 @@ public:
 
         static_cast<T*>(this)->doBind( std::forward<Args>(args)... );
 
-    #ifdef ACTIVATE_BINDABLE_LOG
-        GFXCMDLOG.logCMD( GFXCMDDesc{
-            .cmdType = GFXCMDType::Bind,
-            .sources = { GFXCMDSource{
-                // temporarily use literal,
-                // replace it later.
-                .category = "Bindable",
-                .pSource = this
-            } }
-        } );
-    #endif  // ACTIVATE_BINDABLE_LOG
+        return true;
     }
 
 private:

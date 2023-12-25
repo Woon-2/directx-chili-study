@@ -37,10 +37,7 @@ private:
         bool logEnabled() const noexcept {
             return bLogEnabled_;
         }
-
-        void logCreate();
-        void logBind();
-        void logDraw();
+        
         void entryStackPush();
         void entryStackPop() noexcept;
 
