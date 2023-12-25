@@ -30,6 +30,16 @@ public:
         return pDCs_ | dereference();
     }
 
+    template <class TRenderer>
+    void sortFor(const TRenderer& renderer) {
+        std::ranges::for_each( drawComponents(), [&renderer](auto& dc) {
+            dc.sync(renderer);
+        } );
+        std::ranges::sort( pDCs_, std::less<>{},
+            &IDrawComponent::renderObjectDesc
+        );
+    }
+
 private:
     std::vector< std::shared_ptr<IDrawComponent> > pDCs_;
 };

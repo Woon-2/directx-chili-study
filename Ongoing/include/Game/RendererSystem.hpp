@@ -59,6 +59,7 @@ public:
 
     void render(Slot slot) {
         auto& [pRenderer, scene] = pairs_.at(slot);
+        scene.sortFor(*pRenderer);
         pRenderer->render(scene);
     }
 
