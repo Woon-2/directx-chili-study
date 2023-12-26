@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(PWin VERSION 2023.12.03 LANGUAGES CXX)
+project(PWin VERSION 2023.12.26 LANGUAGES CXX)
 
 message(STATUS "configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message("Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -103,10 +103,7 @@ function(auto_configure TARGET_NAME ACCESS_MODIFIER)
         )
     endif()
 
-    target_compile_definitions(${TARGET_NAME}
-    ${ACCESS_MODIFIER}
-        UNICODE _UNICODE
-        # disable unused window stuff, Keep Window.h light
+    set(WIN32_LIGHT_MACROS
         WIN32_LEAN_AND_MEAN
         NOGDICAPMASKS
         NOSYSMETRICS
@@ -140,6 +137,17 @@ function(auto_configure TARGET_NAME ACCESS_MODIFIER)
         NOPROXYSTUB
         NOIMAGE
         NOTAPE
+    )
+
+    set(ENABLE_WIN32_LIGHT_MACROS FALSE CACHE BOOL
+        "Turn on this if you want to enable macros ignoring heavy win32 stuffs."
+    )
+
+    target_compile_definitions(${TARGET_NAME}
+    ${ACCESS_MODIFIER}
+        UNICODE _UNICODE
+        # disable unused window stuff, Keep Window.h light
+        "$<$<BOOL:${ENABLE_WIN32_LIGHT_MACROS}>:${WIN32_LIGHT_MACROS}>"
         NOMINMAX
         # type safety
         # https://learn.microsoft.com/en-us/windows/win32/winprog/enabling-strict
