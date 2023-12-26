@@ -76,28 +76,40 @@ template <class T>
 class BinderInterface {
 public:
     BinderInterface()
-        : bLocalRebindEnabled_(false) {}
+        : bLocalRebindEnabled_(false),
+        bLocalRebindTemporary_(false) {}
 
     bool localRebindEnabled() const noexcept {
-        bLocalRebindEnabled_;
+        return bLocalRebindEnabled_ || bLocalRebindTemporary_;
     }
 
     static bool globalRebindEnabled() noexcept {
-        return bGlobalRebindEnabled;
+        return bGlobalRebindEnabled || bGlobalRebindTemporary;
     }
 
     void enableLocalRebind() noexcept {
         bLocalRebindEnabled_ = true;
     }
 
+    void enableLocalRebindTemporary() noexcept {
+        bLocalRebindTemporary_ = true;
+    }
+
     static void enableGlobalRebind() noexcept {
-        return bGlobalRebindEnabled;
+        bGlobalRebindEnabled = true;
+    }
+
+    static void enableGlobalRebindTemporary() noexcept {
+        bGlobalRebindTemporary = true;
     }
 
     template <class ... Args>
     [[maybe_unused]] bool bind(Args&& ... args) {
         if (pLastBinder == this) {
-            if ( !(bGlobalRebindEnabled || bLocalRebindEnabled_) ) {
+            if ( !( bGlobalRebindEnabled || bLocalRebindEnabled_
+                    || bGlobalRebindTemporary || bLocalRebindTemporary_
+                )
+            ) {
                 return false;
             }
         }
@@ -106,13 +118,18 @@ public:
 
         static_cast<T*>(this)->doBind( std::forward<Args>(args)... );
 
+        bGlobalRebindTemporary = false;
+        bLocalRebindTemporary_ = false;
+
         return true;
     }
 
 private:
     static const BinderInterface* pLastBinder;
     static bool bGlobalRebindEnabled;
+    static bool bGlobalRebindTemporary;
     bool bLocalRebindEnabled_;
+    bool bLocalRebindTemporary_;
 };
 
 template <class T>
@@ -120,6 +137,9 @@ const BinderInterface<T>* BinderInterface<T>::pLastBinder;
 
 template <class T>
 bool BinderInterface<T>::bGlobalRebindEnabled = false;
+
+template <class T>
+bool BinderInterface<T>::bGlobalRebindTemporary = false;
 
 template <class T>
 class LocalRebindInterface {

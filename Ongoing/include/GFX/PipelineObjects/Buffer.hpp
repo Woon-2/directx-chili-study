@@ -118,21 +118,24 @@ public:
         logComponent_( this, GFXCMDSourceCategory("VertexBuffer") ),
     #endif
         binder_(), slot_() {
-        #ifdef ACTIVATE_BINDABLE_LOG
-            if (enableLogOnCreation) {
-                logComponent_.enableLog();
-            }
-            logComponent_.logCreate();
-        #endif
+    #ifdef ACTIVATE_BINDABLE_LOG
+        if (enableLogOnCreation) {
+            logComponent_.enableLog();
         }
+        logComponent_.logCreate();
+    #endif
+    }
 
-        UINT slot() const noexcept {
-            return slot_;
-        }
+    UINT slot() const noexcept {
+        return slot_;
+    }
 
-        void setSlot(UINT val) noexcept {
-            slot_ = val;
+    void setSlot(UINT val) noexcept {
+        if (val != slot_) {
+            binder_.enableLocalRebindTemporary();
         }
+        slot_ = val;
+    }
 
 private:
     void bind(GFXPipeline& pipeline) override final {
@@ -325,6 +328,9 @@ public:
     }
 
     void setSlot(UINT val) noexcept {
+        if (val != slot_) {
+            binder_.enableLocalRebindTemporary();
+        }
         slot_ = val;
     }
 
@@ -390,6 +396,9 @@ public:
     }
 
     void setSlot(UINT val) noexcept {
+        if (val != slot_) {
+            binder_.enableLocalRebindTemporary();
+        }
         slot_ = val;
     }
 

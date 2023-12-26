@@ -37,6 +37,9 @@ public:
     }
 
     void setSlot(UINT val) noexcept {
+        if (val != slot_) {
+            binder_.enableLocalRebindTemporary();
+        }
         slot_ = val;
     }
 
