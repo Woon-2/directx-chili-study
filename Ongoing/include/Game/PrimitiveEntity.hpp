@@ -44,7 +44,7 @@ class PETransformCBuf : public VSCBuffer<dx::XMMATRIX>{
 public:
     PETransformCBuf() = default;
     PETransformCBuf(GFXFactory factory)
-        : VSCBuffer<dx::XMMATRIX>(factory, 0u, D3D11_USAGE_DYNAMIC,
+        : VSCBuffer<dx::XMMATRIX>(factory, D3D11_USAGE_DYNAMIC,
             D3D11_CPU_ACCESS_WRITE, initialTransforms()
         ) {}
 
@@ -57,7 +57,7 @@ public:
     PEIndexedColorCBuf() = default;
     PEIndexedColorCBuf(GFXFactory factory)
         : PSCBuffer<PEFaceColorData>(
-            factory, 0u, D3D11_USAGE_DEFAULT, 0u, initialColors()
+            factory, D3D11_USAGE_DEFAULT, 0u, initialColors()
         ) {}
 
 private:
@@ -211,6 +211,10 @@ public:
         static_cast<MyPosBuffer*>( pStorage_->get(IDPosBuffer_).value() )
             ->setSlot( IndexedRenderer::slotPosBuffer() );
 
+        assert(pStorage_->get(IDTransformCBuf_).has_value());
+        static_cast<MyTransformCBuf*>( pStorage_->get(IDTransformCBuf_).value() )
+            ->setSlot( 0u );
+
         RODesc_ = RenderObjectDesc{
             .header = {
                 .IDBuffer = IDPosBuffer_,
@@ -227,9 +231,15 @@ public:
         assert(pStorage_->get(IDPosBuffer_).has_value());
         static_cast<MyPosBuffer*>( pStorage_->get(IDPosBuffer_).value() )
             ->setSlot( BlendedRenderer::slotPosBuffer() );
+            
+        assert(pStorage_->get(IDBlendedColorBuffer_).has_value());
         static_cast<MyBlendedColorBuffer*>(
             pStorage_->get(IDBlendedColorBuffer_).value()
         )->setSlot( BlendedRenderer::slotColorBuffer() );
+
+        assert(pStorage_->get(IDTransformCBuf_).has_value());
+        static_cast<MyTransformCBuf*>( pStorage_->get(IDTransformCBuf_).value() )
+            ->setSlot( 0u );
 
         RODesc_ = RenderObjectDesc{
             .header = {

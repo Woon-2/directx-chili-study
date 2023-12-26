@@ -1,6 +1,6 @@
 #include "GFX/PipelineObjects/Texture.hpp"
 
-void TextureBinder::doBind( GFXPipeline& pipeline, std::size_t slot,
+void TextureBinder::doBind( GFXPipeline& pipeline, UINT slot,
     ID3D11ShaderResourceView** srvArr
 ) {
     GFX_THROW_FAILED_VOID(
@@ -10,8 +10,7 @@ void TextureBinder::doBind( GFXPipeline& pipeline, std::size_t slot,
     );
 }
 
-Texture::Texture( GFXFactory factory, std::size_t slot,
-    const Surface& surface
+Texture::Texture( GFXFactory factory, const Surface& surface
 #ifdef ACTIVATE_BINDABLE_LOG
     , bool enableLogOnCreation
 #endif
@@ -19,7 +18,7 @@ Texture::Texture( GFXFactory factory, std::size_t slot,
 #ifdef ACTIVATE_BINDABLE_LOG
     logComponent_( this, GFXCMDSourceCategory("Texture") ),
 #endif
-    slot_(slot), pSRV_() {
+    slot_(), pSRV_() {
     auto textureDesc = D3D11_TEXTURE2D_DESC{
         .Width = static_cast<UINT>( surface.GetWidth() ),
         .Height = static_cast<UINT>( surface.GetHeight() ),

@@ -300,8 +300,8 @@ public:
     friend class LocalRebindInterface< VSCBuffer<ValT> >;
 
     template <std::ranges::contiguous_range R>
-    VSCBuffer( GFXFactory factory,
-        UINT slot, D3D11_USAGE usage, UINT CPUAccessFlags, R&& range
+    VSCBuffer( GFXFactory factory, D3D11_USAGE usage,
+        UINT CPUAccessFlags, R&& range
     #ifdef ACTIVATE_BINDABLE_LOG
         , bool enableLogOnCreation = true
     #endif
@@ -311,13 +311,21 @@ public:
     #ifdef ACTIVATE_BINDABLE_LOG
         logComponent_( this, GFXCMDSourceCategory("VSCBuffer") ),
     #endif
-        slot_(slot) {
+        slot_() {
     #ifdef ACTIVATE_BINDABLE_LOG
         if (enableLogOnCreation) {
             logComponent_.enableLog();
         }
         logComponent_.logCreate();
     #endif
+    }
+
+    UINT slot() const noexcept {
+        return slot_;
+    }
+
+    void setSlot(UINT val) noexcept {
+        slot_ = val;
     }
 
 private:
@@ -357,8 +365,8 @@ public:
     friend class LocalRebindInterface< PSCBuffer<ValT> >;
 
     template <std::ranges::contiguous_range R>
-    PSCBuffer( GFXFactory factory,
-        UINT slot, D3D11_USAGE usage, UINT CPUAccessFlags, R&& range
+    PSCBuffer( GFXFactory factory, D3D11_USAGE usage,
+        UINT CPUAccessFlags, R&& range
     #ifdef ACTIVATE_BINDABLE_LOG
         , bool enableLogOnCreation = true
     #endif
@@ -368,13 +376,21 @@ public:
     #ifdef ACTIVATE_BINDABLE_LOG
         logComponent_( this, GFXCMDSourceCategory("PSCBuffer") ),
     #endif
-    slot_(slot) {
+    slot_() {
     #ifdef ACTIVATE_BINDABLE_LOG
         if (enableLogOnCreation) {
             logComponent_.enableLog();
         }
         logComponent_.logCreate();
     #endif
+    }
+
+    UINT slot() const noexcept {
+        return slot_;
+    }
+
+    void setSlot(UINT val) noexcept {
+        slot_ = val;
     }
 
 private:

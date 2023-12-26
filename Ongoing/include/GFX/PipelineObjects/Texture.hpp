@@ -16,7 +16,7 @@ public:
     friend class BinderInterface<TextureBinder>; 
 
 private:
-    void doBind( GFXPipeline& pipeline, std::size_t slot,
+    void doBind( GFXPipeline& pipeline, UINT slot,
         ID3D11ShaderResourceView** srv
     );
 };
@@ -26,8 +26,7 @@ class Texture : public IBindable,
 public:
     friend class LocalRebindInterface<Texture>; 
 
-    Texture( GFXFactory factory, std::size_t slot,
-        const Surface& surface
+    Texture( GFXFactory factory, const Surface& surface
     #ifdef ACTIVATE_BINDABLE_LOG
         , bool enableLogOnCreation = true
     #endif
@@ -48,7 +47,7 @@ private:
     IBindable::LogComponent logComponent_;
 #endif
     wrl::ComPtr<ID3D11ShaderResourceView> pSRV_;
-    std::size_t slot_;
+    UINT slot_;
     TextureBinder binder_;
 };
 
