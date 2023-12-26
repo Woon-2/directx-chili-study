@@ -114,6 +114,7 @@ target_sources(chili PRIVATE
     src/GFX/PipelineObjects/DrawContext.cpp
     src/GFX/PipelineObjects/RenderTarget.cpp
     src/GFX/PipelineObjects/Shader.cpp
+    src/GFX/PipelineObjects/Texture.cpp
     include/GFX/PipelineObjects/Bindable.hpp
     include/GFX/PipelineObjects/Buffer.hpp
     include/GFX/PipelineObjects/DrawContext.hpp
@@ -122,6 +123,7 @@ target_sources(chili PRIVATE
     include/GFX/PipelineObjects/Shader.hpp
     include/GFX/PipelineObjects/Topology.hpp
     include/GFX/PipelineObjects/Viewport.hpp
+    include/GFX/PipelineObjects/Texture.hpp
 
     include/GFX/Primitives/Cube.hpp
     include/GFX/Primitives/Plane.hpp
