@@ -184,55 +184,6 @@ function(auto_configure TARGET_NAME ACCESS_MODIFIER)
         )
     endif()
 
-    target_compile_definitions(${TARGET_NAME}
-    ${ACCESS_MODIFIER}
-        UNICODE _UNICODE
-        # disable unused window stuff, Keep Window.h light
-        WIN32_LEAN_AND_MEAN
-        NOGDICAPMASKS
-        NOSYSMETRICS
-        NOMENUS
-        NOICONS
-        NOSYSCOMMANDS
-        NORASTEROPS
-        OEMRESOURCE
-        NOATOM
-        NOCLIPBOARD
-        NOCOLOR
-        NOCTLMGR
-        NODRAWTEXT
-        NOKERNEL
-        NONLS
-        NOMEMMGR
-        NOMETAFILE
-        NOOPENFILE
-        NOSCROLL
-        NOSERVICE
-        NOSOUND
-        NOTEXTMETRIC
-        NOWH
-        NOCOMM
-        NOKANJI
-        NOHELP
-        NOPROFILER
-        NODEFERWINDOWPOS
-        NOMCX
-        NORPC
-        NOPROXYSTUB
-        NOIMAGE
-        NOTAPE
-        NOMINMAX
-        # type safety
-        # https://learn.microsoft.com/en-us/windows/win32/winprog/enabling-strict
-        STRICT
-    )
-
-    target_link_options(${TARGET_NAME}
-    ${ACCESS_MODIFIER}
-        /subsystem:WINDOWS
-        /ENTRY:WinMainCRTStartup
-    )
-
     # Platform setting
     if(WIN32)
         set_target_properties(${TARGET_NAME}
