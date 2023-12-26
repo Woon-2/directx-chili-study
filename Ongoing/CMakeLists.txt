@@ -130,6 +130,15 @@ target_sources(chili PRIVATE
     include/GFX/Primitives/Sphere.hpp
 )
 
+# Image processing sources
+target_sources(chili PRIVATE
+    src/Image/GDIPlusMgr.cpp
+    src/Image/Surface.cpp
+
+    include/Image/GDIPlusMgr.hpp
+    include/Image/Surface.hpp
+)
+
 function(auto_configure TARGET_NAME ACCESS_MODIFIER)
     target_compile_features(${TARGET_NAME} ${ACCESS_MODIFIER} cxx_std_20)
 
@@ -242,6 +251,7 @@ PRIVATE
     woon2cache::LRUCache
     d3d11.lib
     D3DCompiler.lib
+    gdiplus.lib
     $<$<CONFIG:DEBUG>:dxguid.lib>
     imgui::imgui_win32_dx11
 )
