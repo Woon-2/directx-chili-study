@@ -1,13 +1,62 @@
 #ifndef __DrawComponent
 #define __DrawComponent
 
+#define ACTIVATE_DRAWCOMPONENT_LOG
+
 #include "RenderObjectDesc.hpp"
+
+#include "GFXCMDLogger.hpp"
 
 #include "GFX/PipelineObjects/DrawContext.hpp"
 
 class Renderer;
 
 class IDrawComponent {
+#ifdef ACTIVATE_DRAWCOMPONENT_LOG
+protected:
+    class LogComponent {
+    public:
+        LogComponent() noexcept
+            : logSrc_(nullptr), bLogEnabled_(false) {}
+        
+        LogComponent( const void* parent,
+            bool enableLogOnCreation = true
+        ) noexcept
+            : logSrc_(parent),
+            bLogEnabled_(enableLogOnCreation) {
+            // must call corresponding entryStackPop
+            // in concrete DrawComponent's constructor.
+            entryStackPush();
+        }
+
+        void enableLog() noexcept {
+            bLogEnabled_ = true;
+        }
+
+        void disableLog() noexcept {
+            bLogEnabled_ = false;
+        }
+
+        bool logEnabled() const noexcept {
+            return bLogEnabled_;
+        }
+
+        void entryStackPush() {
+            GFXCMDLOG.entryStackPush( GFXCMDSource{
+                .category = logCategory(),
+                .pSource = logSrc_
+            } );
+        }
+
+        void entryStackPop() noexcept {
+            GFXCMDLOG.entryStackPop();
+        }
+
+    private:
+        const void* logSrc_;
+        bool bLogEnabled_;
+    };
+#endif  // ACTIVATE_DRAWCOMPONENT_LOG
 public:
     virtual ~IDrawComponent() {}
 
@@ -15,6 +64,13 @@ public:
     virtual IDrawContext* drawContext() = 0;
     virtual const IDrawContext* drawContext() const = 0;
     virtual void sync(const Renderer& pRenderer) = 0;
+
+#ifdef ACTIVATE_DRAWCOMPONENT_LOG
+    static constexpr const GFXCMDSourceCategory
+            logCategory() noexcept {
+            return GFXCMDSourceCategory("DrawComponent");
+        }
+#endif  // ACTIVATE_DRAWCOMPONENT_LOG
 
     friend auto operator<=>(const IDrawComponent& lhs,
         const IDrawComponent& rhs) {

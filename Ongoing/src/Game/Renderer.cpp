@@ -13,7 +13,7 @@
 #ifdef ACTIVATE_RENDERER_LOG
 void Renderer::LogComponent::entryStackPush() {
     GFXCMDLOG.entryStackPush( GFXCMDSource{
-        .category = "Renderer",
+        .category = logCategory(),
         .pSource = logSrc_
     } );
 }

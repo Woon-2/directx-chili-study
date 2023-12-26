@@ -165,8 +165,16 @@ public:
     // all unspecified members are default constructed.
     GFXCMDSummarizer(const GFXCMDLogger& logger)
         : GFXCMDSummarizer(logger,
-            GFXCMDSourceCategory("Renderer"),
-            GFXCMDSourceCategory("DrawComponent")
+    #ifdef ACTIVATE_RENDERER_LOG
+            Renderer::logCategory(),
+    #else
+            "Renderer",
+    #endif
+    #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+            IDrawComponent::logCategory()
+    #else
+            "DrawComponent"
+    #endif
         ) {}
 
     GFXCMDSummarizer(const GFXCMDLogger& logger,

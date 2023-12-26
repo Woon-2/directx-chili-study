@@ -125,7 +125,11 @@ public:
 
     PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
         GFXStorage& storage, const ChiliWindow& wnd
-    ) : RODesc_(), pipeline_(pipeline), pStorage_(&storage),
+    ) : 
+    #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+        logComponent_(this),
+    #endif
+        RODesc_(), pipeline_(pipeline), pStorage_(&storage),
         IDPosBuffer_( storage.cache<MyPosBuffer>(factory) ),
         IDIndexBuffer_( storage.cache<MyIndexBuffer>(factory) ),
         IDTopology_( storage.cache<MyTopology>() ),
@@ -138,13 +142,21 @@ public:
         drawContext_(
             static_cast<UINT>( MyIndexBuffer::size() ),
             0u, 0, storage, IDTransformCBuf_
-        ) {}
+        ) {
+    #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+        logComponent_.entryStackPop();
+    #endif
+    }
 
     template <class ... TesselationFactors>
     PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
         GFXStorage& storage, const ChiliWindow& wnd,
         TesselationFactors&& ... tesselationFactors
-    ) : RODesc_(), pipeline_(pipeline), pStorage_(&storage),
+    ) :
+    #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+        logComponent_(this),
+    #endif
+        RODesc_(), pipeline_(pipeline), pStorage_(&storage),
         IDPosBuffer_( storage.load<MyPosBuffer>(
             factory, std::forward<TesselationFactors>(tesselationFactors)...
         ) ),
@@ -165,7 +177,11 @@ public:
                 std::forward<TesselationFactors>(tesselationFactors)...
             ) ),
             0u, 0, storage, IDTransformCBuf_
-        ) {}
+        ) {
+        #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+            logComponent_.entryStackPop();
+        #endif
+        }
 
     void update(const Transform trans) {
         drawContext_.update(trans);
@@ -236,6 +252,9 @@ public:
     }
 
 private:
+#ifdef ACTIVATE_DRAWCOMPONENT_LOG
+    IDrawComponent::LogComponent logComponent_;
+#endif
     std::optional<RenderObjectDesc> RODesc_;
     GFXPipeline pipeline_;
     GFXStorage* pStorage_;

@@ -37,7 +37,7 @@ private:
         bool logEnabled() const noexcept {
             return bLogEnabled_;
         }
-        
+
         void entryStackPush();
         void entryStackPop() noexcept;
 
@@ -89,6 +89,11 @@ public:
 
     bool logEnabled() const noexcept {
         return logComponent().logEnabled();
+    }
+
+    static constexpr const GFXCMDSourceCategory
+        logCategory() noexcept {
+        return GFXCMDSourceCategory("Renderer");
     }
 #endif
 
