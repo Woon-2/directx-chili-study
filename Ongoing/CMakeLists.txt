@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.12.26 LANGUAGES CXX)
+project(POngoing VERSION 2023.12.27 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -233,6 +233,14 @@ compile_hlsl("${PROJECT_SOURCE_DIR}/shader/VertexShaderBlended.hlsl"
 )
 compile_hlsl("${PROJECT_SOURCE_DIR}/shader/PixelShaderBlended.hlsl"
     "${COMPILED_SHADER_PATH}/PixelShaderBlended.cso"
+    "ps_4_0"
+)
+compile_hlsl("${PROJECT_SOURCE_DIR}/shader/VertexShaderTextured.hlsl"
+    "${COMPILED_SHADER_PATH}/VertexShaderTextured.cso"
+    "vs_4_0"
+)
+compile_hlsl("${PROJECT_SOURCE_DIR}/shader/PixelShaderTextured.hlsl"
+    "${COMPILED_SHADER_PATH}/PixelShaderTextured.cso"
     "ps_4_0"
 )
 add_hlsl_target("${HLSL_COMPILED_SHADERS}")
