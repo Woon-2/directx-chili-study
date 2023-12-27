@@ -161,3 +161,59 @@ void BlendedRenderer::loadBindables(GFXFactory factory) {
     IDVertexShader_ = mappedStorage().cache<MyVertexShader>(factory);
     IDPixelShader_ = mappedStorage().cache<MyPixelShader>(factory);
 }
+
+TexturedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
+    : VertexShader(factory, inputElemDescs(), csoPath()) {}
+
+std::vector<D3D11_INPUT_ELEMENT_DESC>
+TexturedRenderer::MyVertexShader::inputElemDescs() const noexcept {
+    return std::vector<D3D11_INPUT_ELEMENT_DESC>{
+        { .SemanticName = "Position",
+            .SemanticIndex = 0,
+            .Format = DXGI_FORMAT_R32G32B32_FLOAT,
+            .InputSlot = 0,
+            .AlignedByteOffset = 0,
+            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+            .InstanceDataStepRate = 0
+        },
+        { .SemanticName = "TexCoord",
+            .SemanticIndex = 0,
+            .Format = DXGI_FORMAT_R32G32_FLOAT,
+            .InputSlot = 1u,
+            .AlignedByteOffset = 0,
+            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+            .InstanceDataStepRate = 0
+        }
+    };
+}
+
+std::filesystem::path
+TexturedRenderer::MyVertexShader::csoPath() const noexcept {
+    return compiledShaderPath/L"VertexShaderTextured.cso";
+}
+
+TexturedRenderer::MyPixelShader::MyPixelShader(GFXFactory factory)
+    : PixelShader(factory, csoPath()) {}
+
+std::filesystem::path
+TexturedRenderer::MyPixelShader::csoPath() const noexcept {
+    return compiledShaderPath/L"PixelShaderTextured.cso";
+}
+
+const RendererDesc TexturedRenderer::rendererDesc() const {
+    return RendererDesc{
+            .header = {
+                .IDVertexShader = IDVertexShader_,
+                .IDPixelShader = IDPixelShader_,
+                .IDType = typeid(*this)
+            },
+            .IDs = {
+                IDVertexShader_, IDPixelShader_
+            }
+        };
+}
+
+void TexturedRenderer::loadBindables(GFXFactory factory) {
+    IDVertexShader_ = mappedStorage().cache<MyVertexShader>(factory);
+    IDPixelShader_ = mappedStorage().cache<MyPixelShader>(factory);
+}

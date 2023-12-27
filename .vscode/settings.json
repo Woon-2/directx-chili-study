@@ -86,6 +86,7 @@
         "csignal": "cpp",
         "random": "cpp",
         "typeindex": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "codecvt": "cpp"
     }
 }

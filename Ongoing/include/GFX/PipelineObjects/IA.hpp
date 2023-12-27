@@ -7,6 +7,11 @@ struct GFXVertex {
     float z;
 };
 
+struct GFXTexCoord {
+    float u;
+    float v;
+};
+
 struct GFXColor {
     float r;
     float g;

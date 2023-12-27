@@ -203,4 +203,52 @@ private:
     GFXStorage::ID IDPixelShader_;
 };
 
+class TexturedRenderer : public Renderer {
+public:
+    class MyVertexShader : public VertexShader {
+    public:
+        MyVertexShader(GFXFactory factory);
+
+    private:
+        std::vector<D3D11_INPUT_ELEMENT_DESC> inputElemDescs() const noexcept;
+        std::filesystem::path csoPath() const noexcept;
+    };
+
+    class MyPixelShader : public PixelShader {
+    public:
+        MyPixelShader(GFXFactory factory);
+
+    private:
+        std::filesystem::path csoPath() const noexcept;
+    };
+
+    TexturedRenderer() = default;
+    TexturedRenderer(GFXPipeline pipeline)
+        : Renderer(std::move(pipeline)) {}
+
+    static consteval UINT slotPosBuffer() {
+        return 0u;
+    }
+
+    static consteval UINT slotTexBuffer() {
+        return 1u;
+    }
+
+    static consteval UINT slotTexture() {
+        return 0u;
+    }
+
+    static consteval UINT slotSamplerState() {
+        return 0u;
+    }
+
+private:
+    const RendererDesc rendererDesc() const override;
+    void loadBindables(GFXFactory factory) override;
+
+    GFXStorage* pStorage_;
+    GFXStorage::ID IDVertexShader_;
+    GFXStorage::ID IDPixelShader_;
+};
+
 #endif  // __Renderer

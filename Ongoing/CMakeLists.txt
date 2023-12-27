@@ -79,6 +79,7 @@ target_sources(chili PRIVATE
     include/Game/Plane.hpp
     include/Game/Prism.hpp
     include/Game/Sphere.hpp
+    include/Game/Sheet.hpp
     include/Game/Entity.hpp
     include/Game/Renderer.hpp
     include/Game/RendererSystem.hpp
@@ -161,6 +162,7 @@ function(auto_configure TARGET_NAME ACCESS_MODIFIER)
             /fp:fast
             /JMC
             /wd5104
+            /wd4996
         )
 
     # See below link for gcc options

@@ -5,11 +5,16 @@
 #include "Game/Plane.hpp"
 #include "Game/Prism.hpp"
 #include "Game/Sphere.hpp"
+#include "Game/Sheet.hpp"
 
 #include "Game/GFXCMDLogger.hpp"
 #include "Game/GFXCMDLogFileView.hpp"
 
 #include "AdditionalRanges.hpp"
+
+#include "Image/GDIPlusMgr.hpp"
+// do as chili do, it's temporary.
+GDIPlusManager gdipm;
 
 Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse
@@ -25,6 +30,11 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
         .addRenderer<BlendedRenderer>();
     rendererSystem_.enableLog(slotBlendedRender);
     rendererSystem_.sync(slotBlendedRender);
+
+    auto slotTexturedRender = rendererSystem_
+        .addRenderer<TexturedRenderer>();
+    rendererSystem_.enableLog(slotTexturedRender);
+    rendererSystem_.sync(slotTexturedRender);
 
     createObjects(80u, wnd, gfx, kbd, mouse);
 }
@@ -58,6 +68,7 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
         MAKE_PLANE,
         MAKE_PRISM,
         MAKE_SPHERE,
+        MAKE_SHEET,
         SIZE
     };
 
@@ -65,33 +76,58 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
     auto distTesselation = std::uniform_int_distribution<std::size_t>(3u, 48u);
 
     for (auto i = decltype(n)(0); i < n; ++i)  {
+        static constexpr auto pi = 3.14159f;
+
+    #define BASIC_DISTS \
+        Distribution(15.f, 6.f), /* distRadius */   \
+        Distribution(0.f, 2.f * pi), /* distCTP */    \
+        Distribution(0.03f * pi, 0.01f * pi), /* distDeltaCTP */    \
+        Distribution(0.5f * pi, 0.2f * pi) /* distDeltaRTY */
 
         switch ( distType(rng) ) {
         case MAKE_BOX:
-            createConcreteObject<Box>(wnd, gfx, kbd, mouse);
+            createConcreteObject<Box>( BASIC_DISTS,
+                std::uniform_int_distribution<>(0, 1),
+                wnd, gfx, kbd, mouse
+            );
             break;
 
         case MAKE_CONE:
-            createConcreteObject<Cone>(wnd, gfx, kbd, mouse,
+            createConcreteObject<Cone>( BASIC_DISTS,
+                std::uniform_int_distribution<>(0, 1),
+                wnd, gfx, kbd, mouse,
                 distTesselation(rng)
             );
             break;
 
         case MAKE_PLANE:
-            createConcreteObject<Plane>(wnd, gfx, kbd, mouse,
+            createConcreteObject<Plane>( BASIC_DISTS,
+                std::uniform_int_distribution<>(0, 1),
+                wnd, gfx, kbd, mouse,
                 distTesselation(rng), distTesselation(rng)
             );
             break;
 
         case MAKE_PRISM:
-            createConcreteObject<Prism>(wnd, gfx, kbd, mouse,
+            createConcreteObject<Prism>( BASIC_DISTS,
+                std::uniform_int_distribution<>(0, 1),
+                wnd, gfx, kbd, mouse,
                 distTesselation(rng)
             );
             break;
 
         case MAKE_SPHERE:
-            createConcreteObject<Sphere>(wnd, gfx, kbd, mouse,
+            createConcreteObject<Sphere>( BASIC_DISTS,
+                std::uniform_int_distribution<>(0, 1),
+                wnd, gfx, kbd, mouse,
                 distTesselation(rng), distTesselation(rng)
+            );
+            break;
+
+        case MAKE_SHEET:
+            createConcreteObject<Sheet>( BASIC_DISTS,
+                std::uniform_int_distribution<>(2, 2),
+                wnd, gfx, kbd, mouse
             );
             break;
 
@@ -103,18 +139,13 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
 }
 
 template <class T, class ... TesselationFactors>
-void Game::createConcreteObject( const ChiliWindow& wnd, Graphics& gfx,
+void Game::createConcreteObject( Distribution distRadius,
+    Distribution distCTP,  Distribution distDeltaCTP,
+    Distribution distDeltaRTY, std::uniform_int_distribution<> distScene,
+    const ChiliWindow& wnd, Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse,
     TesselationFactors&& ... tesselationFactors
 ) {
-    static constexpr auto pi = 3.14159f;
-
-    auto distRadius = Distribution(15.f, 6.f);
-    auto distCTP = Distribution(0.f, 2.f * pi);
-    auto distDeltaCTP = Distribution(0.03f * pi, 0.01f * pi);
-    auto distDeltaRTY = Distribution(0.5f * pi, 0.2f * pi);
-    auto distScene = std::uniform_int_distribution<>(0, 1);
-
     auto obj = std::make_unique<Entity<T>>();
 
     obj->ctDrawComponent( gfx.factory(), gfx.pipeline(),

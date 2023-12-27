@@ -12,6 +12,9 @@
 #include "GFX/Core/Graphics.hpp"
 #include "GFX/Core/GraphicsStorage.hpp"
 
+// include for distributions temporary.
+#include "GTransformComponent.hpp"
+
 #include <memory>
 
 class Game {
@@ -32,8 +35,11 @@ private:
         Graphics& gfx, Keyboard<MyChar>& kbd, Mouse& mouse
     );
     template <class T, class ... Args>
-    void createConcreteObject( const ChiliWindow& wnd, Graphics& gfx,
-        Keyboard<MyChar>& kbd, Mouse& mouse, Args&& ... args
+    void createConcreteObject( Distribution distRadius,
+        Distribution distCTP, Distribution distDeltaCTP,
+        Distribution distDelteRTY, std::uniform_int_distribution<> distScene,
+        const ChiliWindow& wnd, Graphics& gfx, Keyboard<MyChar>& kbd,
+        Mouse& mouse, Args&& ... args
     );
 
     RendererSystem rendererSystem_;
