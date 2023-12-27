@@ -62,10 +62,10 @@ struct Plane {
         std::size_t nTesselationX = defNTesselation,
         std::size_t nTesselationY = defNTesselation
     ) {
-        if (nTesselationX < 2 || nTesselationY < 2) {
+        if (nTesselationX < 1 || nTesselationY < 1) {
             throw GFX_EXCEPT_CUSTOM(
-                "Plane is not definable with nTesselation less than 2.\n"
-                "(Setting nTesselation to n means a side of plane contains n points.)\n"
+                "Plane is not definable with nTesselation less than 1.\n"
+                "(Setting nTesselation to n means a side of plane contains n+1 points.)\n"
             );
         }
 
@@ -105,10 +105,10 @@ struct Plane {
         std::size_t nTesselationX = defNTesselation,
         std::size_t nTesselationY = defNTesselation
     ) {
-        if (nTesselationX < 2 || nTesselationY < 2) {
+        if (nTesselationX < 1 || nTesselationY < 1) {
             throw GFX_EXCEPT_CUSTOM(
-                "Plane is not definable with nTesselation less than 2.\n"
-                "(Setting nTesselation to n means a side of plane contains n points.)\n"
+                "Plane is not definable with nTesselation less than 1.\n"
+                "(Setting nTesselation to n means a side of plane contains n+1 points.)\n"
             );
         }
 
