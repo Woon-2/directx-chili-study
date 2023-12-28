@@ -82,7 +82,7 @@ struct Cube {
         using pos_type = typename VertexPosContainer::value_type;
 
         VertexPosContainer ret;
-        reserve_if_possible( ret, 24u );
+        reserve_if_possible( ret, 36u );
         auto out = std::back_inserter(ret);
 
         auto vertices = std::array<pos_type, 8>{
