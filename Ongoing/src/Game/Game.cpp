@@ -6,6 +6,7 @@
 #include "Game/Prism.hpp"
 #include "Game/Sphere.hpp"
 #include "Game/Sheet.hpp"
+#include "Game/SkinnedBox.hpp"
 
 #include "Game/GFXCMDLogger.hpp"
 #include "Game/GFXCMDLogFileView.hpp"
@@ -73,6 +74,7 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
         MAKE_PRISM,
         MAKE_SPHERE,
         MAKE_SHEET,
+        MAKE_SKINNED_BOX,
         SIZE
     };
 
@@ -130,6 +132,13 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
 
         case MAKE_SHEET:
             createConcreteObject<Sheet>( BASIC_DISTS,
+                std::uniform_int_distribution<>(2, 2),
+                wnd, gfx, kbd, mouse
+            );
+            break;
+
+        case MAKE_SKINNED_BOX:
+            createConcreteObject<SkinnedBox>( BASIC_DISTS,
                 std::uniform_int_distribution<>(2, 2),
                 wnd, gfx, kbd, mouse
             );

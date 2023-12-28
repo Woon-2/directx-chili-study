@@ -75,6 +75,7 @@ target_sources(chili PRIVATE
     include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp
     include/Game/Box.hpp
+    include/Game/SkinnedBox.hpp
     include/Game/Cone.hpp
     include/Game/Plane.hpp
     include/Game/Prism.hpp
