@@ -8,12 +8,15 @@
 #include <ranges>
 #include <iterator>
 #include <algorithm>
+#include <array>
 
 namespace Primitives {
 
 struct Cube {
     using MyVertex = GFXVertex;
     using MyIndex = GFXIndex;
+
+    static constexpr auto side = 0.5f;
 
     class CubeVertexBuffer : public VertexBuffer<MyVertex> {
     public:
@@ -25,6 +28,19 @@ struct Cube {
 
         static constexpr std::size_t size() {
             return 8u;
+        }
+    };
+
+    class CubeVertexBufferIndependent : public VertexBuffer<MyVertex> {
+    public:
+        CubeVertexBufferIndependent() = default;
+        CubeVertexBufferIndependent(GFXFactory factory)
+            : VertexBuffer<MyVertex>( factory,
+                Cube::modelPositionsIndependent< std::vector<MyVertex> >()
+            ) {}
+
+        static constexpr std::size_t size() {
+            return 36u;
         }
     };
 
@@ -49,8 +65,6 @@ struct Cube {
         reserve_if_possible( ret, 8u );
         auto out = std::back_inserter(ret);
 
-        static constexpr auto side = 0.5f;
-
 		out = pos_type( -side,-side,-side ); // 0
 		out = pos_type( side,-side,-side ); // 1
 		out = pos_type( -side,side,-side ); // 2
@@ -59,6 +73,35 @@ struct Cube {
 		out = pos_type( side,-side,side ); // 5
 		out = pos_type( -side,side,side ); // 6
 		out = pos_type( side,side,side ); // 7
+
+        return ret;
+    }
+
+    template <std::ranges::contiguous_range VertexPosContainer>
+    static VertexPosContainer modelPositionsIndependent() {
+        using pos_type = typename VertexPosContainer::value_type;
+
+        VertexPosContainer ret;
+        reserve_if_possible( ret, 24u );
+        auto out = std::back_inserter(ret);
+
+        auto vertices = std::array<pos_type, 8>{
+            pos_type( -side,-side,-side ), // 0
+            pos_type( side,-side,-side ), // 1
+            pos_type( -side,side,-side ), // 2
+            pos_type( side,side,-side ), // 3
+            pos_type( -side,-side,side ), // 4
+            pos_type( side,-side,side ), // 5
+            pos_type( -side,side,side ), // 6
+            pos_type( side,side,side ) // 7
+        };
+
+        out = vertices[0]; out = vertices[2]; out = vertices[1]; out = vertices[2]; out = vertices[3]; out = vertices[1];
+        out = vertices[1]; out = vertices[3]; out = vertices[5]; out = vertices[3]; out = vertices[7]; out = vertices[5];
+        out = vertices[2]; out = vertices[6]; out = vertices[3]; out = vertices[3]; out = vertices[6]; out = vertices[7];
+        out = vertices[4]; out = vertices[5]; out = vertices[7]; out = vertices[4]; out = vertices[7]; out = vertices[6];
+        out = vertices[0]; out = vertices[4]; out = vertices[2]; out = vertices[2]; out = vertices[4]; out = vertices[6];
+        out = vertices[0]; out = vertices[1]; out = vertices[4]; out = vertices[1]; out = vertices[5]; out = vertices[4];
 
         return ret;
     }
