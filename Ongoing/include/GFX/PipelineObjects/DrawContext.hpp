@@ -72,6 +72,55 @@ private:
     virtual void drawCall(GFXPipeline& pipeline) const = 0;
 };
 
+class DrawContextBasic : public IDrawContext {
+public:
+    DrawContextBasic() = default;
+    DrawContextBasic(UINT nVertex, UINT startVertexLocation
+    #ifdef ACTIVATE_DRAWCONTEXT_LOG
+        , bool enableLogOnCreation = true
+    #endif
+    ) :
+    #ifdef ACTIVATE_DRAWCONTEXT_LOG
+        logComponent_( this, GFXCMDSourceCategory("DrawContextBasic") ),
+    #endif
+        numVertex_(nVertex), startVertexLocation_(startVertexLocation) {
+    #ifdef ACTIVATE_DRAWCONTEXT_LOG
+        if (enableLogOnCreation) {
+            logComponent_.enableLog();
+        }
+        logComponent_.logCreate();
+    #endif
+    }
+
+    void setNumVertex(UINT nVertex) noexcept {
+        numVertex_ = nVertex;
+    }
+
+    UINT numVertex() const noexcept {
+        return numVertex_;
+    }
+
+    void setStartVertexLocation(UINT vertexLocation) noexcept {
+        startVertexLocation_ = vertexLocation;
+    }
+
+    UINT startVertexLocation() const noexcept {
+        return startVertexLocation_;
+    }
+
+protected:
+    void basicDrawCall(GFXPipeline& pipeline) const;
+
+private:
+    void drawCall(GFXPipeline& pipeline) const override;
+
+#ifdef ACTIVATE_DRAWCONTEXT_LOG
+    IDrawContext::LogComponent logComponent_;
+#endif
+    UINT numVertex_;
+    UINT startVertexLocation_;
+};
+
 class DrawContextIndexed : public IDrawContext {
 public:
     DrawContextIndexed() = default;
