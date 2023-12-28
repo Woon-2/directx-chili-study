@@ -129,13 +129,20 @@ public:
     using MyChar = CharT;
     using MyKeyboard = Keyboard<MyChar>;
     using MyMouse = Mouse;
+    using MyIKbdIC = IKeyboardInputComponent<MyChar>;
+    using MyIMsIC = IMouseInputComponent;
 
     InputSystem() = default;
     InputSystem(MyKeyboard& kbd, MyMouse& mouse, const Win32::Client& client)
-        : mousePointConverter_(client), pKbd_(&kbd), pMouse_(&mouse) {}
+        : mousePointConverter_(client), pKbd_(&kbd), pMouse_(&mouse),
+        icMouse_(), icKbd_() {}
 
-    void setListner(std::shared_ptr<IMouseInputComponent> listner) {
-        ic_ = std::move(listner);
+    void setListner(std::shared_ptr<MyIMsIC> listner) {
+        icMouse_ = std::move(listner);
+    }
+
+    void setListner(std::shared_ptr<MyIKbdIC> listner) {
+        icKbd_ = std::move(listner);
     }
 
     void plugin(MyKeyboard& kbd) {
@@ -158,12 +165,14 @@ public:
     }
 
     void update() {
-        if (!pMouse_.has_value() || !ic_) {
+        updateKbdRelated();
+        updateMouseRelated();
+        if (!pMouse_.has_value() || !icMouse_) {
             return;
         }
 
         if ( auto ev = pMouse_.value()->peek(); ev.has_value() ) {
-            ic_->receive(ev.value());
+            icMouse_->receive(ev.value());
         }
     }
 
@@ -176,11 +185,32 @@ public:
     }
 
 private:
+    void updateKbdRelated() {
+        if (!pKbd_.has_value() || !icKbd_) {
+            return;
+        }
+
+        if ( auto ev = pKbd_.value()->readKey(); ev.has_value() ) {
+            icKbd_->receive(ev.value());
+        }
+    }
+
+    void updateMouseRelated() {
+        if (!pMouse_.has_value() || !icMouse_) {
+            return;
+        }
+
+        if ( auto ev = pMouse_.value()->peek(); ev.has_value() ) {
+            icMouse_->receive(ev.value());
+        }
+    }
+
     MousePointConverter mousePointConverter_;
     std::optional< MyKeyboard* > pKbd_;
     std::optional< MyMouse* > pMouse_;
 
-    std::shared_ptr<IMouseInputComponent> ic_;
+    std::shared_ptr<MyIMsIC> icMouse_;
+    std::shared_ptr<MyIKbdIC> icKbd_;
 };
 
 #endif  // __InputSystem

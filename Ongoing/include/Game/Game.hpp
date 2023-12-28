@@ -15,12 +15,40 @@
 // include for distributions temporary.
 #include "GTransformComponent.hpp"
 
+#include "InputComponent.hpp"
+
 #include <memory>
+
+class Game;
+
+template<>
+class KeyboardInputComponent<Game, CHAR> : public IKeyboardInputComponent<CHAR> {
+public:
+    KeyboardInputComponent()
+        : bSimulate_(true) {}
+
+    void receive(const Keyboard<MyChar>::Event& ev) override {
+        if (ev.pressed() && ev.keycode() == VK_SPACE) {
+            bSimulate_ = false;
+        }
+        else if (ev.released() && ev.keycode() == VK_SPACE) {
+            bSimulate_ = true;
+        }
+    }
+
+    bool willSimulate() const noexcept {
+        return bSimulate_;
+    }
+
+private:
+    bool bSimulate_;
+};
 
 class Game {
 public:
     using MyTimer = Timer<float>;
     using MyChar = ChiliWindow::MyChar;
+    using MyIC = KeyboardInputComponent<Game, CHAR>;
 
     Game(const ChiliWindow& wnd, Graphics& gfx,
         Keyboard<MyChar>& kbd, Mouse& mouse
@@ -46,6 +74,8 @@ private:
     InputSystem<MyChar> inputSystem_;
     MyTimer timer_;
     std::vector< std::unique_ptr<IEntity> > entities_;
+
+    std::shared_ptr<MyIC> ic_;
 };
 
 #endif  // __Game
