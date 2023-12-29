@@ -31,6 +31,18 @@ public:
     void render() {
         gfx_.clear(0.f, 0.f, 0.f);
         game_.render();
+
+        // temporary imgui stuffs for testing ---
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+
+        static bool showDemoWindow = true;
+        ImGui::ShowDemoWindow(&showDemoWindow);
+        ImGui::Render();
+        ImGui_ImplDX11_RenderDrawData( ImGui::GetDrawData() );
+        // --------------------------
+
         gfx_.present();
     }
 private: 

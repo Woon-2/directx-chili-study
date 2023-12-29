@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.12.28 LANGUAGES CXX)
+project(POngoing VERSION 2023.12.29 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -143,6 +143,12 @@ target_sources(chili PRIVATE
 
     include/Image/GDIPlusMgr.hpp
     include/Image/Surface.hpp
+)
+
+# UI sources
+target_sources(chili PRIVATE
+    src/UI/ImguiMgr.cpp
+    include/UI/ImguiMgr.hpp
 )
 
 function(auto_configure TARGET_NAME ACCESS_MODIFIER)

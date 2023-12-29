@@ -7,13 +7,15 @@
 #include "GFXSwapChain.hpp"
 #include "GraphicsStorage.hpp"
 
+#include "imgui_impl_dx11.h"
+
 class Graphics {
 public:
     using MyWindow = ChiliWindow;
 
     Graphics(MyWindow& wnd);
 
-    ~Graphics() = default;
+    ~Graphics();
 
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
@@ -58,6 +60,8 @@ private:
             .Flags = 0
         };
     }
+
+    void initImgui();
 
     MyWindow& wnd_;
     GFXStorage storage_;

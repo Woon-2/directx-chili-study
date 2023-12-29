@@ -7,6 +7,8 @@
 #include <string_view>
 #include <type_traits>
 
+#include "imgui_impl_win32.h"
+
 #include "Literal.hpp"
 #include "Resource.hpp"
 
@@ -186,7 +188,13 @@ public:
         requires canRegist<Traits, HINSTANCE>
             && canCreate<Traits, HINSTANCE, Window<Traits>*, Args...>
     BasicChiliWindow(Args&& ... args)
-        : MyBase( std::forward<Args>(args)... ) {}
+        : MyBase( std::forward<Args>(args)... ) {
+        ImGui_ImplWin32_Init( nativeHandle() );
+    }
+
+    ~BasicChiliWindow() {
+        ImGui_ImplWin32_Shutdown();
+    }
 
     BasicChiliWindow(const BasicChiliWindow&) requires false;
     BasicChiliWindow(BasicChiliWindow&&) requires false;

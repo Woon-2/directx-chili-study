@@ -5,6 +5,12 @@
 #include "Keyboard.hpp"
 #include "Mouse.hpp"
 
+#include "imgui_impl_win32.h"
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
+    HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
+);
+
 template <class Wnd>
 class BasicChiliMsgHandler : public Win32::MsgHandler<Wnd>{
 public:
@@ -315,6 +321,30 @@ private:
     }
 
     MyMouse* pMouse_;
+};
+
+template <class Wnd>
+class ImguiMsgHandler : public Win32::MsgHandler<Wnd>{
+public:
+    using Win32::MsgHandler<Wnd>::window;
+    using MyWindow = Wnd;
+    using MyChar = typename MyWindow::MyChar;
+
+    ImguiMsgHandler(MyWindow& wnd) noexcept
+        : Win32::MsgHandler<MyWindow>(wnd) {}
+
+    std::optional<LRESULT> operator()(
+        const Win32::Message& msg
+    ) override {
+        if ( ImGui_ImplWin32_WndProcHandler(
+            window().nativeHandle(), msg.type, msg.wParam, msg.lParam
+        ) ) {
+            return 0;
+        }
+        else {
+            return {};
+        }
+    }
 };
 
 #endif // __ChiliMsgHandlers

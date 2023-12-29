@@ -56,4 +56,9 @@ void App::setupMsgHandlers() {
             window(), &mouse_
         )
     );
+    window().msgHandlers().push_front(
+        std::make_unique< ImguiMsgHandler<MyWindow> >(
+            window()
+        )
+    );
 }
