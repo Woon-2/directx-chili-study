@@ -78,7 +78,7 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
         SIZE
     };
 
-    auto distType = std::uniform_int_distribution<>(0, SIZE - 1);
+    auto distType = std::uniform_int_distribution<>(MAKE_SKINNED_BOX, MAKE_SKINNED_BOX);
     auto distTesselation = std::uniform_int_distribution<std::size_t>(3u, 48u);
 
     for (auto i = decltype(n)(0); i < n; ++i)  {

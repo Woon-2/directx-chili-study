@@ -65,11 +65,11 @@ public:
 
             auto out = std::back_inserter(ret);
             out = tc[0]; out = tc[2]; out = tc[1]; out = tc[2]; out = tc[3]; out = tc[1];
-            out = tc[4]; out = tc[8]; out = tc[5]; out = tc[5]; out = tc[8]; out = tc[9];
+            out = tc[12]; out = tc[3]; out = tc[13]; out = tc[3]; out = tc[7]; out = tc[13];
             out = tc[2]; out = tc[6]; out = tc[3]; out = tc[3]; out = tc[6]; out = tc[7];
             out = tc[4]; out = tc[5]; out = tc[7]; out = tc[4]; out = tc[7]; out = tc[6];
-            out = tc[2]; out = tc[10]; out = tc[11]; out = tc[2]; out = tc[11]; out = tc[6];
-            out = tc[12]; out = tc[3]; out = tc[7]; out = tc[12]; out = tc[7]; out = tc[13];
+            out = tc[10]; out = tc[11]; out = tc[2]; out = tc[2]; out = tc[11]; out = tc[6];
+            out = tc[8]; out = tc[9]; out = tc[4]; out = tc[9]; out = tc[5]; out = tc[4];
 
             return ret;
         }
