@@ -16,6 +16,7 @@
 #include "GTransformComponent.hpp"
 
 #include "InputComponent.hpp"
+#include "SimulationUI.hpp"
 
 #include <memory>
 
@@ -74,6 +75,7 @@ private:
     InputSystem<MyChar> inputSystem_;
     MyTimer timer_;
     std::vector< std::unique_ptr<IEntity> > entities_;
+    SimulationUI simulationUI_;
 
     std::shared_ptr<MyIC> ic_;
 };

@@ -14,7 +14,6 @@ Graphics::Graphics(MyWindow& wnd)
     try {
         initGFXComponents();
         constructAppRenderTarget();
-        initImgui();
     }
     catch (const GraphicsException& e) {
         MessageBoxA(nullptr, e.what(), "Graphics Exception",
@@ -32,10 +31,6 @@ Graphics::Graphics(MyWindow& wnd)
         MessageBoxA(nullptr, "no details available",
             "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
     }
-}
-
-Graphics::~Graphics() {
-    ImGui_ImplDX11_Shutdown();
 }
 
 void Graphics::present() {
@@ -164,8 +159,4 @@ void Graphics::constructAppRenderTarget() {
     pRenderTarget->enableLocalRebind();
 
     pipeline_.bind(pRenderTarget);
-}
-
-void Graphics::initImgui() {
-    ImGui_ImplDX11_Init( factory_.device().Get(), pipeline_.context().Get() );
 }

@@ -21,7 +21,8 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse
 ) : rendererSystem_( gfx.factory(), gfx.pipeline() ),
     inputSystem_( kbd, mouse, wnd.client() ),
-    timer_(), entities_(), ic_( std::make_shared<MyIC>() ) {
+    timer_(), entities_(), simulationUI_(),
+    ic_( std::make_shared<MyIC>() ){
     auto slotIndexedRender = rendererSystem_
         .addRenderer<IndexedRenderer>();
     rendererSystem_.enableLog(slotIndexedRender);
@@ -52,7 +53,7 @@ void Game::update() {
         // update entities
         std::ranges::for_each(entities_ | dereference(),
             [this, elapsed](auto& entity) {
-                entity.update( elapsed );
+                entity.update( elapsed * simulationUI_.speedFactor() );
             }
         );
     }
@@ -60,6 +61,7 @@ void Game::update() {
 
 void Game::render() {
     rendererSystem_.render();
+    simulationUI_.render();
     GFXCMDLOG.advance();
     GFXCMDLOG_FILEVIEW.report();
 }

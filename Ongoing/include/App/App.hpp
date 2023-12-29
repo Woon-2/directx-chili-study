@@ -18,6 +18,8 @@ public:
         = { .x=200, .y=200, .width=800, .height=600 }
     );
 
+    ~App();
+
     [[maybe_unused]] int run();
 
     static void setHInst(HINSTANCE hInst) {
@@ -28,23 +30,7 @@ public:
         game_.update();
     }
 
-    void render() {
-        gfx_.clear(0.f, 0.f, 0.f);
-        game_.render();
-
-        // temporary imgui stuffs for testing ---
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
-
-        static bool showDemoWindow = true;
-        ImGui::ShowDemoWindow(&showDemoWindow);
-        ImGui::Render();
-        ImGui_ImplDX11_RenderDrawData( ImGui::GetDrawData() );
-        // --------------------------
-
-        gfx_.present();
-    }
+    void render();
 private: 
     MyWindow& window() noexcept {
         return wnd_;

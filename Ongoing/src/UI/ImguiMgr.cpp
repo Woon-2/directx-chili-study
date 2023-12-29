@@ -1,5 +1,4 @@
 #include "UI/ImguiMgr.hpp"
-#include "imgui.h"
 
 ImguiMgr::ImguiMgr() {
     IMGUI_CHECKVERSION();
