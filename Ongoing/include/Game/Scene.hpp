@@ -2,6 +2,7 @@
 #define __Scene
 
 #include "DrawComponent.hpp"
+#include "Camera.hpp"
 
 #include "GFX/Core/GraphicsStorage.hpp"
 
@@ -40,8 +41,17 @@ public:
         );
     }
 
+    const CameraVision& vision() const noexcept {
+        return *pVision_;
+    }
+
+    void setVision(std::shared_ptr<CameraVision> pVision) {
+        pVision_ = pVision;
+    }
+
 private:
     std::vector< std::shared_ptr<IDrawComponent> > pDCs_;
+    std::shared_ptr<CameraVision> pVision_;
 };
 
 #endif  // __Scene

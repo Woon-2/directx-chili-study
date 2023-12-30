@@ -14,9 +14,7 @@ void DrawCaller::basicDrawCall(GFXPipeline& pipeline) const {
 }
 
 void DrawCaller::drawCall(GFXPipeline& pipeline) const {
-    beforeDrawCall(pipeline);
     basicDrawCall(pipeline);
-    afterDrawCall(pipeline);
 }
 
 void DrawCallerIndexed::indexedDrawCall(GFXPipeline& pipeline) const {
@@ -32,7 +30,5 @@ void DrawCallerIndexed::indexedDrawCall(GFXPipeline& pipeline) const {
 }
 
 void DrawCallerIndexed::drawCall(GFXPipeline& pipeline) const {
-    beforeDrawCall(pipeline);
     indexedDrawCall(pipeline);
-    afterDrawCall(pipeline);
 }

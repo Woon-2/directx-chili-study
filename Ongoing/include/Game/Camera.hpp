@@ -4,6 +4,7 @@
 #include "Transform.hpp"
 
 #include <optional>
+#include <memory>
 
 struct CameraViewTransDesc {
     dx::XMFLOAT3 eye;
@@ -75,10 +76,22 @@ private:
 class Camera {
 public:
     Camera()
-        : vision_() {}
+        : pVision_( std::make_shared<CameraVision>() ) {}
 
     Camera(const CameraVisionDesc& cvDesc)
-        : vision_(cvDesc) {}
+        : pVision_( std::make_shared<CameraVision>(cvDesc) ) {}
+
+    void update() {
+
+    }
+
+    const std::shared_ptr<CameraVision> vision() noexcept {
+        return pVision_;
+    }
+
+    const std::shared_ptr<const CameraVision> vision() const noexcept {
+        return pVision_;
+    }
 
     void setParams( std::optional<float> fovy,
         std::optional<float> aspect,
@@ -92,7 +105,7 @@ public:
     void rotateAxis(dx::XMVECTOR axis, float theta);
 
 private:
-    CameraVision vision_;
+    std::shared_ptr<CameraVision> pVision_;
 };
 
 #endif  // __Camera

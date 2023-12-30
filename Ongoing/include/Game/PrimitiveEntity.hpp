@@ -8,6 +8,7 @@
 #include "GTransformComponent.hpp"
 #include "InputComponent.hpp"
 #include "InputSystem.hpp"
+#include "Camera.hpp"
 
 #include "App/ChiliWindow.hpp"
 #include "GFX/Core/GFXFactory.hpp"
@@ -29,6 +30,50 @@
 #include <memory>
 
 #include "ShaderPath.h"
+
+class MapTransformGPU : public IDrawContext {
+public:
+    MapTransformGPU( GFXStorage& mappedStorage, 
+        GFXStorage::ID IDTransCBuf
+    ) :  transform_(), mappedStorage_(&mappedStorage),
+        IDTransCBuf_(IDTransCBuf) {}
+
+    void beforeDrawCall(GFXPipeline& pipeline) override;
+    void update(Transform transform) {
+        transform_ = transform;
+    }
+
+    void pushBackApplyee(Transform transform) {
+        applyees_.push_back(transform);
+    }
+
+    void popBackApplyee() {
+        applyees_.pop_back();
+    }
+
+private:
+    Transform transform_;
+    std::vector<Transform> applyees_;
+    GFXStorage* mappedStorage_;
+    GFXStorage::ID IDTransCBuf_;
+};
+
+class ApplyTransform : public IDrawContext {
+public:
+    ApplyTransform(MapTransformGPU& mapper)
+        : transform_(), mapper_(mapper) {}
+
+    void setTransform(Transform transform) {
+        transform_ = transform;
+    }
+
+    void beforeDrawCall(GFXPipeline& pipeline) override;
+    void afterDrawCall(GFXPipeline& pipeline) override;
+
+private:
+    Transform transform_;
+    MapTransformGPU& mapper_;
+};
 
 struct PEFaceColorData {
     GFXColor faceColors[6];
@@ -86,26 +131,6 @@ public:
         }) {}
 };
 
-class PEDrawCaller : public DrawCallerIndexed {
-public:
-    PEDrawCaller( UINT numIndex, UINT startIndexLocation,
-        INT baseVertexLocation, GFXStorage& mappedStorage,
-        GFXStorage::ID IDTransCBuf
-    ) : DrawCallerIndexed(numIndex, startIndexLocation, baseVertexLocation),
-        trans_(), mappedStorage_(&mappedStorage), IDTransCBuf_(IDTransCBuf) {}
-
-    void update(const Transform trans) {
-        trans_ = trans;
-    }
-
-private:
-    void drawCall(GFXPipeline& pipeline) const override;
-
-    Transform trans_;
-    GFXStorage* mappedStorage_;
-    GFXStorage::ID IDTransCBuf_;
-};
-
 template < class T, class PosBufferT, class IndexBufferT >
 class PEDrawComponent : public IDrawComponent {
 public:
@@ -121,7 +146,7 @@ public:
     using MyIndexedColorCBuf = PEIndexedColorCBuf;
     using MyBlendedColorBuffer = PEColorBuffer;
     using MyViewport = PEViewport;
-    using MyDrawCaller = PEDrawCaller;
+    using MyDrawCaller = DrawCallerIndexed;
 
     PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
         GFXStorage& storage, const ChiliWindow& wnd
@@ -129,7 +154,9 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        RODesc_(), pipeline_(pipeline), pStorage_(&storage),
+        RODesc_(),
+        drawCaller_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0 ),
+        pipeline_(pipeline), pStorage_(&storage),
         IDPosBuffer_( storage.cache<MyPosBuffer>(factory) ),
         IDIndexBuffer_( storage.cache<MyIndexBuffer>(factory) ),
         IDTopology_( storage.cache<MyTopology>() ),
@@ -139,10 +166,14 @@ public:
         IDBlendedColorBuffer_( storage.cache<MyBlendedColorBuffer>(
             factory, MyPosBuffer::size()
         ) ),
-        drawCaller_(
-            static_cast<UINT>( MyIndexBuffer::size() ),
-            0u, 0, storage, IDTransformCBuf_
-        ) {
+        transformGPUMapper_( std::make_shared<MapTransformGPU>(
+            storage, IDTransformCBuf_
+        ) ),
+        transformApplyer_( std::make_shared<ApplyTransform>(
+            *transformGPUMapper_
+        ) ) {
+        drawCaller_.addDrawContext(transformApplyer_);
+        drawCaller_.addDrawContext(transformGPUMapper_);
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_.entryStackPop();
     #endif
@@ -156,7 +187,13 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        RODesc_(), pipeline_(pipeline), pStorage_(&storage),
+        RODesc_(),
+        drawCaller_(
+            static_cast<UINT>( MyIndexBuffer::size(
+                std::forward<TesselationFactors>(tesselationFactors)...
+            ) ), 0u, 0
+        ),
+        pipeline_(pipeline), pStorage_(&storage),
         IDPosBuffer_( storage.load<MyPosBuffer>(
             factory, std::forward<TesselationFactors>(tesselationFactors)...
         ) ),
@@ -172,19 +209,21 @@ public:
                 std::forward<TesselationFactors>(tesselationFactors)...
             )
         ) ),
-        drawCaller_(
-            static_cast<UINT>( MyIndexBuffer::size(
-                std::forward<TesselationFactors>(tesselationFactors)...
-            ) ),
-            0u, 0, storage, IDTransformCBuf_
-        ) {
-        #ifdef ACTIVATE_DRAWCOMPONENT_LOG
-            logComponent_.entryStackPop();
-        #endif
-        }
+        transformGPUMapper_( std::make_shared<MapTransformGPU>(
+            storage, IDTransformCBuf_
+        ) ),
+        transformApplyer_( std::make_shared<ApplyTransform>(
+            *transformGPUMapper_
+        ) ) {
+        drawCaller_.addDrawContext(transformApplyer_);
+        drawCaller_.addDrawContext(transformGPUMapper_);
+    #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+        logComponent_.entryStackPop();
+    #endif
+    }
 
-    void update(const Transform trans) {
-        drawCaller_.update(trans);
+    void update(const Transform transform) {
+        transformGPUMapper_->update(transform);
     }
 
     const RenderObjectDesc renderObjectDesc() const override {
@@ -253,6 +292,13 @@ public:
         };
     }
 
+    void sync(const CameraVision& vision) {
+        transformApplyer_->setTransform(
+            vision.viewTransComp().total()
+            * vision.projTransComp().total()
+        );
+    }
+
     const BasicDrawCaller* drawCaller() const override {
         return &drawCaller_;
     }
@@ -266,6 +312,7 @@ private:
     IDrawComponent::LogComponent logComponent_;
 #endif
     std::optional<RenderObjectDesc> RODesc_;
+    MyDrawCaller drawCaller_;
     GFXPipeline pipeline_;
     GFXStorage* pStorage_;
     GFXStorage::ID IDPosBuffer_;
@@ -275,12 +322,12 @@ private:
     GFXStorage::ID IDTransformCBuf_;
     GFXStorage::ID IDIndexedColorCBuf_;
     GFXStorage::ID IDBlendedColorBuffer_;
-    // draw context is here to guarantee
-    // it is initalized at the last.
-    // since draw context may use other member data,
-    // to protect the program from accessing unitialized data,
-    // sacrifice memory efficiency.
-    MyDrawCaller drawCaller_;
+    // GPU Mapper must be declared at here
+    // as it requires transform cbuffer already constructed.
+    std::shared_ptr<MapTransformGPU> transformGPUMapper_;
+    // transform applyer must be declared at here
+    // as it requires GPU Mapper reference.
+    std::shared_ptr<ApplyTransform> transformApplyer_;
 };
 
 template <class T>
@@ -293,9 +340,7 @@ public:
 
     void update(milliseconds elapsed) override {
         tc_->update(elapsed);
-        tc_->setTotal( dx::XMMatrixTranspose(
-            (tc_->local() * tc_->global()).get()
-        ) );
+        tc_->setTotal( tc_->local() * tc_->global() );
         dc_->update(tc_->total());
     }
 

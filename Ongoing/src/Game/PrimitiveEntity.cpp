@@ -1,13 +1,45 @@
 #include "Game/PrimitiveEntity.hpp"
 
+#include <ranges>
+#include <algorithm>
+#include <numeric>
+
+void MapTransformGPU::beforeDrawCall(GFXPipeline& pipeline) {
+    assert( mappedStorage_->get(IDTransCBuf_).has_value() );
+
+    auto transCBuf = static_cast<PETransformCBuf*>(
+        mappedStorage_->get(IDTransCBuf_).value()
+    );
+
+    // to avoid dangling pointer issue
+    // caused by following lambda returning the raw address of it,
+    // accumulated transform should be declared here.
+    auto accumulated = Transform();
+
+    transCBuf->dynamicUpdate( pipeline, [this, &accumulated](){
+        accumulated = std::accumulate( applyees_.begin(), applyees_.end(),
+            transform_, [](Transform lhs, const Transform& rhs) {
+                return lhs * rhs;
+            }
+        );
+
+        accumulated = accumulated.transpose();
+        return accumulated.data();
+    } );
+}
+
+void ApplyTransform::beforeDrawCall(GFXPipeline& pipeline) {
+    mapper_.pushBackApplyee(transform_);
+}
+
+void ApplyTransform::afterDrawCall(GFXPipeline& pipeline) {
+    mapper_.popBackApplyee();
+}
+
 std::vector<dx::XMMATRIX> PETransformCBuf::initialTransforms() {
     return std::vector<dx::XMMATRIX>{
         dx::XMMatrixTranspose(
             dx::XMMatrixIdentity()
-            * dx::XMMatrixRotationY(0.7f)
-            * dx::XMMatrixRotationX(-0.4f)
-            * dx::XMMatrixTranslation( 0.f, 0.f, 4.f )
-            * dx::XMMatrixPerspectiveLH( 1.f, 3.f/4.f, 0.5f, 10.f )
         )
     };
 }
@@ -35,17 +67,4 @@ std::vector<GFXColor> PEColorBuffer::makeRandom(std::size_t size) {
     }
 
     return ret;
-}
-
-void PEDrawCaller::drawCall(GFXPipeline& pipeline) const {
-    // first adopt transform
-    assert( mappedStorage_->get(IDTransCBuf_).has_value() );
-
-    auto transCBuf = static_cast<PETransformCBuf*>(
-        mappedStorage_->get(IDTransCBuf_).value()
-    );
-
-    transCBuf->dynamicUpdate(pipeline, [this](){ return trans_.data(); });
-    // then draw
-    DrawCallerIndexed::indexedDrawCall(pipeline);
 }

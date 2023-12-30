@@ -5,6 +5,7 @@
 #include "InputSystem.hpp"
 #include "Entity.hpp"
 #include "Timer.hpp"
+#include "Camera.hpp"
 
 #include "App/ChiliWindow.hpp"
 #include "App/Keyboard.hpp"
@@ -74,6 +75,7 @@ private:
     RendererSystem rendererSystem_;
     InputSystem<MyChar> inputSystem_;
     MyTimer timer_;
+    Camera camera_;
     std::vector< std::unique_ptr<IEntity> > entities_;
     SimulationUI simulationUI_;
 

@@ -87,6 +87,7 @@
         "random": "cpp",
         "typeindex": "cpp",
         "stack": "cpp",
-        "codecvt": "cpp"
+        "codecvt": "cpp",
+        "numeric": "cpp"
     }
 }

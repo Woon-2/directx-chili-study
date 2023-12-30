@@ -17,26 +17,47 @@
 // do as chili do, it's temporary.
 GDIPlusManager gdipm;
 
+namespace {
+    const CameraVisionDesc initialCVDesc() {
+        return CameraVisionDesc{
+            .viewTransDesc = CameraViewTransDesc{
+                .eye = dx::XMFLOAT3(0.f, 0.f, -20.f),
+                .at = dx::XMFLOAT3(0.f, 0.f, 0.f),
+                .up = dx::XMFLOAT3(0.f, 1.f, 0.f),
+            },
+            .projTransDesc = CameraProjTransDesc{
+                .fovy = dx::XM_PIDIV2,
+                .aspect = 1.f,
+                .nearZ = 0.5f,
+                .farZ = 40.f,
+            }
+        };
+    }
+}
+
 Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse
 ) : rendererSystem_( gfx.factory(), gfx.pipeline() ),
     inputSystem_( kbd, mouse, wnd.client() ),
-    timer_(), entities_(), simulationUI_(),
+    timer_(), camera_( initialCVDesc() ), entities_(), simulationUI_(),
     ic_( std::make_shared<MyIC>() ){
     auto slotIndexedRender = rendererSystem_
         .addRenderer<IndexedRenderer>();
     rendererSystem_.enableLog(slotIndexedRender);
     rendererSystem_.sync(slotIndexedRender);
+    rendererSystem_.scene(slotIndexedRender).setVision( camera_.vision() );
 
     auto slotBlendedRender = rendererSystem_
         .addRenderer<BlendedRenderer>();
     rendererSystem_.enableLog(slotBlendedRender);
     rendererSystem_.sync(slotBlendedRender);
+    rendererSystem_.scene(slotBlendedRender).setVision( camera_.vision() );
 
     auto slotTexturedRender = rendererSystem_
         .addRenderer<TexturedRenderer>();
     rendererSystem_.enableLog(slotTexturedRender);
     rendererSystem_.sync(slotTexturedRender);
+    rendererSystem_.scene(slotTexturedRender).setVision( camera_.vision() );
 
     inputSystem_.setListner(ic_);
 
@@ -46,11 +67,12 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
 void Game::update() {
     // update systems
     inputSystem_.update();
+    camera_.update();
 
     auto elapsed = timer_.mark();
 
+    // update entities
     if (ic_->willSimulate()) {
-        // update entities
         std::ranges::for_each(entities_ | dereference(),
             [this, elapsed](auto& entity) {
                 entity.update( elapsed * simulationUI_.speedFactor() );

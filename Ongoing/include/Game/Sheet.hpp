@@ -57,7 +57,7 @@ public:
     using MyTopology = PETopology;
     using MyTransformCBuf = PETransformCBuf;
     using MyViewport = PEViewport;
-    using MyDrawCaller = PEDrawCaller;
+    using MyDrawCaller = DrawCallerIndexed;
 
     class MyTexture : public Texture {
     public:
@@ -82,7 +82,9 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        RODesc_(), pipeline_(pipeline), pStorage_(&storage),
+        RODesc_(),
+        drawCaller_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0 ),
+        pipeline_(pipeline), pStorage_(&storage),
         IDPosBuffer_( storage.cache<MyVertexBuffer>(factory) ),
         IDTexBuffer_( storage.cache<MyTexBuffer>(factory) ),
         IDIndexBuffer_( storage.cache<MyIndexBuffer>(factory) ),
@@ -91,17 +93,21 @@ public:
         IDTransformCBuf_( storage.cache<MyTransformCBuf>(factory) ),
         IDTexture_( storage.cache<MyTexture>(factory) ),
         IDSampler_( storage.cache<MySampler>(factory) ),
-        drawCaller_(
-            static_cast<UINT>( MyIndexBuffer::size() ),
-            0u, 0, storage, IDTransformCBuf_
-        ) {
+        transformGPUMapper_( std::make_shared<MapTransformGPU>(
+            storage, IDTransformCBuf_
+        ) ),
+        transformApplyer_( std::make_shared<ApplyTransform>(
+            *transformGPUMapper_
+        ) ) {
+        drawCaller_.addDrawContext(transformApplyer_);
+        drawCaller_.addDrawContext(transformGPUMapper_);
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_.entryStackPop();
     #endif
     }
 
-    void update(const Transform trans) {
-        drawCaller_.update(trans);
+    void update(const Transform transform) {
+        transformGPUMapper_->update(transform);
     }
 
     const RenderObjectDesc renderObjectDesc() const override {
@@ -154,6 +160,13 @@ public:
         };
     }
 
+    void sync(const CameraVision& vision) {
+        transformApplyer_->setTransform(
+            vision.viewTransComp().total()
+            * vision.projTransComp().total()
+        );
+    }
+
     const BasicDrawCaller* drawCaller() const override {
         return &drawCaller_;
     }
@@ -167,6 +180,7 @@ private:
     IDrawComponent::LogComponent logComponent_;
 #endif
     std::optional<RenderObjectDesc> RODesc_;
+    MyDrawCaller drawCaller_;
     GFXPipeline pipeline_;
     GFXStorage* pStorage_;
     GFXStorage::ID IDPosBuffer_;
@@ -177,12 +191,12 @@ private:
     GFXStorage::ID IDTransformCBuf_;
     GFXStorage::ID IDTexture_;
     GFXStorage::ID IDSampler_;
-    // draw context is here to guarantee
-    // it is initalized at the last.
-    // since draw context may use other member data,
-    // to protect the program from accessing unitialized data,
-    // sacrifice memory efficiency.
-    MyDrawCaller drawCaller_;
+    // GPU Mapper must be declared at here
+    // as it requires transform cbuffer already constructed.
+    std::shared_ptr<MapTransformGPU> transformGPUMapper_;
+    // transform applyer must be declared at here
+    // as it requires GPU Mapper reference.
+    std::shared_ptr<ApplyTransform> transformApplyer_;
 };
 
 template<>

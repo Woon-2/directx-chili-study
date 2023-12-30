@@ -31,7 +31,9 @@ CameraVision::CameraVision(const CameraVisionDesc& cvDesc)
     auto& farZ = cvDesc.projTransDesc.farZ;
 
     viewTrans_.setLocal( dx::XMMatrixLookAtLH(eye, at, up) );
+    viewTrans_.setTotal(viewTrans_.local());
     projTrans_.setLocal( dx::XMMatrixPerspectiveFovLH(fovy, aspect, nearZ, farZ) );
+    projTrans_.setTotal(projTrans_.local());
 }
 
 void CameraVision::updateView(const CameraViewTransDesc& vtd) {
@@ -40,6 +42,7 @@ void CameraVision::updateView(const CameraViewTransDesc& vtd) {
     auto up = dx::XMLoadFloat3(&vtd.up);
 
     viewTrans_.setLocal( dx::XMMatrixLookAtLH(eye, at, up) );
+    viewTrans_.setTotal(viewTrans_.local());
 
     viewTransDesc_ = vtd;
 }
@@ -51,6 +54,7 @@ void CameraVision::updateProj(const CameraProjTransDesc& ptd) {
     auto& farZ = ptd.farZ;
 
     projTrans_.setLocal( dx::XMMatrixPerspectiveFovLH(fovy, aspect, nearZ, farZ) );
+    projTrans_.setTotal(projTrans_.local());
 
     projTransDesc_ = ptd;
 }
@@ -60,12 +64,12 @@ void Camera::setParams( std::optional<float> fovy,
     std::optional<float> nearZ,
     std::optional<float> farZ
 ) {
-    vision_.updateProj(
+    pVision_->updateProj(
         CameraProjTransDesc{
-            .fovy = fovy.value_or( vision_.ptDesc().fovy ),
-            .aspect = aspect.value_or( vision_.ptDesc().aspect ),
-            .nearZ = nearZ.value_or( vision_.ptDesc().nearZ ),
-            .farZ = farZ.value_or( vision_.ptDesc().farZ )
+            .fovy = fovy.value_or( pVision_->ptDesc().fovy ),
+            .aspect = aspect.value_or( pVision_->ptDesc().aspect ),
+            .nearZ = nearZ.value_or( pVision_->ptDesc().nearZ ),
+            .farZ = farZ.value_or( pVision_->ptDesc().farZ )
         }
     );
 }
@@ -87,41 +91,49 @@ inline namespace {
 }
 
 void Camera::rotateX(float theta) {
-    auto& vtMat = *( vision_.viewTransComp().localRef().data() );
+    auto& vtMat = *( pVision_->viewTransComp().localRef().data() );
 
     vtMat *= rotateImpl( vtMat, {}, theta,
         [](auto _, auto theta) {
             return dx::XMMatrixRotationX(theta);
         }
     );
+
+    pVision_->viewTransComp().setTotal(vtMat);
 }
 
 void Camera::rotateY(float theta) {
-    auto& vtMat = *( vision_.viewTransComp().localRef().data() );
+    auto& vtMat = *( pVision_->viewTransComp().localRef().data() );
 
     vtMat *= rotateImpl( vtMat, {}, theta,
         [](auto _, auto theta) {
             return dx::XMMatrixRotationY(theta);
         }
     );
+
+    pVision_->viewTransComp().setTotal(vtMat);
 }
 
 void Camera::rotateZ(float theta) {
-    auto& vtMat = *( vision_.viewTransComp().localRef().data() );
+    auto& vtMat = *( pVision_->viewTransComp().localRef().data() );
 
     vtMat *= rotateImpl( vtMat, {}, theta,
         [](auto _, auto theta) {
             return dx::XMMatrixRotationZ(theta);
         }
     );
+
+    pVision_->viewTransComp().setTotal(vtMat);
 }
 
 void Camera::rotateAxis(dx::XMVECTOR axis, float theta) {
-    auto& vtMat = *( vision_.viewTransComp().localRef().data() );
+    auto& vtMat = *( pVision_->viewTransComp().localRef().data() );
 
     vtMat *= rotateImpl( vtMat, {}, theta,
         [](auto axis, auto theta) {
             return dx::XMMatrixRotationAxis(axis, theta);
         }
     );
+
+    pVision_->viewTransComp().setTotal(vtMat);
 }

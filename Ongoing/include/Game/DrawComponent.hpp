@@ -7,9 +7,9 @@
 
 #include "GFXCMDLogger.hpp"
 
-#include "GFX/PipelineObjects/DrawCaller.hpp"
-
 class Renderer;
+class BasicDrawCaller;
+class CameraVision;
 
 class IDrawComponent {
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
@@ -64,6 +64,7 @@ public:
     virtual BasicDrawCaller* drawCaller() = 0;
     virtual const BasicDrawCaller* drawCaller() const = 0;
     virtual void sync(const Renderer& pRenderer) = 0;
+    virtual void sync(const CameraVision& v) {}
 
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     static constexpr const GFXCMDSourceCategory

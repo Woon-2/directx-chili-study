@@ -39,6 +39,8 @@ void Renderer::render(Scene& scene) {
     std::ranges::for_each( scene.drawComponents(),
         [this, &scene](auto& dc) mutable {
             dc.sync(*this);
+            dc.sync(scene.vision());
+            
             auto IDs = std::move(dc.renderObjectDesc().IDs);
 
             std::ranges::for_each(IDs,

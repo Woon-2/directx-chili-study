@@ -46,6 +46,10 @@ public:
         return lhs *= rhs;
     }
 
+    Transform transpose() const noexcept {
+        return dx::XMMatrixTranspose(localMat_);
+    }
+
 private:
     dx::XMMATRIX localMat_;
 };
