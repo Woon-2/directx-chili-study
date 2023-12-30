@@ -125,6 +125,7 @@ target_sources(chili PRIVATE
     include/GFX/PipelineObjects/Bindable.hpp
     include/GFX/PipelineObjects/Buffer.hpp
     include/GFX/PipelineObjects/DrawCaller.hpp
+    include/GFX/PipelineObjects/DrawContext.hpp
     include/GFX/PipelineObjects/IA.hpp
     include/GFX/PipelineObjects/RenderTarget.hpp
     include/GFX/PipelineObjects/Shader.hpp

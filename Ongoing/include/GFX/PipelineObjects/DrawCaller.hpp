@@ -3,15 +3,52 @@
 
 #define ACTIVATE_DRAWCALLER_LOG
 
+#include "DrawContext.hpp"
+
 #include <d3d11.h>
 
 #include "Game/GFXCMDLogger.hpp"
+
+#include <vector>
+#include <memory>
+#include <ranges>
+#include <algorithm>
+
+#include "AdditionalRanges.hpp"
 
 class GFXPipeline;
 
 class IDrawCaller {
 public:
     friend class GFXPipeline;
+
+    // begin of draw context related stuffs.
+    // draw context modifiers should be added later.
+    // this is minimum implementation.
+    void addDrawContext(std::shared_ptr<IDrawContext> pDrawContext) {
+        drawContexts_.push_back(pDrawContext);
+    }
+
+    void clearDrawContexts() {
+        drawContexts_.clear();
+    }
+
+    void beforeDrawCall(GFXPipeline& pipeline) const {
+        std::ranges::for_each( drawContexts_ | dereference(),
+            [&pipeline](IDrawContext& drawContext) {
+                drawContext.beforeDrawCall(pipeline);
+            }
+        );
+    }
+
+    void afterDrawCall(GFXPipeline& pipeline) const {
+        std::ranges::for_each( drawContexts_ | dereference(),
+            [&pipeline](IDrawContext& drawContext) {
+                drawContext.afterDrawCall(pipeline);
+            }
+        );
+    }
+    // end of draw context related stuffs.
 
 #ifdef ACTIVATE_DRAWCALLER_LOG
 protected:
@@ -70,6 +107,8 @@ protected:
 
 private:
     virtual void drawCall(GFXPipeline& pipeline) const = 0;
+
+    std::vector< std::shared_ptr<IDrawContext> > drawContexts_;
 };
 
 class DrawCallerBasic : public IDrawCaller {
