@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2023.12.29 LANGUAGES CXX)
+project(POngoing VERSION 2023.12.30 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -73,6 +73,7 @@ target_sources(chili PRIVATE
     src/Game/GFXCMDSummarizer.cpp
     src/Game/GFXCMDLogFileView.cpp
     src/Game/SimulationUI.cpp
+    src/Game/Camera.cpp
     include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp
     include/Game/Box.hpp
@@ -98,6 +99,7 @@ target_sources(chili PRIVATE
     include/Game/GFXCMDSummarizer.hpp
     include/Game/GFXCMDLogFileView.hpp
     include/Game/SimulationUI.hpp
+    include/Game/Camera.hpp
 )
 
 # GFX sources

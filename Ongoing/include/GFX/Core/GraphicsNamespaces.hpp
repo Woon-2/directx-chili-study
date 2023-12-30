@@ -8,4 +8,7 @@
 namespace wrl = Microsoft::WRL;
 namespace dx = DirectX;
 
+#undef near
+#undef far
+
 #endif  // __GraphicsNamespaces

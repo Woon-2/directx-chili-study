@@ -1,7 +1,6 @@
 #ifndef __Transform
 #define __Transform
 
-#include <DirectXMath.h>
 #include "GFX/Core/GraphicsNamespaces.hpp"
 
 #include <vector>
@@ -70,6 +69,14 @@ public:
         return local_;
     }
 
+    Transform& localRef() noexcept {
+        return local_;
+    }
+
+    const Transform& localRef() const noexcept {
+        return local_;
+    }
+
     void adjustGlobal(const Transform trans) noexcept {
         global_ *= trans;
     }
@@ -79,6 +86,14 @@ public:
     }
 
     const Transform global() const noexcept {
+        return global_;
+    }
+
+    Transform& globalRef() noexcept {
+        return global_;
+    }
+
+    const Transform& globalRef() const noexcept {
         return global_;
     }
 
