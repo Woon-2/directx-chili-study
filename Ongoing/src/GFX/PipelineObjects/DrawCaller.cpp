@@ -3,7 +3,7 @@
 #include "GFX/Core/Pipeline.hpp"
 #include "GFX/Core/GraphicsException.hpp"
 
-void DrawCallerBasic::basicDrawCall(GFXPipeline& pipeline) const {
+void DrawCaller::basicDrawCall(GFXPipeline& pipeline) const {
     GFX_THROW_FAILED_VOID(
         pipeline.context()->Draw(numVertex_, startVertexLocation_)
     );
@@ -13,7 +13,7 @@ void DrawCallerBasic::basicDrawCall(GFXPipeline& pipeline) const {
 #endif
 }
 
-void DrawCallerBasic::drawCall(GFXPipeline& pipeline) const {
+void DrawCaller::drawCall(GFXPipeline& pipeline) const {
     beforeDrawCall(pipeline);
     basicDrawCall(pipeline);
     afterDrawCall(pipeline);

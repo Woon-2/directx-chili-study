@@ -21,7 +21,7 @@ public:
         bindable->bind(*this);
     }
 
-    void drawCall(const IDrawCaller* drawCaller) {
+    void drawCall(const BasicDrawCaller* drawCaller) {
         drawCaller->drawCall(*this);
     }
 

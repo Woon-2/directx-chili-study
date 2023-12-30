@@ -253,11 +253,11 @@ public:
         };
     }
 
-    const IDrawCaller* drawCaller() const override {
+    const BasicDrawCaller* drawCaller() const override {
         return &drawCaller_;
     }
 
-    IDrawCaller* drawCaller() override {
+    BasicDrawCaller* drawCaller() override {
         return &drawCaller_;
     }
 

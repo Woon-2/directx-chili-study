@@ -78,11 +78,11 @@ public:
     using MyTopology = PETopology;
     using MyTransformCBuf = PETransformCBuf;
     using MyViewport = PEViewport;
-    class MyDrawCaller : public DrawCallerBasic {
+    class MyDrawCaller : public DrawCaller {
     public:
         MyDrawCaller( GFXStorage& mappedStorage,
             GFXStorage::ID IDTransCBuf
-        ) : DrawCallerBasic(36u, 0u), trans_(),
+        ) : DrawCaller(36u, 0u), trans_(),
             mappedStorage_(&mappedStorage), IDTransCBuf_(IDTransCBuf) {}
 
     void update(const Transform trans) {
@@ -100,7 +100,7 @@ public:
 
             transCBuf->dynamicUpdate(pipeline, [this](){ return trans_.data(); });
             // then draw
-            DrawCallerBasic::basicDrawCall(pipeline);
+            DrawCaller::basicDrawCall(pipeline);
         }
 
         Transform trans_;
@@ -199,11 +199,11 @@ public:
         };
     }
 
-    const IDrawCaller* drawCaller() const override {
+    const BasicDrawCaller* drawCaller() const override {
         return &drawCaller_;
     }
 
-    IDrawCaller* drawCaller() override {
+    BasicDrawCaller* drawCaller() override {
         return &drawCaller_;
     }
 

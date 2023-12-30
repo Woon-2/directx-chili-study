@@ -18,7 +18,7 @@
 
 class GFXPipeline;
 
-class IDrawCaller {
+class BasicDrawCaller {
 public:
     friend class GFXPipeline;
 
@@ -111,16 +111,16 @@ private:
     std::vector< std::shared_ptr<IDrawContext> > drawContexts_;
 };
 
-class DrawCallerBasic : public IDrawCaller {
+class DrawCaller : public BasicDrawCaller {
 public:
-    DrawCallerBasic() = default;
-    DrawCallerBasic(UINT nVertex, UINT startVertexLocation
+    DrawCaller() = default;
+    DrawCaller(UINT nVertex, UINT startVertexLocation
     #ifdef ACTIVATE_DRAWCALLER_LOG
         , bool enableLogOnCreation = true
     #endif
     ) :
     #ifdef ACTIVATE_DRAWCALLER_LOG
-        logComponent_( this, GFXCMDSourceCategory("DrawCallerBasic") ),
+        logComponent_( this, GFXCMDSourceCategory("DrawCaller") ),
     #endif
         numVertex_(nVertex), startVertexLocation_(startVertexLocation) {
     #ifdef ACTIVATE_DRAWCALLER_LOG
@@ -154,13 +154,13 @@ private:
     void drawCall(GFXPipeline& pipeline) const override;
 
 #ifdef ACTIVATE_DRAWCALLER_LOG
-    IDrawCaller::LogComponent logComponent_;
+    BasicDrawCaller::LogComponent logComponent_;
 #endif
     UINT numVertex_;
     UINT startVertexLocation_;
 };
 
-class DrawCallerIndexed : public IDrawCaller {
+class DrawCallerIndexed : public BasicDrawCaller {
 public:
     DrawCallerIndexed() = default;
     DrawCallerIndexed(UINT numIndex, UINT startIndexLocation,
@@ -213,7 +213,7 @@ private:
     void drawCall(GFXPipeline& pipeline) const override;
 
 #ifdef ACTIVATE_DRAWCALLER_LOG
-    IDrawCaller::LogComponent logComponent_;
+    BasicDrawCaller::LogComponent logComponent_;
 #endif
     UINT numIndex_;
     UINT startIndexLocation_;

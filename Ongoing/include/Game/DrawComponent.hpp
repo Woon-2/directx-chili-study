@@ -61,8 +61,8 @@ public:
     virtual ~IDrawComponent() {}
 
     virtual const RenderObjectDesc renderObjectDesc() const = 0;
-    virtual IDrawCaller* drawCaller() = 0;
-    virtual const IDrawCaller* drawCaller() const = 0;
+    virtual BasicDrawCaller* drawCaller() = 0;
+    virtual const BasicDrawCaller* drawCaller() const = 0;
     virtual void sync(const Renderer& pRenderer) = 0;
 
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
