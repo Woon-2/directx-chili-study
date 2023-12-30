@@ -78,11 +78,11 @@ public:
     using MyTopology = PETopology;
     using MyTransformCBuf = PETransformCBuf;
     using MyViewport = PEViewport;
-    class MyDrawContext : public DrawContextBasic {
+    class MyDrawCaller : public DrawCallerBasic {
     public:
-        MyDrawContext( GFXStorage& mappedStorage,
+        MyDrawCaller( GFXStorage& mappedStorage,
             GFXStorage::ID IDTransCBuf
-        ) : DrawContextBasic(36u, 0u), trans_(),
+        ) : DrawCallerBasic(36u, 0u), trans_(),
             mappedStorage_(&mappedStorage), IDTransCBuf_(IDTransCBuf) {}
 
     void update(const Transform trans) {
@@ -100,7 +100,7 @@ public:
 
             transCBuf->dynamicUpdate(pipeline, [this](){ return trans_.data(); });
             // then draw
-            DrawContextBasic::basicDrawCall(pipeline);
+            DrawCallerBasic::basicDrawCall(pipeline);
         }
 
         Transform trans_;
@@ -139,14 +139,14 @@ public:
         IDTransformCBuf_( storage.cache<MyTransformCBuf>(factory) ),
         IDTexture_( storage.cache<MyTexture>(factory) ),
         IDSampler_( storage.cache<MySampler>(factory) ),
-        drawContext_( storage, IDTransformCBuf_ ) {
+        drawCaller_( storage, IDTransformCBuf_ ) {
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_.entryStackPop();
     #endif
     }
 
     void update(const Transform trans) {
-        drawContext_.update(trans);
+        drawCaller_.update(trans);
     }
 
     const RenderObjectDesc renderObjectDesc() const override {
@@ -199,12 +199,12 @@ public:
         };
     }
 
-    const IDrawContext* drawContext() const override {
-        return &drawContext_;
+    const IDrawCaller* drawCaller() const override {
+        return &drawCaller_;
     }
 
-    IDrawContext* drawContext() override {
-        return &drawContext_;
+    IDrawCaller* drawCaller() override {
+        return &drawCaller_;
     }
 
 private:
@@ -226,7 +226,7 @@ private:
     // since draw context may use other member data,
     // to protect the program from accessing unitialized data,
     // sacrifice memory efficiency.
-    MyDrawContext drawContext_;
+    MyDrawCaller drawCaller_;
 };
 
 template<>

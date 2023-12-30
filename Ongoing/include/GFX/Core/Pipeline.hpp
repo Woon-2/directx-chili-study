@@ -2,7 +2,7 @@
 #define __Pipeline
 
 #include "GFX/PipelineObjects/Bindable.hpp"
-#include "GFX/PipelineObjects/DrawContext.hpp"
+#include "GFX/PipelineObjects/DrawCaller.hpp"
 
 #include <d3d11.h>
 #include "GraphicsNamespaces.hpp"
@@ -21,8 +21,8 @@ public:
         bindable->bind(*this);
     }
 
-    void drawCall(const IDrawContext* drawContext) {
-        drawContext->drawCall(*this);
+    void drawCall(const IDrawCaller* drawCaller) {
+        drawCaller->drawCall(*this);
     }
 
     void setContext(wrl::ComPtr<ID3D11DeviceContext> pContext) {

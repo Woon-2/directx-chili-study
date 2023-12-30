@@ -49,7 +49,7 @@ void Renderer::render(Scene& scene) {
                 }
             );
 
-            pipeline_.drawCall(dc.drawContext());
+            pipeline_.drawCall(dc.drawCaller());
         }
     );
 

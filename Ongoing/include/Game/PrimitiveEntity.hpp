@@ -86,12 +86,12 @@ public:
         }) {}
 };
 
-class PEDrawContext : public DrawContextIndexed {
+class PEDrawCaller : public DrawCallerIndexed {
 public:
-    PEDrawContext( UINT numIndex, UINT startIndexLocation,
+    PEDrawCaller( UINT numIndex, UINT startIndexLocation,
         INT baseVertexLocation, GFXStorage& mappedStorage,
         GFXStorage::ID IDTransCBuf
-    ) : DrawContextIndexed(numIndex, startIndexLocation, baseVertexLocation),
+    ) : DrawCallerIndexed(numIndex, startIndexLocation, baseVertexLocation),
         trans_(), mappedStorage_(&mappedStorage), IDTransCBuf_(IDTransCBuf) {}
 
     void update(const Transform trans) {
@@ -121,7 +121,7 @@ public:
     using MyIndexedColorCBuf = PEIndexedColorCBuf;
     using MyBlendedColorBuffer = PEColorBuffer;
     using MyViewport = PEViewport;
-    using MyDrawContext = PEDrawContext;
+    using MyDrawCaller = PEDrawCaller;
 
     PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
         GFXStorage& storage, const ChiliWindow& wnd
@@ -139,7 +139,7 @@ public:
         IDBlendedColorBuffer_( storage.cache<MyBlendedColorBuffer>(
             factory, MyPosBuffer::size()
         ) ),
-        drawContext_(
+        drawCaller_(
             static_cast<UINT>( MyIndexBuffer::size() ),
             0u, 0, storage, IDTransformCBuf_
         ) {
@@ -172,7 +172,7 @@ public:
                 std::forward<TesselationFactors>(tesselationFactors)...
             )
         ) ),
-        drawContext_(
+        drawCaller_(
             static_cast<UINT>( MyIndexBuffer::size(
                 std::forward<TesselationFactors>(tesselationFactors)...
             ) ),
@@ -184,7 +184,7 @@ public:
         }
 
     void update(const Transform trans) {
-        drawContext_.update(trans);
+        drawCaller_.update(trans);
     }
 
     const RenderObjectDesc renderObjectDesc() const override {
@@ -253,12 +253,12 @@ public:
         };
     }
 
-    const IDrawContext* drawContext() const override {
-        return &drawContext_;
+    const IDrawCaller* drawCaller() const override {
+        return &drawCaller_;
     }
 
-    IDrawContext* drawContext() override {
-        return &drawContext_;
+    IDrawCaller* drawCaller() override {
+        return &drawCaller_;
     }
 
 private:
@@ -280,7 +280,7 @@ private:
     // since draw context may use other member data,
     // to protect the program from accessing unitialized data,
     // sacrifice memory efficiency.
-    MyDrawContext drawContext_;
+    MyDrawCaller drawCaller_;
 };
 
 template <class T>

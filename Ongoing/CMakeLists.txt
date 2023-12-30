@@ -117,14 +117,14 @@ target_sources(chili PRIVATE
     include/GFX/Core/GraphicsNamespaces.hpp
 
     src/GFX/PipelineObjects/Buffer.cpp
-    src/GFX/PipelineObjects/DrawContext.cpp
+    src/GFX/PipelineObjects/DrawCaller.cpp
     src/GFX/PipelineObjects/RenderTarget.cpp
     src/GFX/PipelineObjects/Shader.cpp
     src/GFX/PipelineObjects/Texture.cpp
     src/GFX/PipelineObjects/Sampler.cpp
     include/GFX/PipelineObjects/Bindable.hpp
     include/GFX/PipelineObjects/Buffer.hpp
-    include/GFX/PipelineObjects/DrawContext.hpp
+    include/GFX/PipelineObjects/DrawCaller.hpp
     include/GFX/PipelineObjects/IA.hpp
     include/GFX/PipelineObjects/RenderTarget.hpp
     include/GFX/PipelineObjects/Shader.hpp

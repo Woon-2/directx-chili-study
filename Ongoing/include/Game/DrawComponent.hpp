@@ -7,7 +7,7 @@
 
 #include "GFXCMDLogger.hpp"
 
-#include "GFX/PipelineObjects/DrawContext.hpp"
+#include "GFX/PipelineObjects/DrawCaller.hpp"
 
 class Renderer;
 
@@ -61,8 +61,8 @@ public:
     virtual ~IDrawComponent() {}
 
     virtual const RenderObjectDesc renderObjectDesc() const = 0;
-    virtual IDrawContext* drawContext() = 0;
-    virtual const IDrawContext* drawContext() const = 0;
+    virtual IDrawCaller* drawCaller() = 0;
+    virtual const IDrawCaller* drawCaller() const = 0;
     virtual void sync(const Renderer& pRenderer) = 0;
 
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG

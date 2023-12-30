@@ -37,7 +37,7 @@ std::vector<GFXColor> PEColorBuffer::makeRandom(std::size_t size) {
     return ret;
 }
 
-void PEDrawContext::drawCall(GFXPipeline& pipeline) const {
+void PEDrawCaller::drawCall(GFXPipeline& pipeline) const {
     // first adopt transform
     assert( mappedStorage_->get(IDTransCBuf_).has_value() );
 
@@ -47,5 +47,5 @@ void PEDrawContext::drawCall(GFXPipeline& pipeline) const {
 
     transCBuf->dynamicUpdate(pipeline, [this](){ return trans_.data(); });
     // then draw
-    DrawContextIndexed::indexedDrawCall(pipeline);
+    DrawCallerIndexed::indexedDrawCall(pipeline);
 }

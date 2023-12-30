@@ -1,7 +1,7 @@
-#ifndef __DrawContext
-#define __DrawContext
+#ifndef __DrawCaller
+#define __DrawCaller
 
-#define ACTIVATE_DRAWCONTEXT_LOG
+#define ACTIVATE_DRAWCALLER_LOG
 
 #include <d3d11.h>
 
@@ -9,11 +9,11 @@
 
 class GFXPipeline;
 
-class IDrawContext {
+class IDrawCaller {
 public:
     friend class GFXPipeline;
 
-#ifdef ACTIVATE_DRAWCONTEXT_LOG
+#ifdef ACTIVATE_DRAWCALLER_LOG
 protected:
     class LogComponent {
     public:
@@ -66,25 +66,25 @@ protected:
         const void* logSrc_;
         bool bLogEnabled_;
     };
-#endif  // ACTIVATE_DRAWCONTEXT_LOG
+#endif  // ACTIVATE_DRAWCALLER_LOG
 
 private:
     virtual void drawCall(GFXPipeline& pipeline) const = 0;
 };
 
-class DrawContextBasic : public IDrawContext {
+class DrawCallerBasic : public IDrawCaller {
 public:
-    DrawContextBasic() = default;
-    DrawContextBasic(UINT nVertex, UINT startVertexLocation
-    #ifdef ACTIVATE_DRAWCONTEXT_LOG
+    DrawCallerBasic() = default;
+    DrawCallerBasic(UINT nVertex, UINT startVertexLocation
+    #ifdef ACTIVATE_DRAWCALLER_LOG
         , bool enableLogOnCreation = true
     #endif
     ) :
-    #ifdef ACTIVATE_DRAWCONTEXT_LOG
-        logComponent_( this, GFXCMDSourceCategory("DrawContextBasic") ),
+    #ifdef ACTIVATE_DRAWCALLER_LOG
+        logComponent_( this, GFXCMDSourceCategory("DrawCallerBasic") ),
     #endif
         numVertex_(nVertex), startVertexLocation_(startVertexLocation) {
-    #ifdef ACTIVATE_DRAWCONTEXT_LOG
+    #ifdef ACTIVATE_DRAWCALLER_LOG
         if (enableLogOnCreation) {
             logComponent_.enableLog();
         }
@@ -114,28 +114,28 @@ protected:
 private:
     void drawCall(GFXPipeline& pipeline) const override;
 
-#ifdef ACTIVATE_DRAWCONTEXT_LOG
-    IDrawContext::LogComponent logComponent_;
+#ifdef ACTIVATE_DRAWCALLER_LOG
+    IDrawCaller::LogComponent logComponent_;
 #endif
     UINT numVertex_;
     UINT startVertexLocation_;
 };
 
-class DrawContextIndexed : public IDrawContext {
+class DrawCallerIndexed : public IDrawCaller {
 public:
-    DrawContextIndexed() = default;
-    DrawContextIndexed(UINT numIndex, UINT startIndexLocation,
+    DrawCallerIndexed() = default;
+    DrawCallerIndexed(UINT numIndex, UINT startIndexLocation,
         INT baseVertexLocation
-    #ifdef ACTIVATE_DRAWCONTEXT_LOG
+    #ifdef ACTIVATE_DRAWCALLER_LOG
         , bool enableLogOnCreation = true
     #endif
     ) :
-    #ifdef ACTIVATE_DRAWCONTEXT_LOG
-        logComponent_( this, GFXCMDSourceCategory("DrawContextIndexed") ),
+    #ifdef ACTIVATE_DRAWCALLER_LOG
+        logComponent_( this, GFXCMDSourceCategory("DrawCallerIndexed") ),
     #endif
         numIndex_(numIndex), startIndexLocation_(startIndexLocation),
         baseVertexLocation_(baseVertexLocation) {
-    #ifdef ACTIVATE_DRAWCONTEXT_LOG
+    #ifdef ACTIVATE_DRAWCALLER_LOG
         if (enableLogOnCreation) {
             logComponent_.enableLog();
         }
@@ -173,12 +173,12 @@ protected:
 private:
     void drawCall(GFXPipeline& pipeline) const override;
 
-#ifdef ACTIVATE_DRAWCONTEXT_LOG
-    IDrawContext::LogComponent logComponent_;
+#ifdef ACTIVATE_DRAWCALLER_LOG
+    IDrawCaller::LogComponent logComponent_;
 #endif
     UINT numIndex_;
     UINT startIndexLocation_;
     INT baseVertexLocation_;
 };
 
-#endif  // __DrawContext
+#endif  // __DrawCaller
