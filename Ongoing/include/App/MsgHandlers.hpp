@@ -104,6 +104,11 @@ public:
     std::optional<LRESULT> operator()(
         const Win32::Message& msg
     ) override {
+        // ignore keyboard message if imgui has captured the mouse
+        if (ImGui::GetIO().WantCaptureMouse) {
+            return {};
+        }
+
         try {
             switch (msg.type) {
             // clear scanned key state when window loses focus
@@ -175,6 +180,11 @@ public:
     std::optional<LRESULT> operator()(
         const Win32::Message& msg
     ) override {
+        // ignore mouse message if imgui has captured the mouse
+        if (ImGui::GetIO().WantCaptureMouse) {
+            return {};
+        }
+
         try {
             while (!pMouse_->empty()) {
                 const auto e = pMouse_->read();
@@ -339,7 +349,7 @@ public:
         if ( ImGui_ImplWin32_WndProcHandler(
             window().nativeHandle(), msg.type, msg.wParam, msg.lParam
         ) ) {
-            return 0;
+            return true;
         }
         else {
             return {};
