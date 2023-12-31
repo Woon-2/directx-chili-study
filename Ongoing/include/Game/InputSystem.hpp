@@ -167,13 +167,6 @@ public:
     void update() {
         updateKbdRelated();
         updateMouseRelated();
-        if (!pMouse_.has_value() || !icMouse_) {
-            return;
-        }
-
-        if ( auto ev = pMouse_.value()->peek(); ev.has_value() ) {
-            icMouse_->receive(ev.value());
-        }
     }
 
     MousePointConverter& mousePointConverter() noexcept {
