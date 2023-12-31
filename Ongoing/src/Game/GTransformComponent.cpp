@@ -1,8 +1,6 @@
 #include "Game/GTransformComponent.hpp"
 
 void GTransformComponent::update(milliseconds elapsed) {
-    BasicTransformComponent::update();
-
     float elapsedCnt = std::chrono::duration_cast<seconds>(elapsed).count();
 
     roll_ += dRoll_ * elapsedCnt;
