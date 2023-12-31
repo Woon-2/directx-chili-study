@@ -16,12 +16,6 @@ public:
     void render();
 
 private:
-    // update is called in render
-    // since imgui works in immediate mode,
-    // so to prevent confusion of where to call update,
-    // wrap update call in render.
-    void update();
-
     std::size_t nFrameSample_;
     std::size_t frameID_;
     bool willShow_;

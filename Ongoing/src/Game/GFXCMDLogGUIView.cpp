@@ -7,17 +7,16 @@
 GFXCMDLogGuiView::GFXCMDLogGuiView()
     : nFrameSample_(0u), frameID_(0), willShow_(true) {}
 
-void GFXCMDLogGuiView::update() {
+void GFXCMDLogGuiView::render() {
     GFXCMDSUM.update(GFXCMDSUM.phIDFrame, GFXCMDSummarizer::IDFrame(frameID_));
     GFXCMDSUM.update(GFXCMDSUM.phNFrameSample, 1u);
 
     GFXCMDSUM.update(GFXCMDSUM.phTotalCreateCnt);
     GFXCMDSUM.update(GFXCMDSUM.phTotalBindCnt);
     GFXCMDSUM.update(GFXCMDSUM.phTotalDrawCnt);
-}
 
-void GFXCMDLogGuiView::render() {
-    update();
+    // should protect frameID from overflow later.
+    ++frameID_;
 
     if ( willShow_ && ImGui::Begin( "Graphics Report", &willShow_ ) ) {
         auto curFrameReport = GFXCMDSUM.report(
