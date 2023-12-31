@@ -4,7 +4,7 @@
 class SimulationUI {
 public:
     SimulationUI()
-        : speedFactor_(1.f), buffer_{0} {}
+        : speedFactor_(1.f), buffer_{0}, willShow_(true) {}
 
     void render();
 
@@ -13,6 +13,7 @@ public:
     }
 private:
     float speedFactor_;
+    bool willShow_;
 
     char buffer_[1024];  // temporary
 };
