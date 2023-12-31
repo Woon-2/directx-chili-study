@@ -6,8 +6,6 @@
 #include <vector>
 #include <memory>
 #include <optional>
-#include <ranges>
-#include <algorithm>
 
 class alignas(16) Transform {
 public:
@@ -25,7 +23,15 @@ public:
         localMat_ = mat;
     }
 
-    dx::XMMATRIX get() const noexcept {
+    dx::XMMATRIX clone() const noexcept {
+        return localMat_;
+    }
+
+    dx::XMMATRIX& get() noexcept {
+        return localMat_;
+    }
+
+    const dx::XMMATRIX& get() const noexcept {
         return localMat_;
     }
 
@@ -56,10 +62,13 @@ private:
 
 class BasicTransformComponent {
 public:
-    BasicTransformComponent() = default;
+    BasicTransformComponent()
+        : local_(), global_(), total_(Transform()) {}
+        
     BasicTransformComponent(const Transform& initialLocal,
         const Transform& initialGlobal
-    ) : local_(initialLocal), global_(initialGlobal) {}
+    ) : local_(initialLocal), global_(initialGlobal),
+    total_(Transform()) {}
 
     void VCALL adjustLocal(const Transform trans) noexcept {
         local_ *= trans;
@@ -109,27 +118,10 @@ public:
         return total_.value();
     }
 
-    void addChild(std::weak_ptr<const Transform> child) {
-        children_.push_back( std::move(child) );
-    }
-
-    const auto& children() const noexcept {
-        return children_;
-    }
-
-    void update() {
-        auto expiredRange = std::ranges::remove_if( children_,
-            [](const auto& wp) { return wp.expired(); }
-        );
-
-        children_.erase(expiredRange.begin(), expiredRange.end());
-    }
-
 private:
     Transform local_;
     Transform global_;
     std::optional<Transform> total_;
-    std::vector< std::weak_ptr<const Transform> > children_;
 };
 
 #endif
