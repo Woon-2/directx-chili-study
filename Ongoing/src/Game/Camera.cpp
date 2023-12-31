@@ -74,66 +74,26 @@ void Camera::setParams( std::optional<float> fovy,
     );
 }
 
-inline namespace {
-    template <class RotateFn>
-    dx::XMMATRIX VCALL rotateImpl( dx::XMMATRIX mat, dx::HXMVECTOR axis,
-        float theta, RotateFn&& rfn
-    ) {
-        // store translation
-        auto eye = mat.r[3];
-        // invert translation
-        // (DXMath is using row-major matrices, so 4th row represents the translation)
-        mat.r[3] = dx::XMVectorZero();
-        mat *= std::invoke( std::forward<RotateFn>(rfn), axis, theta );
-        // translate with stored translation
-        return mat * dx::XMMatrixTranslationFromVector(eye);
-    }
-}
-
 void Camera::rotateX(float theta) {
-    auto& vtMat = *( pVision_->viewTransComp().localRef().data() );
-
-    vtMat *= rotateImpl( vtMat, {}, theta,
-        [](auto _, auto theta) {
-            return dx::XMMatrixRotationX(theta);
-        }
+    pVision_->viewTransComp().adjustLocal(
+        dx::XMMatrixRotationX(theta)
     );
-
-    pVision_->viewTransComp().setTotal(vtMat);
 }
 
 void Camera::rotateY(float theta) {
-    auto& vtMat = *( pVision_->viewTransComp().localRef().data() );
-
-    vtMat *= rotateImpl( vtMat, {}, theta,
-        [](auto _, auto theta) {
-            return dx::XMMatrixRotationY(theta);
-        }
+    pVision_->viewTransComp().adjustLocal(
+        dx::XMMatrixRotationY(theta)
     );
-
-    pVision_->viewTransComp().setTotal(vtMat);
 }
 
 void Camera::rotateZ(float theta) {
-    auto& vtMat = *( pVision_->viewTransComp().localRef().data() );
-
-    vtMat *= rotateImpl( vtMat, {}, theta,
-        [](auto _, auto theta) {
-            return dx::XMMatrixRotationZ(theta);
-        }
+    pVision_->viewTransComp().adjustLocal(
+        dx::XMMatrixRotationZ(theta)
     );
-
-    pVision_->viewTransComp().setTotal(vtMat);
 }
 
 void VCALL Camera::rotateAxis(dx::FXMVECTOR axis, float theta) {
-    auto& vtMat = *( pVision_->viewTransComp().localRef().data() );
-
-    vtMat *= rotateImpl( vtMat, {}, theta,
-        [](auto axis, auto theta) {
-            return dx::XMMatrixRotationAxis(axis, theta);
-        }
+    pVision_->viewTransComp().adjustLocal(
+        dx::XMMatrixRotationAxis(axis, theta)
     );
-
-    pVision_->viewTransComp().setTotal(vtMat);
 }
