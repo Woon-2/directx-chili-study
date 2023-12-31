@@ -75,6 +75,7 @@ target_sources(chili PRIVATE
     src/Game/GFXCMDLogGUIView.cpp
     src/Game/SimulationUI.cpp
     src/Game/Camera.cpp
+    src/Game/CoordSystem.cpp
     include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp
     include/Game/Box.hpp
@@ -102,6 +103,7 @@ target_sources(chili PRIVATE
     include/Game/GFXCMDLogGUIView.hpp
     include/Game/SimulationUI.hpp
     include/Game/Camera.hpp
+    include/Game/CoordSystem.hpp
 )
 
 # GFX sources

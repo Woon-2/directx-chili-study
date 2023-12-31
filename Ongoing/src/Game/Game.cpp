@@ -17,30 +17,22 @@
 // do as chili do, it's temporary.
 GDIPlusManager gdipm;
 
-namespace {
-    const CameraVisionDesc initialCVDesc() {
-        return CameraVisionDesc{
-            .viewTransDesc = CameraViewTransDesc{
-                .eye = dx::XMFLOAT3(0.f, 0.f, -20.f),
-                .at = dx::XMFLOAT3(0.f, 0.f, 0.f),
-                .up = dx::XMFLOAT3(0.f, 1.f, 0.f),
-            },
-            .projTransDesc = CameraProjTransDesc{
-                .fovy = dx::XM_PIDIV2,
-                .aspect = 1.f,
-                .nearZ = 0.5f,
-                .farZ = 40.f,
-            }
-        };
-    }
-}
 
 Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse
 ) : rendererSystem_( gfx.factory(), gfx.pipeline() ),
     inputSystem_( kbd, mouse, wnd.client() ),
-    timer_(), camera_( initialCVDesc() ), entities_(), simulationUI_(),
-    ic_( std::make_shared<MyIC>() ){
+    coordSystem_( std::make_shared<CoordSystem>() ),
+    timer_(), camera_(), entities_(),
+    simulationUI_(), ic_( std::make_shared<MyIC>() ) {
+
+    camera_.setParams(dx::XM_PIDIV2, 1.f, 0.5f, 40.f);
+    camera_.attach(coordSystem_);
+    coordSystem_->addChild(camera_.coordSystem());
+    camera_.coordSystem()->adjustGlobal(
+        dx::XMMatrixTranslation(0.f, 0.f, -20.f)
+    );
+
     auto slotIndexedRender = rendererSystem_
         .addRenderer<IndexedRenderer>();
     rendererSystem_.enableLog(slotIndexedRender);
@@ -65,11 +57,15 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
 }
 
 void Game::update() {
+    auto elapsed = timer_.mark();
+    
     // update systems
     inputSystem_.update();
     camera_.update();
 
-    auto elapsed = timer_.mark();
+    // coord system may be affected by other systems,
+    // so update coord system lastly.
+    coordSystem_->traverse();
 
     // update entities
     if (ic_->willSimulate()) {
@@ -79,6 +75,10 @@ void Game::update() {
             }
         );
     }
+
+    // coord systems may be changed during updating entities,
+    // so update coord system once more.
+    coordSystem_->traverse();
 }
 
 void Game::render() {

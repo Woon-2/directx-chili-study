@@ -6,6 +6,7 @@
 #include "Entity.hpp"
 #include "Timer.hpp"
 #include "Camera.hpp"
+#include "CoordSystem.hpp"
 
 #include "App/ChiliWindow.hpp"
 #include "App/Keyboard.hpp"
@@ -74,6 +75,7 @@ private:
 
     RendererSystem rendererSystem_;
     InputSystem<MyChar> inputSystem_;
+    std::shared_ptr<CoordSystem> coordSystem_;
     MyTimer timer_;
     Camera camera_;
     std::vector< std::unique_ptr<IEntity> > entities_;
