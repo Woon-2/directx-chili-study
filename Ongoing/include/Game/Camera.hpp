@@ -99,6 +99,66 @@ public:
         std::optional<float> farZ
     );
 
+    void VCALL setEye(dx::FXMVECTOR eyeVal) {
+        const auto& oldAt = pVision_->vtDesc().at;
+        const auto& oldUp = pVision_->vtDesc().up;
+        auto newEye = dx::XMFLOAT3();
+        dx::XMStoreFloat3(&newEye, eyeVal);
+
+        pVision_->updateView(
+            CameraViewTransDesc{
+                .eye = newEye,
+                .at = oldAt,
+                .up = oldUp
+            }
+        );
+    }
+
+    dx::XMVECTOR eye() {
+        auto stored = pVision_->vtDesc().eye;
+        return dx::XMLoadFloat3(&stored);
+    }
+
+    void VCALL setAt(dx::FXMVECTOR atVal) {
+        const auto& oldEye = pVision_->vtDesc().eye;
+        const auto& oldUp = pVision_->vtDesc().up;
+        auto newAt = dx::XMFLOAT3();
+        dx::XMStoreFloat3(&newAt, atVal);
+
+        pVision_->updateView(
+            CameraViewTransDesc{
+                .eye = oldEye,
+                .at = newAt,
+                .up = oldUp
+            }
+        );
+    }
+
+    dx::XMVECTOR at() {
+        auto stored = pVision_->vtDesc().at;
+        return dx::XMLoadFloat3(&stored);
+    }
+
+    void VCALL setUp(dx::FXMVECTOR upVal) {
+        const auto& oldEye = pVision_->vtDesc().eye;
+        const auto& oldAt = pVision_->vtDesc().at;
+        auto newUp = dx::XMFLOAT3();
+        dx::XMStoreFloat3(&newUp, upVal);
+
+        pVision_->updateView(
+            CameraViewTransDesc{
+                .eye = oldEye,
+                .at = oldAt,
+                .up = newUp
+            }
+        );
+    }
+
+    dx::XMVECTOR up() {
+        auto stored = pVision_->vtDesc().up;
+        return dx::XMLoadFloat3(&stored);
+    }
+
     void rotateX(float theta);
     void rotateY(float theta);
     void rotateZ(float theta);
