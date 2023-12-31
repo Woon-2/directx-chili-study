@@ -64,7 +64,7 @@ class BasicTransformComponent {
 public:
     BasicTransformComponent()
         : local_(), global_(), total_(Transform()) {}
-        
+
     BasicTransformComponent(const Transform& initialLocal,
         const Transform& initialGlobal
     ) : local_(initialLocal), global_(initialGlobal),
@@ -114,7 +114,7 @@ public:
         total_ = trans;
     }
 
-    const Transform total() const noexcept {
+    const Transform& total() const noexcept {
         return total_.value();
     }
 
