@@ -102,7 +102,7 @@ public:
     void rotateX(float theta);
     void rotateY(float theta);
     void rotateZ(float theta);
-    void rotateAxis(dx::XMVECTOR axis, float theta);
+    void VCALL rotateAxis(dx::FXMVECTOR axis, float theta);
 
 private:
     std::shared_ptr<CameraVision> pVision_;

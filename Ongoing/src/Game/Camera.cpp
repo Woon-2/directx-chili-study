@@ -76,7 +76,7 @@ void Camera::setParams( std::optional<float> fovy,
 
 inline namespace {
     template <class RotateFn>
-    dx::XMMATRIX rotateImpl( dx::XMMATRIX mat, dx::XMVECTOR axis,
+    dx::XMMATRIX VCALL rotateImpl( dx::XMMATRIX mat, dx::HXMVECTOR axis,
         float theta, RotateFn&& rfn
     ) {
         // store translation
@@ -126,7 +126,7 @@ void Camera::rotateZ(float theta) {
     pVision_->viewTransComp().setTotal(vtMat);
 }
 
-void Camera::rotateAxis(dx::XMVECTOR axis, float theta) {
+void VCALL Camera::rotateAxis(dx::FXMVECTOR axis, float theta) {
     auto& vtMat = *( pVision_->viewTransComp().localRef().data() );
 
     vtMat *= rotateImpl( vtMat, {}, theta,

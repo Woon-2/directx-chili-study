@@ -17,11 +17,11 @@ public:
     Transform(dx::FXMMATRIX mat) noexcept
         : localMat_(mat) {}
 
-    void adjust(dx::FXMMATRIX mat) noexcept {
+    void VCALL adjust(dx::FXMMATRIX mat) noexcept {
         localMat_ *= mat;
     }
 
-    void set(dx::FXMMATRIX mat) noexcept {
+    void VCALL set(dx::FXMMATRIX mat) noexcept {
         localMat_ = mat;
     }
 
@@ -37,16 +37,16 @@ public:
         return &localMat_;
     }
 
-    Transform& operator*=(const Transform rhs) noexcept {
+    Transform& VCALL operator*=(const Transform rhs) noexcept {
         localMat_ *= rhs.localMat_;
         return *this;
     }
 
-    friend Transform operator*(Transform lhs, const Transform& rhs) noexcept {
+    friend Transform VCALL operator*(Transform lhs, const Transform& rhs) noexcept {
         return lhs *= rhs;
     }
 
-    Transform transpose() const noexcept {
+    Transform VCALL transpose() const noexcept {
         return dx::XMMatrixTranspose(localMat_);
     }
 
@@ -57,15 +57,15 @@ private:
 class BasicTransformComponent {
 public:
     BasicTransformComponent() = default;
-    BasicTransformComponent(const Transform initialLocal,
+    BasicTransformComponent(const Transform& initialLocal,
         const Transform& initialGlobal
     ) : local_(initialLocal), global_(initialGlobal) {}
 
-    void adjustLocal(const Transform trans) noexcept {
+    void VCALL adjustLocal(const Transform trans) noexcept {
         local_ *= trans;
     }
 
-    void setLocal(const Transform trans) noexcept {
+    void VCALL setLocal(const Transform trans) noexcept {
         local_ = trans;
     }
 
@@ -81,11 +81,11 @@ public:
         return local_;
     }
 
-    void adjustGlobal(const Transform trans) noexcept {
+    void VCALL adjustGlobal(const Transform trans) noexcept {
         global_ *= trans;
     }
 
-    void setGlobal(const Transform trans) noexcept {
+    void VCALL setGlobal(const Transform trans) noexcept {
         global_ = trans;
     }
 
@@ -101,7 +101,7 @@ public:
         return global_;
     }
 
-    void setTotal(const Transform trans) noexcept {
+    void VCALL setTotal(const Transform trans) noexcept {
         total_ = trans;
     }
 
