@@ -20,8 +20,18 @@ void GFXCMDLogGuiView::render() {
 
     if ( willShow_ && ImGui::Begin( "Graphics Report", &willShow_ ) ) {
         auto curFrameReport = GFXCMDSUM.report(
-            "Frame: {}\n"
-            "[GPU Commands]\n"
+            "Frame: {}\n",
+            GFXCMDSUM.phIDFrame
+        );
+        ImGui::Text( curFrameReport.c_str() );
+
+        ImGui::Text( "Application average %.3f ms/frame (%.1f FPS)",
+            1000.f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate
+        );
+
+
+        auto curFrameGFXCMDReport = GFXCMDSUM.report(    
+            "[GPU Commands in Frame {}]\n"
             "    Create: {}, Bind: {}, Draw: {}\n",
             GFXCMDSUM.phIDFrame,
             GFXCMDSUM.phTotalCreateCnt,
@@ -29,11 +39,7 @@ void GFXCMDLogGuiView::render() {
             GFXCMDSUM.phTotalDrawCnt
         );
 
-        ImGui::Text( curFrameReport.c_str() );
-
-        ImGui::Text( "Application average %.3f ms/frame (%.1f FPS)",
-            1000.f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate
-        );
+        ImGui::Text( curFrameGFXCMDReport.c_str() );
 
         ImGui::End();
     }
