@@ -294,8 +294,7 @@ public:
 
     void sync(const CameraVision& vision) {
         transformApplyer_->setTransform(
-            vision.viewTransComp().total()
-            * vision.projTransComp().total()
+            vision.viewTrans() * vision.projTrans()
         );
     }
 

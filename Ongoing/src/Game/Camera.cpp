@@ -30,10 +30,8 @@ CameraVision::CameraVision(const CameraVisionDesc& cvDesc)
     auto& nearZ = cvDesc.projTransDesc.nearZ;
     auto& farZ = cvDesc.projTransDesc.farZ;
 
-    viewTrans_.setLocal( dx::XMMatrixLookAtLH(eye, at, up) );
-    viewTrans_.setTotal(viewTrans_.local());
-    projTrans_.setLocal( dx::XMMatrixPerspectiveFovLH(fovy, aspect, nearZ, farZ) );
-    projTrans_.setTotal(projTrans_.local());
+    viewTrans_ = dx::XMMatrixLookAtLH(eye, at, up);
+    projTrans_ = dx::XMMatrixPerspectiveFovLH(fovy, aspect, nearZ, farZ);
 }
 
 void CameraVision::updateView(const CameraViewTransDesc& vtd) {
@@ -41,8 +39,7 @@ void CameraVision::updateView(const CameraViewTransDesc& vtd) {
     auto at = dx::XMLoadFloat3(&vtd.at);
     auto up = dx::XMLoadFloat3(&vtd.up);
 
-    viewTrans_.setLocal( dx::XMMatrixLookAtLH(eye, at, up) );
-    viewTrans_.setTotal(viewTrans_.local());
+    viewTrans_ = dx::XMMatrixLookAtLH(eye, at, up);
 
     viewTransDesc_ = vtd;
 }
@@ -53,8 +50,7 @@ void CameraVision::updateProj(const CameraProjTransDesc& ptd) {
     auto& nearZ = ptd.nearZ;
     auto& farZ = ptd.farZ;
 
-    projTrans_.setLocal( dx::XMMatrixPerspectiveFovLH(fovy, aspect, nearZ, farZ) );
-    projTrans_.setTotal(projTrans_.local());
+    projTrans_ = dx::XMMatrixPerspectiveFovLH(fovy, aspect, nearZ, farZ);
 
     projTransDesc_ = ptd;
 }
@@ -75,25 +71,17 @@ void Camera::setParams( std::optional<float> fovy,
 }
 
 void Camera::rotateX(float theta) {
-    pVision_->viewTransComp().adjustLocal(
-        dx::XMMatrixRotationX(theta)
-    );
+    pVision_->viewTrans() *= dx::XMMatrixRotationX(theta);
 }
 
 void Camera::rotateY(float theta) {
-    pVision_->viewTransComp().adjustLocal(
-        dx::XMMatrixRotationY(theta)
-    );
+    pVision_->viewTrans() *= dx::XMMatrixRotationY(theta);
 }
 
 void Camera::rotateZ(float theta) {
-    pVision_->viewTransComp().adjustLocal(
-        dx::XMMatrixRotationZ(theta)
-    );
+    pVision_->viewTrans() *= dx::XMMatrixRotationZ(theta);
 }
 
 void VCALL Camera::rotateAxis(dx::FXMVECTOR axis, float theta) {
-    pVision_->viewTransComp().adjustLocal(
-        dx::XMMatrixRotationAxis(axis, theta)
-    );
+    pVision_->viewTrans() *= dx::XMMatrixRotationAxis(axis, theta);
 }

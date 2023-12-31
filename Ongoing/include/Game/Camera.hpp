@@ -2,6 +2,7 @@
 #define __Camera
 
 #include "Transform.hpp"
+#include "CoordSystem.hpp"
 
 #include <optional>
 #include <memory>
@@ -31,19 +32,15 @@ public:
     CameraVision();
     CameraVision(const CameraVisionDesc& cvDesc);
 
-    const BasicTransformComponent& viewTransComp() const noexcept {
+    auto& viewTrans() noexcept {
         return viewTrans_;
     }
 
-    BasicTransformComponent& viewTransComp() noexcept {
+    const auto& viewTrans() const noexcept {
         return viewTrans_;
     }
 
-    const BasicTransformComponent& projTransComp() const noexcept {
-        return projTrans_;
-    }
-
-    BasicTransformComponent& projTransComp() noexcept {
+    const auto& projTrans() const noexcept {
         return projTrans_;
     }
 
@@ -67,8 +64,8 @@ private:
         return projTransDesc_;
     }
 
-    BasicTransformComponent viewTrans_;
-    BasicTransformComponent projTrans_;
+    Transform viewTrans_;
+    Transform projTrans_;
     CameraViewTransDesc viewTransDesc_;
     CameraProjTransDesc projTransDesc_;
 };
