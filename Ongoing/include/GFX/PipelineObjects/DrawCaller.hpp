@@ -80,18 +80,9 @@ protected:
             return bLogEnabled_;
         }
 
-        void logCreate() const {
-            logImpl(GFXCMDType::Create);
-        }
-
         void logDraw() const {
-            logImpl(GFXCMDType::Draw);
-        }
-
-    private:
-        void logImpl(GFXCMDType cmdType) const {
             GFXCMDLOG.logCMD( GFXCMDDesc{
-                .cmdType = cmdType,
+                .cmdType = GFXCMDType::Draw,
                 .sources = { GFXCMDSource{
                     .category = category_,
                     .pSource = logSrc_
@@ -99,6 +90,7 @@ protected:
             } );
         }
 
+    private:
         GFXCMDSourceCategory category_;
         const void* logSrc_;
         bool bLogEnabled_;
@@ -127,7 +119,6 @@ public:
         if (enableLogOnCreation) {
             logComponent_.enableLog();
         }
-        logComponent_.logCreate();
     #endif
     }
 
@@ -178,7 +169,6 @@ public:
         if (enableLogOnCreation) {
             logComponent_.enableLog();
         }
-        logComponent_.logCreate();
     #endif
     }
 
