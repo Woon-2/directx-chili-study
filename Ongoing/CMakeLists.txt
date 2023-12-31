@@ -72,6 +72,7 @@ target_sources(chili PRIVATE
     src/Game/GFXCMDLogger.cpp
     src/Game/GFXCMDSummarizer.cpp
     src/Game/GFXCMDLogFileView.cpp
+    src/Game/GFXCMDLogGUIView.cpp
     src/Game/SimulationUI.cpp
     src/Game/Camera.cpp
     include/Game/PrimitiveEntity.hpp
@@ -98,6 +99,7 @@ target_sources(chili PRIVATE
     include/Game/GFXCMDLogger.hpp
     include/Game/GFXCMDSummarizer.hpp
     include/Game/GFXCMDLogFileView.hpp
+    include/Game/GFXCMDLogGUIView.hpp
     include/Game/SimulationUI.hpp
     include/Game/Camera.hpp
 )

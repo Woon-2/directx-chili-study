@@ -9,7 +9,7 @@
 #include "Game/SkinnedBox.hpp"
 
 #include "Game/GFXCMDLogger.hpp"
-#include "Game/GFXCMDLogFileView.hpp"
+#include "Game/GFXCMDLogGUIView.hpp"
 
 #include "AdditionalRanges.hpp"
 
@@ -85,7 +85,7 @@ void Game::render() {
     rendererSystem_.render();
     simulationUI_.render();
     GFXCMDLOG.advance();
-    GFXCMDLOG_FILEVIEW.report();
+    GFXCMDLOG_GUIVIEW.render();
 }
 
 void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
