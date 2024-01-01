@@ -22,14 +22,13 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse
 ) : rendererSystem_( gfx.factory(), gfx.pipeline() ),
     inputSystem_( kbd, mouse, wnd.client() ),
-    coordSystem_( std::make_shared<CoordSystem>() ),
-    timer_(), camera_(), entities_(),
+    coordSystem_(), timer_(), camera_(), entities_(),
     simulationUI_(), ic_( std::make_shared<MyIC>() ) {
 
     camera_.setParams(dx::XM_PIDIV2, 1.f, 0.5f, 40.f);
     camera_.attach(coordSystem_);
-    coordSystem_->addChild(camera_.coordSystem());
-    camera_.coordSystem()->adjustGlobal(
+    coordSystem_.addChild(camera_.coordSystem());
+    camera_.coordSystem().adjustGlobal(
         dx::XMMatrixTranslation(0.f, 0.f, -20.f)
     );
 
@@ -64,7 +63,7 @@ void Game::update() {
 
     // coord system may be affected by other systems,
     // so update coord system lastly.
-    coordSystem_->traverse();
+    coordSystem_.traverse();
 
     // update entities
     if (ic_->willSimulate()) {
@@ -77,7 +76,7 @@ void Game::update() {
 
     // coord systems may be changed during updating entities,
     // so update coord system once more.
-    coordSystem_->traverse();
+    coordSystem_.traverse();
 }
 
 void Game::render() {

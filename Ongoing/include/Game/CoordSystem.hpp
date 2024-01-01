@@ -44,14 +44,20 @@ private:
 class CoordSystem {
 public:
     CoordSystem()
-        : parent_(), tc_(std::make_shared<BasicTransformComponent>()),
+        : parent_(), tc_(),
         children_(), id_(), dirty_(true) {}
 
-    void addChild(std::shared_ptr<CoordSystem> child) {
-        children_.push_back( std::move(child) );
+    ~CoordSystem();
+    CoordSystem(const CoordSystem&) = default;
+    CoordSystem& operator=(const CoordSystem&) = default;
+    CoordSystem(CoordSystem&&) noexcept = default;
+    CoordSystem& operator=(CoordSystem&&) noexcept = default;
+
+    void addChild(CoordSystem& child) {
+        children_.push_back( &child );
     }
 
-    void setParent(std::shared_ptr<const CoordSystem> parent);
+    void setParent(const CoordSystem& parent);
     void loseParent();
     bool lostParent() const noexcept {
         return !parent_.has_value();
@@ -63,57 +69,57 @@ public:
     }
 
     void VCALL adjustLocal(const Transform trans) noexcept {
-        tc_->adjustLocal(trans);
+        tc_.adjustLocal(trans);
         dirty_ = true;
     }
 
     void VCALL setLocal(const Transform trans) noexcept {
-        tc_->setLocal(trans);
+        tc_.setLocal(trans);
         dirty_ = true;
     }
 
     const Transform local() const noexcept {
-        return tc_->local();
+        return tc_.local();
     }
 
     Transform& localRef() noexcept {
         dirty_ = true;
-        return tc_->localRef();
+        return tc_.localRef();
     }
 
     const Transform& localRef() const noexcept {
-        return tc_->localRef();
+        return tc_.localRef();
     }
 
     const Transform& localConstRef() const noexcept {
-        return tc_->localRef();
+        return tc_.localRef();
     }
 
     void VCALL adjustGlobal(const Transform trans) noexcept {
-        tc_->adjustGlobal(trans);
+        tc_.adjustGlobal(trans);
         dirty_ = true;
     }
 
     void VCALL setGlobal(const Transform trans) noexcept {
-        tc_->setGlobal(trans);
+        tc_.setGlobal(trans);
         dirty_ = true;
     }
 
     const Transform global() const noexcept {
-        return tc_->global();
+        return tc_.global();
     }
 
     Transform& globalRef() noexcept {
         dirty_ = true;
-        return tc_->globalRef();
+        return tc_.globalRef();
     }
 
     const Transform& globalRef() const noexcept {
-        return tc_->globalRef();
+        return tc_.globalRef();
     }
 
     const Transform& globalConstRef() const noexcept {
-        return tc_->globalRef();
+        return tc_.globalRef();
     }
 
     void setDirty() noexcept {
@@ -124,7 +130,7 @@ public:
     // because it can lead confusion to users whether total is set or not.
     // travarse() is the only one function responsible for setting total transform.
     const Transform& total() const noexcept {
-        return tc_->total();
+        return tc_.total();
     }
 
     friend auto operator<=>( const CoordSystem& lhs,
@@ -146,13 +152,13 @@ public:
     }
 
 private:
-    void removeDetachedChildren();
-
-    std::optional<
-        std::shared_ptr<const CoordSystem>
-    > parent_;
-    std::shared_ptr<BasicTransformComponent> tc_;
-    std::vector< std::weak_ptr<CoordSystem> > children_;
+    std::optional<const CoordSystem*> parent_;
+    BasicTransformComponent tc_;
+    // children_ should be mutable to reflect destruction
+    // of current CoordSystem on parent_
+    // (via detaching parent's child which is equal to this)
+    // If children are too many, consider to change data structure.
+    mutable std::vector<CoordSystem*> children_;
     CoordSystemID id_;
     bool dirty_;
 };

@@ -77,10 +77,10 @@ private:
     class CameraCoordComponent {
     public:
         CameraCoordComponent()
-            : coordSystem_( std::make_shared<CoordSystem>() ) {}
+            : coordSystem_() {}
 
         const CameraViewTransDesc makeVTDesc() const noexcept {
-            auto worldTrans = coordSystem_->total();
+            auto worldTrans = coordSystem_.total();
             
             auto eye = dx::XMVector4Transform(
                 dx::XMVectorSet(0.f, 0.f, 0.f, 1.f),
@@ -103,24 +103,26 @@ private:
             return ret;
         }
 
-        const std::shared_ptr<CoordSystem> coordSystem() noexcept {
+        CoordSystem& coordSystem() noexcept {
             return coordSystem_;
         }
 
-        const std::shared_ptr<const CoordSystem> coordSystem() const noexcept {
+        const CoordSystem& coordSystem() const noexcept {
             return coordSystem_;
         }
 
     private:
-        std::shared_ptr<CoordSystem> coordSystem_;
+        CoordSystem coordSystem_;
     };
 
 public:
     Camera()
-        : pVision_( std::make_shared<CameraVision>() ) {}
+        : pVision_( std::make_shared<CameraVision>() ),
+        coordComp_() {}
 
     Camera(const CameraVisionDesc& cvDesc)
-        : pVision_( std::make_shared<CameraVision>(cvDesc) ) {}
+        : pVision_( std::make_shared<CameraVision>(cvDesc) ),
+        coordComp_() {}
 
     void update() {
         if (coordComp_.has_value()) {
@@ -128,28 +130,28 @@ public:
         }
     }
 
-    void attach(std::shared_ptr<CoordSystem> targetCoord) {
+    void attach(const CoordSystem& targetCoord) {
         detach();
         coordComp_ = CameraCoordComponent();
-        coordComp_->coordSystem()->setParent(targetCoord);
+        coordComp_.value().coordSystem().setParent(targetCoord);
     }
 
     void detach() {
         coordComp_.reset();
     }
 
-    const std::shared_ptr<CoordSystem> coordSystem() {
+    CoordSystem& coordSystem() {
         if (!coordComp_.has_value()) {
             // do proper error handling
-            return nullptr;
+            throw;
         }
         return coordComp_.value().coordSystem();
     }
 
-    const std::shared_ptr<const CoordSystem> coordSystem() const {
+    const CoordSystem& coordSystem() const {
         if (!coordComp_.has_value()) {
             // do proper error handling
-            return nullptr;
+            throw;
         }
         return coordComp_.value().coordSystem();
     }

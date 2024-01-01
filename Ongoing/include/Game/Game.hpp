@@ -75,7 +75,7 @@ private:
 
     RendererSystem rendererSystem_;
     InputSystem<MyChar> inputSystem_;
-    std::shared_ptr<CoordSystem> coordSystem_;
+    CoordSystem coordSystem_;
     MyTimer timer_;
     Camera camera_;
     std::vector< std::unique_ptr<IEntity> > entities_;
