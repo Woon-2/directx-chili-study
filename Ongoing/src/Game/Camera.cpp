@@ -12,7 +12,7 @@ CameraVision::CameraVision()
         .projTransDesc = CameraProjTransDesc{
             .fovy = dx::XM_PIDIV2,
             .aspect = 1.f,
-            .nearZ = 0.f,
+            .nearZ = 0.5f,
             .farZ = 40.f
         }
     } ) {}
