@@ -76,6 +76,8 @@ target_sources(chili PRIVATE
     src/Game/SimulationUI.cpp
     src/Game/Camera.cpp
     src/Game/CoordSystem.cpp
+    src/Game/TransformDrawContexts.cpp
+    src/Game/TransformCBuffer.cpp
     include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp
     include/Game/Box.hpp
@@ -104,6 +106,8 @@ target_sources(chili PRIVATE
     include/Game/SimulationUI.hpp
     include/Game/Camera.hpp
     include/Game/CoordSystem.hpp
+    include/Game/TransformDrawContexts.hpp
+    include/Game/TransformCBuffer.hpp
 )
 
 # GFX sources
