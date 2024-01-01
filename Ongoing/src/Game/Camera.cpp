@@ -3,7 +3,7 @@
 #include <functional>
 
 CameraVision::CameraVision()
-    : CameraVision( CameraVisionDesc {
+    : CameraVision( CameraVisionDesc{
         .viewTransDesc = CameraViewTransDesc{
             .eye = dx::XMFLOAT3(0.f, 0.f, 0.f),
             .at = dx::XMFLOAT3(0.f, 0.f ,1.f),
@@ -60,28 +60,28 @@ void Camera::setParams( std::optional<float> fovy,
     std::optional<float> nearZ,
     std::optional<float> farZ
 ) {
-    pVision_->updateProj(
+    vision().updateProj(
         CameraProjTransDesc{
-            .fovy = fovy.value_or( pVision_->ptDesc().fovy ),
-            .aspect = aspect.value_or( pVision_->ptDesc().aspect ),
-            .nearZ = nearZ.value_or( pVision_->ptDesc().nearZ ),
-            .farZ = farZ.value_or( pVision_->ptDesc().farZ )
+            .fovy = fovy.value_or( vision().ptDesc().fovy ),
+            .aspect = aspect.value_or( vision().ptDesc().aspect ),
+            .nearZ = nearZ.value_or( vision().ptDesc().nearZ ),
+            .farZ = farZ.value_or( vision().ptDesc().farZ )
         }
     );
 }
 
 void Camera::rotateX(float theta) {
-    pVision_->viewTrans() *= dx::XMMatrixRotationX(theta);
+    vision().viewTrans() *= dx::XMMatrixRotationX(theta);
 }
 
 void Camera::rotateY(float theta) {
-    pVision_->viewTrans() *= dx::XMMatrixRotationY(theta);
+    vision().viewTrans() *= dx::XMMatrixRotationY(theta);
 }
 
 void Camera::rotateZ(float theta) {
-    pVision_->viewTrans() *= dx::XMMatrixRotationZ(theta);
+    vision().viewTrans() *= dx::XMMatrixRotationZ(theta);
 }
 
 void VCALL Camera::rotateAxis(dx::FXMVECTOR axis, float theta) {
-    pVision_->viewTrans() *= dx::XMMatrixRotationAxis(axis, theta);
+    vision().viewTrans() *= dx::XMMatrixRotationAxis(axis, theta);
 }

@@ -45,13 +45,13 @@ public:
         return *pVision_;
     }
 
-    void setVision(std::shared_ptr<CameraVision> pVision) {
-        pVision_ = pVision;
+    void setVision(CameraVision& vision) {
+        pVision_ = &vision;
     }
 
 private:
+    CameraVision* pVision_;
     std::vector< std::shared_ptr<RCDrawCmp> > pDCs_;
-    std::shared_ptr<CameraVision> pVision_;
 };
 
 #endif  // __Scene

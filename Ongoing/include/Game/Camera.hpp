@@ -117,16 +117,14 @@ private:
 
 public:
     Camera()
-        : pVision_( std::make_shared<CameraVision>() ),
-        coordComp_() {}
+        : vision_(), coordComp_() {}
 
     Camera(const CameraVisionDesc& cvDesc)
-        : pVision_( std::make_shared<CameraVision>(cvDesc) ),
-        coordComp_() {}
+        : vision_(cvDesc), coordComp_() {}
 
     void update() {
         if (coordComp_.has_value()) {
-            vision()->updateView( coordComp_.value().makeVTDesc() );
+            vision().updateView( coordComp_.value().makeVTDesc() );
         }
     }
 
@@ -156,12 +154,12 @@ public:
         return coordComp_.value().coordSystem();
     }
 
-    const std::shared_ptr<CameraVision> vision() noexcept {
-        return pVision_;
+    CameraVision& vision() noexcept {
+        return vision_;
     }
 
-    const std::shared_ptr<const CameraVision> vision() const noexcept {
-        return pVision_;
+    const CameraVision& vision() const noexcept {
+        return vision_;
     }
 
     void setParams( std::optional<float> fovy,
@@ -171,12 +169,12 @@ public:
     );
 
     void VCALL setEye(dx::FXMVECTOR eyeVal) {
-        const auto& oldAt = pVision_->vtDesc().at;
-        const auto& oldUp = pVision_->vtDesc().up;
+        const auto& oldAt = vision().vtDesc().at;
+        const auto& oldUp = vision().vtDesc().up;
         auto newEye = dx::XMFLOAT3();
         dx::XMStoreFloat3(&newEye, eyeVal);
 
-        pVision_->updateView(
+        vision().updateView(
             CameraViewTransDesc{
                 .eye = newEye,
                 .at = oldAt,
@@ -186,17 +184,17 @@ public:
     }
 
     dx::XMVECTOR eye() {
-        auto stored = pVision_->vtDesc().eye;
+        auto stored = vision().vtDesc().eye;
         return dx::XMLoadFloat3(&stored);
     }
 
     void VCALL setAt(dx::FXMVECTOR atVal) {
-        const auto& oldEye = pVision_->vtDesc().eye;
-        const auto& oldUp = pVision_->vtDesc().up;
+        const auto& oldEye = vision().vtDesc().eye;
+        const auto& oldUp = vision().vtDesc().up;
         auto newAt = dx::XMFLOAT3();
         dx::XMStoreFloat3(&newAt, atVal);
 
-        pVision_->updateView(
+        vision().updateView(
             CameraViewTransDesc{
                 .eye = oldEye,
                 .at = newAt,
@@ -206,17 +204,17 @@ public:
     }
 
     dx::XMVECTOR at() {
-        auto stored = pVision_->vtDesc().at;
+        auto stored = vision().vtDesc().at;
         return dx::XMLoadFloat3(&stored);
     }
 
     void VCALL setUp(dx::FXMVECTOR upVal) {
-        const auto& oldEye = pVision_->vtDesc().eye;
-        const auto& oldAt = pVision_->vtDesc().at;
+        const auto& oldEye = vision().vtDesc().eye;
+        const auto& oldAt = vision().vtDesc().at;
         auto newUp = dx::XMFLOAT3();
         dx::XMStoreFloat3(&newUp, upVal);
 
-        pVision_->updateView(
+        vision().updateView(
             CameraViewTransDesc{
                 .eye = oldEye,
                 .at = oldAt,
@@ -226,7 +224,7 @@ public:
     }
 
     dx::XMVECTOR up() {
-        auto stored = pVision_->vtDesc().up;
+        auto stored = vision().vtDesc().up;
         return dx::XMLoadFloat3(&stored);
     }
 
@@ -236,7 +234,7 @@ public:
     void VCALL rotateAxis(dx::FXMVECTOR axis, float theta);
 
 private:
-    std::shared_ptr<CameraVision> pVision_;
+    CameraVision vision_;
     std::optional<CameraCoordComponent> coordComp_;
 };
 
