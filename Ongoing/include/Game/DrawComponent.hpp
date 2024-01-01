@@ -122,12 +122,12 @@ protected:
     }
 
 private:
-    consteval const char* errMsgNoRODesc() {
+    static constexpr const char* const errMsgNoRODesc() noexcept {
         return "RenderObjectDesc didn't have any value.\n"
             "Please check it's intialized incorrectly or has been reset unintentionally.\n";
     }
 
-    consteval const char* errMsgNoDrawCaller() {
+    static constexpr const char* const errMsgNoDrawCaller() noexcept {
         return "DrawCaller didn't have any value.\n"
             "Please check it's intialized incorrectly or has been reset unintentionally.\n";
     }
