@@ -52,7 +52,6 @@ public:
     template <class T>
     std::optional<IBindable*> get() const noexcept {
         if ( auto cache_res = IDCache_.at( std::type_index( typeid(T) ) ); cache_res.hit() ) {
-            std::terminate();
             assert( resources_.contains( cache_res.value() ) );
             return resources_.at( cache_res.value() ).get();
         }
