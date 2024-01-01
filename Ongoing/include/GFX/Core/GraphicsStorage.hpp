@@ -8,6 +8,8 @@
 #include <typeindex>
 #include <optional>
 #include <cassert>
+#include <ranges>
+#include <algorithm>
 
 #include "LRUCache.hpp"
 
@@ -19,10 +21,21 @@ public:
         : IDCache_(IDCACHE_CACHELINE_SIZE, IDCACHE_NUM_CACHELINE),
         resources_() {}
 
+    ~GFXStorage() {
+        std::ranges::for_each( resources_, [](auto& idResPair) {
+            delete idResPair.second;
+        } );
+    }
+
+    GFXStorage(const GFXStorage&) = default;
+    GFXStorage& operator=(const GFXStorage&) noexcept = default;
+    GFXStorage(GFXStorage&&) = default;
+    GFXStorage& operator=(GFXStorage&&) noexcept = default;
+
     template <class T, class ... Args>
     [[nodiscard("ignoring return value of GFXStorage::load lead to memory leak")]]
     const ID load(Args&& ... args) {
-        auto tmp = std::shared_ptr<T>( new T(std::forward<Args>(args)...) );
+        auto tmp = new T(std::forward<Args>(args)...);
         auto id = makeID();
         resources_.try_emplace(id, std::move(tmp));
 
@@ -44,7 +57,7 @@ public:
 
     std::optional<IBindable*> get(const ID& id) const noexcept {
         if ( auto it = resources_.find(id); it != resources_.end() ) {
-            return (it->second).get();
+            return (it->second);
         }
         return std::nullopt;
     }
@@ -53,7 +66,7 @@ public:
     std::optional<IBindable*> get() const noexcept {
         if ( auto cache_res = IDCache_.at( std::type_index( typeid(T) ) ); cache_res.hit() ) {
             assert( resources_.contains( cache_res.value() ) );
-            return resources_.at( cache_res.value() ).get();
+            return resources_.at( cache_res.value() );
         }
         return std::nullopt;
     }
@@ -70,7 +83,7 @@ private:
     }
     
     LRUCache< std::type_index, ID > IDCache_;
-    std::map< ID, std::shared_ptr<IBindable> > resources_;
+    std::map< ID, IBindable* > resources_;
 };
 
 #endif  // __GraphicsStorage
