@@ -45,7 +45,7 @@ class CoordSystem {
 public:
     CoordSystem()
         : parent_(), tc_(std::make_shared<BasicTransformComponent>()),
-        children_(), id_() {}
+        children_(), id_(), dirty_(true) {}
 
     void addChild(std::shared_ptr<CoordSystem> child) {
         children_.push_back( std::move(child) );
@@ -64,10 +64,12 @@ public:
 
     void VCALL adjustLocal(const Transform trans) noexcept {
         tc_->adjustLocal(trans);
+        dirty_ = true;
     }
 
     void VCALL setLocal(const Transform trans) noexcept {
         tc_->setLocal(trans);
+        dirty_ = true;
     }
 
     const Transform local() const noexcept {
@@ -75,6 +77,7 @@ public:
     }
 
     Transform& localRef() noexcept {
+        dirty_ = true;
         return tc_->localRef();
     }
 
@@ -82,12 +85,18 @@ public:
         return tc_->localRef();
     }
 
+    const Transform& localConstRef() const noexcept {
+        return tc_->localRef();
+    }
+
     void VCALL adjustGlobal(const Transform trans) noexcept {
         tc_->adjustGlobal(trans);
+        dirty_ = true;
     }
 
     void VCALL setGlobal(const Transform trans) noexcept {
         tc_->setGlobal(trans);
+        dirty_ = true;
     }
 
     const Transform global() const noexcept {
@@ -95,6 +104,7 @@ public:
     }
 
     Transform& globalRef() noexcept {
+        dirty_ = true;
         return tc_->globalRef();
     }
 
@@ -102,6 +112,17 @@ public:
         return tc_->globalRef();
     }
 
+    const Transform& globalConstRef() const noexcept {
+        return tc_->globalRef();
+    }
+
+    void setDirty() noexcept {
+        dirty_ = true;
+    }
+
+    // total() doesn't intended to be modifiable by client code
+    // because it can lead confusion to users whether total is set or not.
+    // travarse() is the only one function responsible for setting total transform.
     const Transform& total() const noexcept {
         return tc_->total();
     }
@@ -133,6 +154,7 @@ private:
     std::shared_ptr<BasicTransformComponent> tc_;
     std::vector< std::weak_ptr<CoordSystem> > children_;
     CoordSystemID id_;
+    bool dirty_;
 };
 
 #endif  // __CoordSystem

@@ -19,6 +19,7 @@ void CoordSystem::setParent(std::shared_ptr<const CoordSystem> parent) {
     tc_->setGlobal( parentInversion * tc_->globalRef() );
 
     parent_ = parent;
+    dirty_ = true;
 }
 
 void CoordSystem::loseParent() {
@@ -28,28 +29,35 @@ void CoordSystem::loseParent() {
 
     tc_->setGlobal( parent_.value()->tc_->total() * tc_->globalRef() );
     parent_.reset();
+    dirty_ = true;
 }
 
 void CoordSystem::traverse() {
-    // update it's own total transform (world transform)
-    if (lostParent()) {
-        tc_->setTotal( tc_->local() * tc_->global() );
-    }
-    else {
-        tc_->setTotal( tc_->local()
-            * parent_.value()->tc_->total()
-            * tc_->global()
-        );
+    if (dirty_) {
+        // update it's own total transform (world transform)
+        if (lostParent()) {
+            tc_->setTotal( tc_->local() * tc_->global() );
+        }
+        else {
+            tc_->setTotal( tc_->local()
+                * parent_.value()->tc_->total()
+                * tc_->global()
+            );
+        }
     }
 
     // traverse children
-    std::ranges::for_each( children_, [](auto& wpChild) {
+    std::ranges::for_each( children_, [this](auto& wpChild) {
         if (auto spChild = wpChild.lock()) {
+            if (dirty_) {
+                spChild->setDirty();
+            }
             spChild->traverse();
         }
     } );
 
     removeDetachedChildren();
+    dirty_ = false;
 }
 
 void CoordSystem::removeDetachedChildren() {

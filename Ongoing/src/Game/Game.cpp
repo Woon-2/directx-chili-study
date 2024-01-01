@@ -58,7 +58,6 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
 
 void Game::update() {
     auto elapsed = timer_.mark();
-    
     // update systems
     inputSystem_.update();
     camera_.update();
