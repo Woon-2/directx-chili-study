@@ -93,6 +93,7 @@ target_sources(chili PRIVATE
     include/Game/Scene.hpp
     include/Game/InputSystem.hpp
     include/Game/DrawComponent.hpp
+    include/Game/RCDrawComponent.hpp
     include/Game/InputComponent.hpp
     include/Game/RenderObjectDesc.hpp
     include/Game/RendererDesc.hpp

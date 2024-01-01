@@ -4,12 +4,14 @@
 #define ACTIVATE_DRAWCOMPONENT_LOG
 
 #include "RenderObjectDesc.hpp"
+#include "GFX/Core/GraphicsException.hpp"
 
 #include "GFXCMDLogger.hpp"
 
-class Renderer;
+#include <optional>
+#include <memory>
+
 class BasicDrawCaller;
-class CameraVision;
 
 class IDrawComponent {
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
@@ -60,23 +62,78 @@ protected:
 public:
     virtual ~IDrawComponent() {}
 
-    virtual const RenderObjectDesc renderObjectDesc() const = 0;
-    virtual BasicDrawCaller* drawCaller() = 0;
-    virtual const BasicDrawCaller* drawCaller() const = 0;
-    virtual void sync(const Renderer& pRenderer) = 0;
-    virtual void sync(const CameraVision& v) {}
+    virtual const RenderObjectDesc& renderObjectDesc() const = 0;
+    virtual BasicDrawCaller& drawCaller() = 0;
+    virtual const BasicDrawCaller& drawCaller() const = 0;
 
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     static constexpr const GFXCMDSourceCategory
-            logCategory() noexcept {
-            return GFXCMDSourceCategory("DrawComponent");
-        }
+    logCategory() noexcept {
+        return GFXCMDSourceCategory("DrawComponent");
+    }
 #endif  // ACTIVATE_DRAWCOMPONENT_LOG
 
     friend auto operator<=>(const IDrawComponent& lhs,
         const IDrawComponent& rhs) {
         return lhs.renderObjectDesc() <=> rhs.renderObjectDesc();
     }
+};
+
+class DynDrawCmpBase : public IDrawComponent {
+public:
+    const RenderObjectDesc& renderObjectDesc() const final override {
+        if (!roDesc_.has_value()) {
+            throw GFX_EXCEPT_CUSTOM(errMsgNoRODesc());
+        }
+        return roDesc_.value();
+    }
+
+    BasicDrawCaller& drawCaller() final override {
+        if (!drawCaller_.has_value()) {
+            throw GFX_EXCEPT_CUSTOM(errMsgNoDrawCaller());
+        }
+        return *drawCaller_.value().get();
+    }
+
+    const BasicDrawCaller& drawCaller() const final override {
+        if (!drawCaller_.has_value()) {
+            throw GFX_EXCEPT_CUSTOM(errMsgNoDrawCaller());
+        }
+        return *drawCaller_.value().get();
+    }
+
+protected:
+    using LogComponent = IDrawComponent::LogComponent;
+
+    void setRODesc(const RenderObjectDesc& roDesc) {
+        roDesc_ = roDesc;
+    }
+
+    void resetRODesc() {
+        roDesc_.reset();
+    }
+
+    void setDrawCaller(std::unique_ptr<BasicDrawCaller>&& drawCaller) {
+        drawCaller_ = std::move(drawCaller);
+    }
+
+    void resetDrawCaller() {
+        drawCaller_.reset();
+    }
+
+private:
+    consteval const char* errMsgNoRODesc() {
+        return "RenderObjectDesc didn't have any value.\n"
+            "Please check it's intialized incorrectly or has been reset unintentionally.\n";
+    }
+
+    consteval const char* errMsgNoDrawCaller() {
+        return "DrawCaller didn't have any value.\n"
+            "Please check it's intialized incorrectly or has been reset unintentionally.\n";
+    }
+
+    std::optional< RenderObjectDesc > roDesc_;
+    std::optional< std::unique_ptr<BasicDrawCaller> > drawCaller_;
 };
 
 // Prevent instantiation with general type T.

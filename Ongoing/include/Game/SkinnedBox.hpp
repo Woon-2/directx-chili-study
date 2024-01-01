@@ -3,7 +3,7 @@
 
 #include "PrimitiveEntity.hpp"
 #include "Scene.hpp"
-#include "DrawComponent.hpp"
+#include "RCDrawComponent.hpp"
 
 #include "GFX/Primitives/Cube.hpp"
 #include "App/ChiliWindow.hpp"
@@ -24,7 +24,7 @@ class SkinnedBox {
 };
 
 template <>
-class DrawComponent<SkinnedBox> : public IDrawComponent {
+class DrawComponent<SkinnedBox> : public RCDrawCmp {
 public:
     class MyVertexBuffer : public Primitives::Cube::CubeVertexBufferIndependent {
     public:
@@ -103,8 +103,6 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        RODesc_(),
-        drawCaller_( static_cast<UINT>( MyVertexBuffer::size() ), 0u ),
         pipeline_(pipeline), pStorage_(&storage),
         IDPosBuffer_( storage.cache<MyVertexBuffer>(factory) ),
         IDTexBuffer_( storage.cache<MyTexBuffer>(factory) ),
@@ -119,8 +117,13 @@ public:
         transformApplyer_( std::make_shared<ApplyTransform>(
             *transformGPUMapper_
         ) ) {
-        drawCaller_.addDrawContext(transformApplyer_);
-        drawCaller_.addDrawContext(transformGPUMapper_);
+
+        this->setDrawCaller( std::make_unique<MyDrawCaller>(
+            static_cast<UINT>( MyVertexBuffer::size() ), 0
+        ) );
+
+        this->drawCaller().addDrawContext(transformApplyer_);
+        this->drawCaller().addDrawContext(transformGPUMapper_);
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_.entryStackPop();
     #endif
@@ -128,13 +131,6 @@ public:
 
     void update(const Transform transform) {
         transformGPUMapper_->update(transform);
-    }
-
-    const RenderObjectDesc renderObjectDesc() const override {
-        if (!RODesc_.has_value()) {
-            throw GFX_EXCEPT_CUSTOM("DrawComponent is not synchronized with any renderer.\n");
-        }
-        return RODesc_.value();
     }
 
     void sync(const Renderer& renderer) override {
@@ -167,7 +163,7 @@ public:
         static_cast<MySampler*>( pStorage_->get(IDSampler_).value() )
             ->setSlot( TexturedRenderer::slotSamplerState() );
 
-        RODesc_ = RenderObjectDesc{
+        this->setRODesc( RenderObjectDesc{
             .header = {
                 .IDBuffer = IDPosBuffer_,
                 .IDType = typeid(SkinnedBox)
@@ -177,22 +173,13 @@ public:
                 IDTopology_, IDViewport_, IDTransformCBuf_,
                 IDTexture_, IDSampler_
             }
-        };
+        } );
     }
 
     void sync(const CameraVision& vision) {
         transformApplyer_->setTransform(
             vision.viewTrans() * vision.projTrans()
         );
-    }
-
-
-    const BasicDrawCaller* drawCaller() const override {
-        return &drawCaller_;
-    }
-
-    BasicDrawCaller* drawCaller() override {
-        return &drawCaller_;
     }
 
 private:

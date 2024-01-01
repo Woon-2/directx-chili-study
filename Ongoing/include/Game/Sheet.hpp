@@ -3,7 +3,7 @@
 
 #include "PrimitiveEntity.hpp"
 #include "Scene.hpp"
-#include "DrawComponent.hpp"
+#include "RCDrawComponent.hpp"
 
 #include "GFX/Primitives/Plane.hpp"
 #include "App/ChiliWindow.hpp"
@@ -20,7 +20,7 @@ class Sheet {
 };
 
 template <>
-class DrawComponent<Sheet> : public IDrawComponent {
+class DrawComponent<Sheet> : public RCDrawCmp {
 public:
     class MyVertexBuffer : public Primitives::Plane::PlaneVertexBuffer {
     public:
@@ -82,8 +82,6 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        RODesc_(),
-        drawCaller_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0 ),
         pipeline_(pipeline), pStorage_(&storage),
         IDPosBuffer_( storage.cache<MyVertexBuffer>(factory) ),
         IDTexBuffer_( storage.cache<MyTexBuffer>(factory) ),
@@ -99,22 +97,20 @@ public:
         transformApplyer_( std::make_shared<ApplyTransform>(
             *transformGPUMapper_
         ) ) {
-        drawCaller_.addDrawContext(transformApplyer_);
-        drawCaller_.addDrawContext(transformGPUMapper_);
+        this->setDrawCaller( std::make_unique<MyDrawCaller>(
+            static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0
+        ) );
+
+        this->drawCaller().addDrawContext(transformApplyer_);
+        this->drawCaller().addDrawContext(transformGPUMapper_);
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_.entryStackPop();
     #endif
+
     }
 
     void update(const Transform transform) {
         transformGPUMapper_->update(transform);
-    }
-
-    const RenderObjectDesc renderObjectDesc() const override {
-        if (!RODesc_.has_value()) {
-            throw GFX_EXCEPT_CUSTOM("DrawComponent is not synchronized with any renderer.\n");
-        }
-        return RODesc_.value();
     }
 
     void sync(const Renderer& renderer) override {
@@ -147,7 +143,7 @@ public:
         static_cast<MySampler*>( pStorage_->get(IDSampler_).value() )
             ->setSlot( TexturedRenderer::slotSamplerState() );
 
-        RODesc_ = RenderObjectDesc{
+        this->setRODesc( RenderObjectDesc{
             .header = {
                 .IDBuffer = IDPosBuffer_,
                 .IDType = typeid(Sheet)
@@ -157,7 +153,7 @@ public:
                 IDTopology_, IDViewport_, IDTransformCBuf_,
                 IDTexture_, IDSampler_
             }
-        };
+        } );
     }
 
     void sync(const CameraVision& vision) {
@@ -166,20 +162,10 @@ public:
         );
     }
 
-    const BasicDrawCaller* drawCaller() const override {
-        return &drawCaller_;
-    }
-
-    BasicDrawCaller* drawCaller() override {
-        return &drawCaller_;
-    }
-
 private:
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     IDrawComponent::LogComponent logComponent_;
 #endif
-    std::optional<RenderObjectDesc> RODesc_;
-    MyDrawCaller drawCaller_;
     GFXPipeline pipeline_;
     GFXStorage* pStorage_;
     GFXStorage::ID IDPosBuffer_;

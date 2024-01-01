@@ -1,7 +1,7 @@
 #ifndef __Scene
 #define __Scene
 
-#include "DrawComponent.hpp"
+#include "RCDrawComponent.hpp"
 #include "Camera.hpp"
 
 #include "GFX/Core/GraphicsStorage.hpp"
@@ -17,7 +17,7 @@
 
 class Scene {
 public:
-    void addDrawComponent(std::shared_ptr<IDrawComponent> pDC) {
+    void addDrawComponent(std::shared_ptr<RCDrawCmp> pDC) {
         assert( std::ranges::find(pDCs_, pDC) == pDCs_.end() );
 
         pDCs_.push_back( std::move(pDC) );
@@ -50,7 +50,7 @@ public:
     }
 
 private:
-    std::vector< std::shared_ptr<IDrawComponent> > pDCs_;
+    std::vector< std::shared_ptr<RCDrawCmp> > pDCs_;
     std::shared_ptr<CameraVision> pVision_;
 };
 

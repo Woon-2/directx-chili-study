@@ -4,7 +4,7 @@
 #include "Entity.hpp"
 #include "Scene.hpp"
 #include "Renderer.hpp"
-#include "RenderObjectDesc.hpp"
+#include "RCDrawComponent.hpp"
 #include "GTransformComponent.hpp"
 #include "TransformDrawContexts.hpp"
 #include "InputComponent.hpp"
@@ -86,7 +86,7 @@ public:
 };
 
 template < class T, class PosBufferT, class IndexBufferT >
-class PEDrawComponent : public IDrawComponent {
+class PEDrawComponent : public RCDrawCmp {
 public:
     using MyType = DrawComponent<T>;
     using MyVertex = GFXVertex;
@@ -108,8 +108,6 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        RODesc_(),
-        drawCaller_( static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0 ),
         pipeline_(pipeline), pStorage_(&storage),
         IDPosBuffer_( storage.cache<MyPosBuffer>(factory) ),
         IDIndexBuffer_( storage.cache<MyIndexBuffer>(factory) ),
@@ -126,11 +124,17 @@ public:
         transformApplyer_( std::make_shared<ApplyTransform>(
             *transformGPUMapper_
         ) ) {
-        drawCaller_.addDrawContext(transformApplyer_);
-        drawCaller_.addDrawContext(transformGPUMapper_);
+
+        this->setDrawCaller( std::make_unique<MyDrawCaller>(
+            static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0
+        ) );
+
+        this->drawCaller().addDrawContext(transformApplyer_);
+        this->drawCaller().addDrawContext(transformGPUMapper_);
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_.entryStackPop();
     #endif
+
     }
 
     template <class ... TesselationFactors>
@@ -141,12 +145,6 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        RODesc_(),
-        drawCaller_(
-            static_cast<UINT>( MyIndexBuffer::size(
-                std::forward<TesselationFactors>(tesselationFactors)...
-            ) ), 0u, 0
-        ),
         pipeline_(pipeline), pStorage_(&storage),
         IDPosBuffer_( storage.load<MyPosBuffer>(
             factory, std::forward<TesselationFactors>(tesselationFactors)...
@@ -169,22 +167,23 @@ public:
         transformApplyer_( std::make_shared<ApplyTransform>(
             *transformGPUMapper_
         ) ) {
-        drawCaller_.addDrawContext(transformApplyer_);
-        drawCaller_.addDrawContext(transformGPUMapper_);
+
+        this->setDrawCaller( std::make_unique<MyDrawCaller>(
+            static_cast<UINT>( MyIndexBuffer::size(
+                std::forward<TesselationFactors>(tesselationFactors)...
+            ) ), 0u, 0
+        ) );
+
+        this->drawCaller().addDrawContext(transformApplyer_);
+        this->drawCaller().addDrawContext(transformGPUMapper_);
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_.entryStackPop();
     #endif
+
     }
 
     void update(const Transform transform) {
         transformGPUMapper_->update(transform);
-    }
-
-    const RenderObjectDesc renderObjectDesc() const override {
-        if (!RODesc_.has_value()) {
-            throw GFX_EXCEPT_CUSTOM("DrawComponent is not synchronized with any renderer.\n");
-        }
-        return RODesc_.value();
     }
 
     void sync(const Renderer& renderer) override {
@@ -208,7 +207,7 @@ public:
         static_cast<MyTransformCBuf*>( pStorage_->get(IDTransformCBuf_).value() )
             ->setSlot( 0u );
 
-        RODesc_ = RenderObjectDesc{
+        this->setRODesc( RenderObjectDesc{
             .header = {
                 .IDBuffer = IDPosBuffer_,
                 .IDType = typeid(T)
@@ -217,7 +216,7 @@ public:
                 IDPosBuffer_, IDIndexBuffer_, IDTopology_,
                 IDViewport_, IDTransformCBuf_, IDIndexedColorCBuf_
             }
-        };
+        } );
     }
 
     void sync(const BlendedRenderer& renderer) {
@@ -234,7 +233,7 @@ public:
         static_cast<MyTransformCBuf*>( pStorage_->get(IDTransformCBuf_).value() )
             ->setSlot( 0u );
 
-        RODesc_ = RenderObjectDesc{
+        this->setRODesc( RenderObjectDesc{
             .header = {
                 .IDBuffer = IDPosBuffer_,
                 .IDType = typeid(T)
@@ -243,7 +242,7 @@ public:
                 IDPosBuffer_, IDBlendedColorBuffer_, IDIndexBuffer_, IDTopology_,
                 IDViewport_, IDTransformCBuf_
             }
-        };
+        } );
     }
 
     void sync(const CameraVision& vision) {
@@ -252,20 +251,10 @@ public:
         );
     }
 
-    const BasicDrawCaller* drawCaller() const override {
-        return &drawCaller_;
-    }
-
-    BasicDrawCaller* drawCaller() override {
-        return &drawCaller_;
-    }
-
 private:
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
-    IDrawComponent::LogComponent logComponent_;
+    RCDrawCmp::LogComponent logComponent_;
 #endif
-    std::optional<RenderObjectDesc> RODesc_;
-    MyDrawCaller drawCaller_;
     GFXPipeline pipeline_;
     GFXStorage* pStorage_;
     GFXStorage::ID IDPosBuffer_;

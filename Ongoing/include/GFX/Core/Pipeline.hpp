@@ -21,10 +21,10 @@ public:
         bindable->bind(*this);
     }
 
-    void drawCall(const BasicDrawCaller* drawCaller) {
-        drawCaller->beforeDrawCall(*this);
-        drawCaller->drawCall(*this);
-        drawCaller->afterDrawCall(*this);
+    void drawCall(const BasicDrawCaller& drawCaller) {
+        drawCaller.beforeDrawCall(*this);
+        drawCaller.drawCall(*this);
+        drawCaller.afterDrawCall(*this);
     }
 
     void setContext(wrl::ComPtr<ID3D11DeviceContext> pContext) {
