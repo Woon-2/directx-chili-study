@@ -27,7 +27,6 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
 
     camera_.setParams(dx::XM_PIDIV2, 1.f, 0.5f, 40.f);
     camera_.attach(coordSystem_);
-    coordSystem_.addChild(camera_.coordSystem());
     camera_.coordSystem().adjustGlobal(
         dx::XMMatrixTranslation(0.f, 0.f, -20.f)
     );
@@ -53,6 +52,10 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     inputSystem_.setListner(ic_);
 
     createObjects(80u, wnd, gfx, kbd, mouse);
+}
+
+Game::~Game() {
+    coordSystem_.destroyCascade();
 }
 
 void Game::update() {

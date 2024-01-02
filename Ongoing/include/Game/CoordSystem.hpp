@@ -44,7 +44,7 @@ private:
 class CoordSystem {
 public:
     CoordSystem()
-        : parent_(), tc_(),
+        : tc_(), parent_(),
         children_(), id_(), dirty_(true) {}
 
     ~CoordSystem();
@@ -53,7 +53,7 @@ public:
     CoordSystem(CoordSystem&&) noexcept = default;
     CoordSystem& operator=(CoordSystem&&) noexcept = default;
 
-    void addChild(CoordSystem& child) {
+    void addChild(CoordSystem& child) const {
         children_.push_back( &child );
     }
 
@@ -126,6 +126,8 @@ public:
         dirty_ = true;
     }
 
+    void destroyCascade() noexcept;
+
     // total() doesn't intended to be modifiable by client code
     // because it can lead confusion to users whether total is set or not.
     // travarse() is the only one function responsible for setting total transform.
@@ -152,8 +154,10 @@ public:
     }
 
 private:
-    std::optional<const CoordSystem*> parent_;
+    void detachThisFromParent();
+
     BasicTransformComponent tc_;
+    std::optional<const CoordSystem*> parent_;
     // children_ should be mutable to reflect destruction
     // of current CoordSystem on parent_
     // (via detaching parent's child which is equal to this)

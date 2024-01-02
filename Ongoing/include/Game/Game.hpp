@@ -56,9 +56,9 @@ public:
     Game(const ChiliWindow& wnd, Graphics& gfx,
         Keyboard<MyChar>& kbd, Mouse& mouse
     );
+    ~Game();
 
     void update();
-
     void render();
 
 private:

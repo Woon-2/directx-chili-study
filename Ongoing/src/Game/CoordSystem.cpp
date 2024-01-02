@@ -9,19 +9,14 @@ CoordSystemID CoordSystemID::gen() {
 
 CoordSystem::~CoordSystem() {
     if (!lostParent()) {
-        auto& parentChildren = parent_.value()->children_;
-        // since std::ranges::remove returns subrange,
-        // take the subrange.begin() as pos and ignore the subrange.end().
-        auto [pos, _] = std::ranges::remove( parent_.value()->children_, this );
-        parentChildren.erase(pos);
-
-        std::ranges::for_each( children_, [this](auto* child) {
-            child->setParent(*parent_.value());
+        detachThisFromParent();
+        std::ranges::for_each( children_, [this](auto* pChild) {
+            pChild->setParent(*parent_.value());
         } );
     }
     else {
-        std::ranges::for_each( children_, [](auto* child) {
-            child->loseParent();
+        std::ranges::for_each( children_, [](auto* pChild) {
+            pChild->loseParent();
         } );
     }
 }
@@ -46,11 +41,7 @@ void CoordSystem::loseParent() {
         return;
     }
 
-    auto& parentChildren = parent_.value()->children_;
-    // since std::ranges::remove returns subrange,
-    // take the subrange.begin() as pos and ignore the subrange.end().
-    auto [pos, _] = std::ranges::remove( parent_.value()->children_, this );
-    parentChildren.erase(pos);
+    detachThisFromParent();
 
     tc_.setGlobal( parent_.value()->tc_.total() * tc_.globalRef() );
     parent_.reset();
@@ -80,4 +71,25 @@ void CoordSystem::traverse() {
     } );
 
     dirty_ = false;
+}
+
+void CoordSystem::destroyCascade() noexcept {
+    if (!lostParent()) {
+        detachThisFromParent();
+    }
+
+    std::ranges::for_each( children_, [](auto* pChild) {
+        pChild->destroyCascade();
+    } );
+
+    parent_.reset();
+    children_.clear();
+}
+
+void CoordSystem::detachThisFromParent() {
+    auto& parentChildren = parent_.value()->children_;
+    // since std::ranges::remove returns subrange,
+    // take the subrange.begin() as pos and ignore the subrange.end().
+    auto [pos, _] = std::ranges::remove( parent_.value()->children_, this );
+    parentChildren.erase(pos);
 }

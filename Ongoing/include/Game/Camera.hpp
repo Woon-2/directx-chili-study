@@ -132,6 +132,7 @@ public:
         detach();
         coordComp_ = CameraCoordComponent();
         coordComp_.value().coordSystem().setParent(targetCoord);
+        targetCoord.addChild(coordComp_.value().coordSystem());
     }
 
     void detach() {
