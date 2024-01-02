@@ -4,10 +4,11 @@
 #include <numeric>
 
 void MapTransformGPU::beforeDrawCall(GFXPipeline& pipeline) {
-    assert( mappedStorage_->get(IDTransCBuf_).has_value() );
+    assert( IDTransCBuf_.has_value() );
+    assert( mappedStorage_->get(IDTransCBuf_.value()).has_value() );
 
     auto transCBuf = static_cast< CBuffer<MatrixType>* >(
-        mappedStorage_->get(IDTransCBuf_).value()
+        mappedStorage_->get(IDTransCBuf_.value()).value()
     );
 
     // to avoid dangling pointer issue

@@ -104,7 +104,8 @@ public:
 
     PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
         GFXStorage& storage, const ChiliWindow& wnd
-    ) : 
+    ) : transformGPUMapper_(storage),
+        transformApplyer_(transformGPUMapper_),
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
@@ -117,9 +118,9 @@ public:
         IDIndexedColorCBuf_( storage.cache<MyIndexedColorCBuf>( factory ) ),
         IDBlendedColorBuffer_( storage.cache<MyBlendedColorBuffer>(
             factory, MyPosBuffer::size()
-        ) ),
-        transformGPUMapper_(storage, IDTransformCBuf_),
-        transformApplyer_(transformGPUMapper_) {
+        ) ) {
+
+        transformGPUMapper_.setTCBufID(IDTransformCBuf_);
 
         this->setDrawCaller( std::make_unique<MyDrawCaller>(
             static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0
@@ -137,7 +138,8 @@ public:
     PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
         GFXStorage& storage, const ChiliWindow& wnd,
         TesselationFactors&& ... tesselationFactors
-    ) :
+    ) : transformGPUMapper_(storage),
+        transformApplyer_(transformGPUMapper_),
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
@@ -156,9 +158,9 @@ public:
             factory, MyPosBuffer::size(
                 std::forward<TesselationFactors>(tesselationFactors)...
             )
-        ) ),
-        transformGPUMapper_(storage, IDTransformCBuf_),
-        transformApplyer_(transformGPUMapper_) {
+        ) ) {
+
+        transformGPUMapper_.setTCBufID(IDTransformCBuf_);
 
         this->setDrawCaller( std::make_unique<MyDrawCaller>(
             static_cast<UINT>( MyIndexBuffer::size(
@@ -244,6 +246,8 @@ public:
     }
 
 private:
+    MapTransformGPU transformGPUMapper_;
+    ApplyTransform transformApplyer_;
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     RCDrawCmp::LogComponent logComponent_;
 #endif
@@ -256,12 +260,6 @@ private:
     GFXStorage::ID IDTransformCBuf_;
     GFXStorage::ID IDIndexedColorCBuf_;
     GFXStorage::ID IDBlendedColorBuffer_;
-    // GPU Mapper must be declared at here
-    // as it requires transform cbuffer already constructed.
-    MapTransformGPU transformGPUMapper_;
-    // transform applyer must be declared at here
-    // as it requires GPU Mapper reference.
-    ApplyTransform transformApplyer_;
 };
 
 template <class T>

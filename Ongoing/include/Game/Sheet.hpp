@@ -78,7 +78,8 @@ public:
 
     DrawComponent( GFXFactory factory, GFXPipeline pipeline,
         GFXStorage& storage, const ChiliWindow& wnd
-    ) :
+    ) : transformGPUMapper_(storage),
+        transformApplyer_(transformGPUMapper_),
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
@@ -90,9 +91,10 @@ public:
         IDViewport_( storage.cache<MyViewport>( wnd.client() ) ),
         IDTransformCBuf_( storage.cache<MyTransformCBuf>(factory) ),
         IDTexture_( storage.cache<MyTexture>(factory) ),
-        IDSampler_( storage.cache<MySampler>(factory) ),
-        transformGPUMapper_(storage, IDTransformCBuf_),
-        transformApplyer_(transformGPUMapper_) {
+        IDSampler_( storage.cache<MySampler>(factory) ) {
+
+        transformGPUMapper_.setTCBufID(IDTransformCBuf_);
+
         this->setDrawCaller( std::make_unique<MyDrawCaller>(
             static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0
         ) );
@@ -159,6 +161,8 @@ public:
     }
 
 private:
+    MapTransformGPU transformGPUMapper_;
+    ApplyTransform transformApplyer_;
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     IDrawComponent::LogComponent logComponent_;
 #endif
@@ -172,12 +176,6 @@ private:
     GFXStorage::ID IDTransformCBuf_;
     GFXStorage::ID IDTexture_;
     GFXStorage::ID IDSampler_;
-    // GPU Mapper must be declared at here
-    // as it requires transform cbuffer already constructed.
-    MapTransformGPU transformGPUMapper_;
-    // transform applyer must be declared at here
-    // as it requires GPU Mapper reference.
-    ApplyTransform transformApplyer_;
 };
 
 template<>

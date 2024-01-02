@@ -9,16 +9,20 @@
 
 #include "GFX/Core/GraphicsNamespaces.hpp"
 
+#include <optional>
+
 class MapTransformGPU : public IDrawContext {
 public:
     using MatrixType = dx::XMMATRIX;
 
-    MapTransformGPU( GFXStorage& mappedStorage, 
-        GFXStorage::ID IDTransCBuf
-    ) :  transform_(), mappedStorage_(&mappedStorage),
-        IDTransCBuf_(IDTransCBuf) {}
+    MapTransformGPU(GFXStorage& mappedStorage)
+        : transform_(), mappedStorage_(&mappedStorage),
+        IDTransCBuf_() {}
 
     void beforeDrawCall(GFXPipeline& pipeline) override;
+    void setTCBufID(GFXStorage::ID id) {
+        IDTransCBuf_ = id;
+    }
     void update(Transform transform) {
         transform_ = transform;
     }
@@ -35,7 +39,7 @@ private:
     Transform transform_;
     std::vector<Transform> applyees_;
     GFXStorage* mappedStorage_;
-    GFXStorage::ID IDTransCBuf_;
+    std::optional<GFXStorage::ID> IDTransCBuf_;
 };
 
 class ApplyTransform : public IDrawContext {
