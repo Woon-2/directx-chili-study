@@ -111,26 +111,22 @@ public:
         IDTransformCBuf_( storage.cache<MyTransformCBuf>(factory) ),
         IDTexture_( storage.cache<MyTexture>(factory) ),
         IDSampler_( storage.cache<MySampler>(factory) ),
-        transformGPUMapper_( std::make_shared<MapTransformGPU>(
-            storage, IDTransformCBuf_
-        ) ),
-        transformApplyer_( std::make_shared<ApplyTransform>(
-            *transformGPUMapper_
-        ) ) {
+        transformGPUMapper_(storage, IDTransformCBuf_),
+        transformApplyer_(transformGPUMapper_) {
 
         this->setDrawCaller( std::make_unique<MyDrawCaller>(
             static_cast<UINT>( MyVertexBuffer::size() ), 0
         ) );
 
-        this->drawCaller().addDrawContext(transformApplyer_);
-        this->drawCaller().addDrawContext(transformGPUMapper_);
+        this->drawCaller().addDrawContext(&transformApplyer_);
+        this->drawCaller().addDrawContext(&transformGPUMapper_);
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_.entryStackPop();
     #endif
     }
 
     void update(const Transform transform) {
-        transformGPUMapper_->update(transform);
+        transformGPUMapper_.update(transform);
     }
 
     void sync(const Renderer& renderer) override {
@@ -177,7 +173,7 @@ public:
     }
 
     void sync(const CameraVision& vision) {
-        transformApplyer_->setTransform(
+        transformApplyer_.setTransform(
             vision.viewTrans() * vision.projTrans()
         );
     }
@@ -199,10 +195,10 @@ private:
     GFXStorage::ID IDSampler_;
     // GPU Mapper must be declared at here
     // as it requires transform cbuffer already constructed.
-    std::shared_ptr<MapTransformGPU> transformGPUMapper_;
+    MapTransformGPU transformGPUMapper_;
     // transform applyer must be declared at here
     // as it requires GPU Mapper reference.
-    std::shared_ptr<ApplyTransform> transformApplyer_;
+    ApplyTransform transformApplyer_;
 };
 
 template<>

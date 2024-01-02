@@ -14,8 +14,6 @@
 #include <ranges>
 #include <algorithm>
 
-#include "AdditionalRanges.hpp"
-
 class GFXPipeline;
 
 class BasicDrawCaller {
@@ -25,7 +23,7 @@ public:
     // begin of draw context related stuffs.
     // draw context modifiers should be added later.
     // this is minimum implementation.
-    void addDrawContext(std::shared_ptr<IDrawContext> pDrawContext) {
+    void addDrawContext(IDrawContext* pDrawContext) {
         drawContexts_.push_back(pDrawContext);
     }
 
@@ -34,17 +32,17 @@ public:
     }
 
     void beforeDrawCall(GFXPipeline& pipeline) const {
-        std::ranges::for_each( drawContexts_ | dereference(),
-            [&pipeline](IDrawContext& drawContext) {
-                drawContext.beforeDrawCall(pipeline);
+        std::ranges::for_each( drawContexts_,
+            [&pipeline](auto* pDrawContext) {
+                pDrawContext->beforeDrawCall(pipeline);
             }
         );
     }
 
     void afterDrawCall(GFXPipeline& pipeline) const {
-        std::ranges::for_each( drawContexts_ | dereference(),
-            [&pipeline](IDrawContext& drawContext) {
-                drawContext.afterDrawCall(pipeline);
+        std::ranges::for_each( drawContexts_,
+            [&pipeline](auto* pDrawContext) {
+                pDrawContext->afterDrawCall(pipeline);
             }
         );
     }
@@ -100,7 +98,7 @@ protected:
 private:
     virtual void drawCall(GFXPipeline& pipeline) const = 0;
 
-    std::vector< std::shared_ptr<IDrawContext> > drawContexts_;
+    std::vector<IDrawContext*> drawContexts_;
 };
 
 class DrawCaller : public BasicDrawCaller {
