@@ -13,6 +13,8 @@ class IBindable {
 public:
     friend class GFXPipeline;
 
+    virtual ~IBindable() = 0 {}
+
 #ifdef ACTIVATE_BINDABLE_LOG
 protected:
     class LogComponent {

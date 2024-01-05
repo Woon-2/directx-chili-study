@@ -60,7 +60,7 @@ protected:
     };
 #endif  // ACTIVATE_DRAWCOMPONENT_LOG
 public:
-    virtual ~IDrawComponent() {}
+    virtual ~IDrawComponent() = 0 {}
 
     virtual const RenderObjectDesc& renderObjectDesc() const = 0;
     virtual BasicDrawCaller& drawCaller() = 0;

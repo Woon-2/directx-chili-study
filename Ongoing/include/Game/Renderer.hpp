@@ -61,7 +61,7 @@ public:
     #endif
         {}
 
-    virtual ~Renderer() {}
+    virtual ~Renderer() = 0 {}
 
     void linkPipeline(GFXPipeline& pipeline) {
         pipeline_ = pipeline;

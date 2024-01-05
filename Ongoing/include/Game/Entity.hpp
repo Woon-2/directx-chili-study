@@ -5,6 +5,7 @@
 
 class IEntity {
 public:
+    virtual ~IEntity() = 0 {}
     virtual void update(milliseconds elapsed) = 0;
 };
 

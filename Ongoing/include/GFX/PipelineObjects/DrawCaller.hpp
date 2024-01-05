@@ -20,6 +20,8 @@ class BasicDrawCaller {
 public:
     friend class GFXPipeline;
 
+    virtual ~BasicDrawCaller() = 0 {}
+
     // begin of draw context related stuffs.
     // draw context modifiers should be added later.
     // this is minimum implementation.
