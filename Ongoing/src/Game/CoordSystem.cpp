@@ -21,21 +21,6 @@ CoordSystem::~CoordSystem() {
     }
 }
 
-void CoordSystem::setParent(const CoordSystem& parent) {
-    if (!lostParent()) {
-        loseParent();
-    }
-
-    auto parentInversion = dx::XMMatrixInverse(
-        nullptr, parent.tc_.total().get()
-    );
-
-    tc_.setGlobal( parentInversion * tc_.globalRef() );
-
-    parent_ = &parent;
-    dirty_ = true;
-}
-
 void CoordSystem::loseParent() {
     if (lostParent()) {
         return;
@@ -92,4 +77,22 @@ void CoordSystem::detachThisFromParent() {
     // take the subrange.begin() as pos and ignore the subrange.end().
     auto [pos, _] = std::ranges::remove( parent_.value()->children_, this );
     parentChildren.erase(pos);
+}
+
+void CoordSystem::linkParentChild(
+    const CoordSystem& parent, CoordSystem& child
+) {
+    if (!child.lostParent()) {
+        child.loseParent();
+    }
+
+    auto parentInversion = dx::XMMatrixInverse(
+        nullptr, parent.tc_.total().get()
+    );
+
+    child.tc_.setGlobal( parentInversion * child.tc_.globalRef() );
+
+    child.parent_ = &parent;
+    child.dirty_ = true;
+    parent.children_.push_back(&child);
 }

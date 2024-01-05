@@ -54,10 +54,13 @@ public:
     CoordSystem& operator=(CoordSystem&&) noexcept = default;
 
     void addChild(CoordSystem& child) const {
-        children_.push_back( &child );
+        linkParentChild(*this, child);
     }
 
-    void setParent(const CoordSystem& parent);
+    void setParent(const CoordSystem& parent) {
+        linkParentChild(parent, *this);
+    }
+
     void loseParent();
     bool lostParent() const noexcept {
         return !parent_.has_value();
@@ -155,6 +158,9 @@ public:
 
 private:
     void detachThisFromParent();
+    static void linkParentChild(const CoordSystem& parent,
+        CoordSystem& child
+    );
 
     BasicTransformComponent tc_;
     std::optional<const CoordSystem*> parent_;
