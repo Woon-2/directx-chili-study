@@ -10,6 +10,7 @@
 #include <ranges>
 #include <algorithm>
 #include <vector>
+#include <cassert>
 
 class CoordSystemID {
 public:
@@ -54,10 +55,14 @@ public:
     CoordSystem& operator=(CoordSystem&&) noexcept = default;
 
     void addChild(CoordSystem& child) const {
+        assert( std::ranges::find(children_, &child) == children_.end() );
         linkParentChild(*this, child);
     }
 
     void setParent(const CoordSystem& parent) {
+        if (parent_.has_value() && parent_.value() == &parent) [[unlikely]] {
+            return;
+        }
         linkParentChild(parent, *this);
     }
 
