@@ -22,7 +22,8 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse
 ) : rendererSystem_( gfx.factory(), gfx.pipeline() ),
     inputSystem_( kbd, mouse, wnd.client() ),
-    coordSystem_(), timer_(), camera_(), entities_(),
+    coordSystem_(), timer_(), camera_(),
+    cameraControl_(), entities_(),
     simulationUI_(), ic_( std::make_shared<MyIC>() ) {
 
     camera_.setParams(dx::XM_PIDIV2, 1.f, 0.5f, 40.f);
@@ -30,8 +31,7 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     camera_.coordSystem().adjustGlobal(
         dx::XMMatrixTranslation(0.f, 0.f, -20.f)
     );
-
-    coordSystem_.traverse();
+    cameraControl_.show();
 
     auto slotIndexedRender = rendererSystem_
         .addRenderer<IndexedRenderer>();
@@ -64,11 +64,15 @@ void Game::update() {
     auto elapsed = timer_.mark();
     // update systems
     inputSystem_.update();
-    camera_.update();
+    cameraControl_.reflect(camera_.coordSystem());
 
     // coord system may be affected by other systems,
     // so update coord system lastly.
     coordSystem_.traverse();
+
+    // update camera vision via updated coordinate systems.
+    // (it doesn't modifies other cooridnate systems.)
+    camera_.update();
 
     // update entities
     if (ic_->willSimulate()) {
@@ -87,6 +91,7 @@ void Game::update() {
 void Game::render() {
     rendererSystem_.render();
     simulationUI_.render();
+    cameraControl_.render();
     GFXCMDLOG.advance();
     GFXCMDLOG_GUIVIEW.render();
 }

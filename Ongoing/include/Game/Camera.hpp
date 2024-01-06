@@ -111,10 +111,6 @@ private:
             return coordSystem_;
         }
 
-        bool dirty() const noexcept {
-            return coordSystem_.dirty();
-        }
-
     private:
         CoordSystem coordSystem_;
     };

@@ -6,6 +6,7 @@
 #include "Entity.hpp"
 #include "Timer.hpp"
 #include "Camera.hpp"
+#include "CameraControl.hpp"
 #include "CoordSystem.hpp"
 
 #include "App/ChiliWindow.hpp"
@@ -78,6 +79,7 @@ private:
     CoordSystem coordSystem_;
     MyTimer timer_;
     Camera camera_;
+    CameraControl cameraControl_;
     std::vector< std::unique_ptr<IEntity> > entities_;
     SimulationUI simulationUI_;
 

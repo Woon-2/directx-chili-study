@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2024.01.05 LANGUAGES CXX)
+project(POngoing VERSION 2024.01.06 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -78,6 +78,7 @@ target_sources(chili PRIVATE
     src/Game/CoordSystem.cpp
     src/Game/TransformDrawContexts.cpp
     src/Game/TransformCBuffer.cpp
+    src/Game/CameraControl.cpp
     include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp
     include/Game/Box.hpp
@@ -109,6 +110,7 @@ target_sources(chili PRIVATE
     include/Game/CoordSystem.hpp
     include/Game/TransformDrawContexts.hpp
     include/Game/TransformCBuffer.hpp
+    include/Game/CameraControl.hpp
 )
 
 # GFX sources
