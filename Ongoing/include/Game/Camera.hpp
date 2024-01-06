@@ -111,6 +111,10 @@ private:
             return coordSystem_;
         }
 
+        bool dirty() const noexcept {
+            return coordSystem_.dirty();
+        }
+
     private:
         CoordSystem coordSystem_;
     };
@@ -131,7 +135,7 @@ public:
     void attach(const CoordSystem& targetCoord) {
         detach();
         coordComp_ = CameraCoordComponent();
-        targetCoord.addChild(coordComp_.value().coordSystem());
+        coordComp_.value().coordSystem().setParent(targetCoord);
     }
 
     void detach() {

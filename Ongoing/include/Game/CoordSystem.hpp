@@ -45,8 +45,8 @@ private:
 class CoordSystem {
 public:
     CoordSystem()
-        : tc_(), parent_(),
-        children_(), id_(), dirty_(true) {}
+        : tc_(), total_( Transform() ), parent_(),
+        children_(), id_() {}
 
     ~CoordSystem();
     CoordSystem(const CoordSystem&) = default;
@@ -78,69 +78,45 @@ public:
 
     void VCALL adjustLocal(const Transform trans) noexcept {
         tc_.adjustLocal(trans);
-        dirty_ = true;
+        setDirty();
     }
 
     void VCALL setLocal(const Transform trans) noexcept {
         tc_.setLocal(trans);
-        dirty_ = true;
+        setDirty();
     }
 
-    const Transform local() const noexcept {
+    const Transform& local() const noexcept {
         return tc_.local();
-    }
-
-    Transform& localRef() noexcept {
-        dirty_ = true;
-        return tc_.localRef();
-    }
-
-    const Transform& localRef() const noexcept {
-        return tc_.localRef();
-    }
-
-    const Transform& localConstRef() const noexcept {
-        return tc_.localRef();
     }
 
     void VCALL adjustGlobal(const Transform trans) noexcept {
         tc_.adjustGlobal(trans);
-        dirty_ = true;
+        setDirty();
     }
 
     void VCALL setGlobal(const Transform trans) noexcept {
         tc_.setGlobal(trans);
-        dirty_ = true;
+        setDirty();
     }
 
-    const Transform global() const noexcept {
+    const Transform& global() const noexcept {
         return tc_.global();
     }
 
-    Transform& globalRef() noexcept {
-        dirty_ = true;
-        return tc_.globalRef();
-    }
-
-    const Transform& globalRef() const noexcept {
-        return tc_.globalRef();
-    }
-
-    const Transform& globalConstRef() const noexcept {
-        return tc_.globalRef();
-    }
-
     void setDirty() noexcept {
-        dirty_ = true;
+        total_.reset();
+    }
+
+    bool dirty() const noexcept {
+        return !total_.has_value();
     }
 
     void destroyCascade() noexcept;
 
-    // total() doesn't intended to be modifiable by client code
-    // because it can lead confusion to users whether total is set or not.
-    // travarse() is the only one function responsible for setting total transform.
     const Transform& total() const noexcept {
-        return tc_.total();
+        assert(!dirty());
+        return total_.value();
     }
 
     friend auto operator<=>( const CoordSystem& lhs,
@@ -162,12 +138,17 @@ public:
     }
 
 private:
+    void VCALL setTotal(Transform total) {
+        total_ = total;
+    }
+
     void detachThisFromParent();
     static void linkParentChild(const CoordSystem& parent,
         CoordSystem& child
     );
 
     BasicTransformComponent tc_;
+    std::optional<Transform> total_;
     std::optional<const CoordSystem*> parent_;
     // children_ should be mutable to reflect destruction
     // of current CoordSystem on parent_
@@ -175,7 +156,6 @@ private:
     // If children are too many, consider to change data structure.
     mutable std::vector<CoordSystem*> children_;
     CoordSystemID id_;
-    bool dirty_;
 };
 
 #endif  // __CoordSystem

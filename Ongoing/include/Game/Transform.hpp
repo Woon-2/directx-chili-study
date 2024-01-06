@@ -63,12 +63,11 @@ private:
 class BasicTransformComponent {
 public:
     BasicTransformComponent()
-        : local_(), global_(), total_(Transform()) {}
+        : local_(), global_() {}
 
     BasicTransformComponent(const Transform& initialLocal,
         const Transform& initialGlobal
-    ) : local_(initialLocal), global_(initialGlobal),
-    total_(Transform()) {}
+    ) : local_(initialLocal), global_(initialGlobal) {}
 
     void VCALL adjustLocal(const Transform trans) noexcept {
         local_ *= trans;
@@ -78,15 +77,11 @@ public:
         local_ = trans;
     }
 
-    const Transform local() const noexcept {
+    Transform& local() noexcept {
         return local_;
     }
 
-    Transform& localRef() noexcept {
-        return local_;
-    }
-
-    const Transform& localRef() const noexcept {
+    const Transform& local() const noexcept {
         return local_;
     }
 
@@ -98,30 +93,17 @@ public:
         global_ = trans;
     }
 
-    const Transform global() const noexcept {
+    Transform& global() noexcept {
         return global_;
     }
 
-    Transform& globalRef() noexcept {
+    const Transform& global() const noexcept {
         return global_;
-    }
-
-    const Transform& globalRef() const noexcept {
-        return global_;
-    }
-
-    void VCALL setTotal(const Transform trans) noexcept {
-        total_ = trans;
-    }
-
-    const Transform& total() const noexcept {
-        return total_.value();
     }
 
 private:
     Transform local_;
     Transform global_;
-    std::optional<Transform> total_;
 };
 
 #endif

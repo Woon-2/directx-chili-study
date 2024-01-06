@@ -28,20 +28,20 @@ void CoordSystem::loseParent() {
 
     detachThisFromParent();
 
-    tc_.setGlobal( parent_.value()->tc_.total() * tc_.globalRef() );
+    setGlobal( parent_.value()->total() * global() );
     parent_.reset();
-    dirty_ = true;
+    setDirty();
 }
 
 void CoordSystem::traverse() {
-    if (dirty_) {
+    if (dirty()) {
         // update it's own total transform (world transform)
         if (lostParent()) {
-            tc_.setTotal( tc_.local() * tc_.global() );
+            setTotal( tc_.local() * tc_.global() );
         }
         else {
-            tc_.setTotal( tc_.local()
-                * parent_.value()->tc_.total()
+            setTotal( tc_.local()
+                * parent_.value()->total()
                 * tc_.global()
             );
         }
@@ -49,13 +49,11 @@ void CoordSystem::traverse() {
 
     // traverse children
     std::ranges::for_each( children_, [this](auto* pChild) {
-        if (dirty_) {
+        if (dirty()) {
             pChild->setDirty();
         }
         pChild->traverse();
     } );
-
-    dirty_ = false;
 }
 
 void CoordSystem::destroyCascade() noexcept {
@@ -87,12 +85,12 @@ void CoordSystem::linkParentChild(
     }
 
     auto parentInversion = dx::XMMatrixInverse(
-        nullptr, parent.tc_.total().get()
+        nullptr, parent.total().get()
     );
 
-    child.tc_.setGlobal( parentInversion * child.tc_.globalRef() );
+    child.setGlobal( parentInversion * child.global() );
+    child.setDirty();
 
     child.parent_ = &parent;
-    child.dirty_ = true;
     parent.children_.push_back(&child);
 }

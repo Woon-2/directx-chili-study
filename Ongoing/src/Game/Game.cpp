@@ -31,6 +31,8 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
         dx::XMMatrixTranslation(0.f, 0.f, -20.f)
     );
 
+    coordSystem_.traverse();
+
     auto slotIndexedRender = rendererSystem_
         .addRenderer<IndexedRenderer>();
     rendererSystem_.enableLog(slotIndexedRender);

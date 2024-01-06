@@ -19,7 +19,7 @@ public:
         DistributionT& distCTP,  // chi, theta, phi
         DistributionT& distDeltaCTP, // chi, theta, phi
         DistributionT& distDeltaRTY   // roll, yaw, pitch
-    ) : radius_(distRadius(rng)), dRoll_(distDeltaRTY(rng)),
+    ) : total_(), radius_(distRadius(rng)), dRoll_(distDeltaRTY(rng)),
         dPitch_(distDeltaRTY(rng)), dYaw_(distDeltaRTY(rng)),
         dChi_(distDeltaCTP(rng)), dTheta_(distDeltaCTP(rng)),
         dPhi_(distDeltaCTP(rng)), roll_(0.f),
@@ -28,7 +28,17 @@ public:
 
     void update(milliseconds elapsed);
 
+    void VCALL setTotal(Transform total) noexcept {
+        total_ = total;
+    }
+
+    const Transform& total() const noexcept {
+        return total_;
+    }
+
 private:
+    Transform total_;
+
     float radius_;
 
     float dRoll_;
