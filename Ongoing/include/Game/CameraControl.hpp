@@ -27,6 +27,16 @@ public:
         willShow_ = false;
     }
 
+    void reset() noexcept {
+        r_ = 20.f;
+        theta_ = 0.f;
+        phi_ = 0.f;
+        chi_ = 0.f;
+        roll_ = 0.f;
+        pitch_ = 0.f;
+        yaw_ = 0.f;
+    }
+
 private:
     float r_;
     float theta_;

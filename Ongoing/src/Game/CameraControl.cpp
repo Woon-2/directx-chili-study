@@ -20,6 +20,10 @@ void CameraControl::render() {
         ImGui::SliderAngle( "Roll", &roll_, -180.f, 180.f );
         ImGui::SliderAngle( "Pitch", &pitch_, -89.f, 89.f );
         ImGui::SliderAngle( "Yaw", &yaw_, -180.f, 180.f );
+        
+        if ( ImGui::Button( "Reset", ImVec2(40.f, 30.f) ) ) {
+            reset();
+        }
 
         ImGui::End();
     }
