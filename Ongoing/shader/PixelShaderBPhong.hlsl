@@ -5,9 +5,6 @@ cbuffer FaceColors {
 cbuffer Light {
     float3 lightPos;
     float3 lightColor;
-    float diffuseIntensity;
-    float specularIntensity;
-    float ambientIntensity;
     float attConst;
     float attLin;
     float attQuad;
@@ -29,9 +26,9 @@ float4 main( float3 worldPos : Position, float3 n : Normal ) : SV_Target {
     const float3 halfway = normalize(vToLDir + eyeDir);
 
     const float att = 1.0f / (attConst + attLin * vToLDist + attQuad * vToLDist * vToLDist);
-    const float3 diffuse = max( dot(vToLDir, n), 0 ) * diffuseIntensity * diffuseColor;
-    const float3 specular = pow( max( dot(halfway, n), 0 ), specularShinyness ) * specularIntensity * specularColor;
-    const float3 ambient = ambientIntensity * ambientColor;
+    const float3 diffuse = max( dot(vToLDir, n), 0 ) * diffuseColor;
+    const float3 specular = pow( max( dot(halfway, n), 0 ), specularShinyness ) * specularColor;
+    const float3 ambient = ambientColor;
 
     return float4( (diffuse + specular + ambient + emmisiveColor), 1.0f );
 }
