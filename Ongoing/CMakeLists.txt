@@ -268,6 +268,14 @@ compile_hlsl("${PROJECT_SOURCE_DIR}/shader/PixelShaderTextured.hlsl"
     "${COMPILED_SHADER_PATH}/PixelShaderTextured.cso"
     "ps_4_0"
 )
+compile_hlsl("${PROJECT_SOURCE_DIR}/shader/VertexShaderBPhong.hlsl"
+    "${COMPILED_SHADER_PATH}/VertexShaderBPhong.cso"
+    "vs_4_0"
+)
+compile_hlsl("${PROJECT_SOURCE_DIR}/shader/PixelShaderBPhong.hlsl"
+    "${COMPILED_SHADER_PATH}/PixelShaderBPhong.cso"
+    "ps_4_0"
+)
 add_hlsl_target("${HLSL_COMPILED_SHADERS}")
 
 add_dependencies(chili hlsl)
