@@ -106,6 +106,36 @@ struct Cube {
         return ret;
     }
 
+    template <std::ranges::contiguous_range VertexNormalContainer>
+    static VertexNormalContainer modelNormalsIndependent() {
+        using normal_type = typename VertexNormalContainer::value_type;
+
+        VertexNormalContainer ret;
+        reserve_if_possible( ret, 36u );
+        auto out = std::back_inserter(ret);
+
+        static constexpr auto numFace = 6u;
+        static constexpr auto numVertPerFace = 6u;
+
+        auto normals = std::array<normal_type, numFace>{
+            normal_type(0.f, 0.f, -1.f),
+            normal_type(1.f, 0.f, 0.f),
+            normal_type(0.f, 1.f, 0.f),
+            normal_type(0.f, 0.f, 1.f),
+            normal_type(-1.f, 0.f, 0.f),
+            normal_type(0.f, -1.f, 0.f)
+        };
+
+        std::ranges::for_each( normals, [&out](const auto& normal) {
+            // for each face
+            for (auto i = decltype(numVertPerFace)(0); i < numVertPerFace; ++i) {
+                out = normal;
+            }
+        } );
+
+        return ret;
+    }
+
     template <std::ranges::contiguous_range VertexIdxContainer>
     static VertexIdxContainer modelIndices() {
         using idx_type = typename VertexIdxContainer::value_type;
