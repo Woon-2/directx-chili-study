@@ -105,6 +105,16 @@ public:
         bGlobalRebindTemporary = true;
     }
 
+    void disableLocalRebind() noexcept {
+        bLocalRebindEnabled_ = false;
+        bLocalRebindTemporary_ = false;
+    }
+
+    static void disableGlobalRebind() noexcept {
+        bGlobalRebindEnabled = false;
+        bGlobalRebindTemporary = false;
+    }
+
     template <class ... Args>
     [[maybe_unused]] bool bind(Args&& ... args) {
         if (pLastBinder == this) {
@@ -153,6 +163,10 @@ public:
 
     void enableLocalRebind() noexcept {
         static_cast<T*>(this)->binder_.enableLocalRebind();
+    }
+
+    void enableLocalRebindTemporary() noexcept {
+        static_cast<T*>(this)->binder_.enableLocalRebindTemporary();
     }
 
     void disableLocalRebind() noexcept {
