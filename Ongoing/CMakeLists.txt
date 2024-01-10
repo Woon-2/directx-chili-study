@@ -79,6 +79,7 @@ target_sources(chili PRIVATE
     src/Game/TransformDrawContexts.cpp
     src/Game/TransformCBuffer.cpp
     src/Game/CameraControl.cpp
+    src/Game/PointLight.cpp
     include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp
     include/Game/Box.hpp
@@ -111,6 +112,7 @@ target_sources(chili PRIVATE
     include/Game/TransformDrawContexts.hpp
     include/Game/TransformCBuffer.hpp
     include/Game/CameraControl.hpp
+    include/Game/PointLight.hpp
 )
 
 # GFX sources
