@@ -32,8 +32,6 @@ const char* GraphicsException::what() const noexcept
     oss << "[Error Code] " << errorCode() << '\n'
         << "[Description] " << errorStr() << '\n';
 
-    oss << metaStr() << '\n';
-
     if (!emptyInfo()) {
         oss << "\n[Error Info] " << info() << '\n';
     }
