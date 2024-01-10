@@ -143,6 +143,9 @@ public:
     void sync(GFXStorage& storage) {
         unload();
         pStorage_ = &storage;
+        if (ctor_) [[likely]] {
+            map();
+        }
     }
 
     bool valid() const noexcept {
@@ -200,7 +203,7 @@ public:
 
     void remap() {
         unload();
-        resPair_ = ctor_(*pStorage_);
+        map();
     }
 
     void unload() {
@@ -210,6 +213,10 @@ public:
     }
 
 private:
+    void map() {
+        resPair_ = ctor_(*pStorage_);
+    }
+
     bool searchWithID() const noexcept {
         return pStorage_->search( resPair_.id );
     }

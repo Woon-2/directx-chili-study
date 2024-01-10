@@ -143,7 +143,6 @@ void Graphics::constructAppRenderTarget() {
         )
     );
 
-    appRenderTarget_.sync(storage_);
     appRenderTarget_.config( GFXMappedResource::Type<RenderTarget>{},
         factory_, pBackBuffer.Get(), pDepthStencil.Get(),
         D3D11_DEPTH_STENCIL_VIEW_DESC{
@@ -154,7 +153,7 @@ void Graphics::constructAppRenderTarget() {
             }
         }
     );
-    appRenderTarget_.remap();
+    appRenderTarget_.sync(storage_);
 
     auto pRenderTarget = static_cast<RenderTarget*>(
         appRenderTarget_.get()

@@ -104,13 +104,11 @@ const RendererDesc IndexedRenderer::rendererDesc() const {
 }
 
 void IndexedRenderer::loadBindables(GFXFactory factory) {
-    vertexShader_.sync(mappedStorage());
     vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
-    vertexShader_.remap();
+    vertexShader_.sync(mappedStorage());
 
-    pixelShader_.sync(mappedStorage());
     pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
-    pixelShader_.remap();
+    pixelShader_.sync(mappedStorage());
 }
 
 BlendedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
@@ -165,13 +163,11 @@ const RendererDesc BlendedRenderer::rendererDesc() const {
 }
 
 void BlendedRenderer::loadBindables(GFXFactory factory) {
-    vertexShader_.sync(mappedStorage());
     vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
-    vertexShader_.remap();
+    vertexShader_.sync(mappedStorage());
 
-    pixelShader_.sync(mappedStorage());
     pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
-    pixelShader_.remap();
+    pixelShader_.sync(mappedStorage());
 }
 
 TexturedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
@@ -226,13 +222,11 @@ const RendererDesc TexturedRenderer::rendererDesc() const {
 }
 
 void TexturedRenderer::loadBindables(GFXFactory factory) {
-    vertexShader_.sync(mappedStorage());
     vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
-    vertexShader_.remap();
+    vertexShader_.sync(mappedStorage());
 
-    pixelShader_.sync(mappedStorage());
     pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
-    pixelShader_.remap();
+    pixelShader_.sync(mappedStorage());
 }
 
 BPhongRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
@@ -287,11 +281,9 @@ const RendererDesc BPhongRenderer::rendererDesc() const {
 }
 
 void BPhongRenderer::loadBindables(GFXFactory factory) {
-    vertexShader_.sync(mappedStorage());
     vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
-    vertexShader_.remap();
+    vertexShader_.sync(mappedStorage());
 
-    pixelShader_.sync(mappedStorage());
     pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
-    pixelShader_.remap();
+    pixelShader_.sync(mappedStorage());
 }
