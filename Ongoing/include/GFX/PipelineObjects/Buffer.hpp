@@ -36,7 +36,7 @@ public:
     template <class BufferGetter>
         requires std::convertible_to< std::invoke_result_t<BufferGetter>, void* >
             || std::convertible_to< std::invoke_result_t<BufferGetter>, const void* >
-    void dynamicUpdate( GFXPipeline& pipeline, BufferGetter&& getter ) {
+    void dynamicUpdate(GFXPipeline& pipeline, BufferGetter&& getter) {
         // is dynamic usage check to be added
         auto mapped = D3D11_MAPPED_SUBRESOURCE{};
         std::fill_n( reinterpret_cast<char*>(&mapped), sizeof(mapped), 0 );
@@ -55,6 +55,19 @@ public:
 
         GFX_THROW_FAILED_VOID(
             pipeline.context()->Unmap( data().Get(), 0 )
+        );
+    }
+
+    template <class BufferGetter>
+        requires std::convertible_to< std::invoke_result_t<BufferGetter>, void* >
+            || std::convertible_to< std::invoke_result_t<BufferGetter>, const void* >
+    void stage(GFXPipeline& pipeline, BufferGetter&& getter) {
+        const void* updated = std::invoke( std::forward<BufferGetter>(getter) );
+
+        GFX_THROW_FAILED_VOID(
+            pipeline.context()->UpdateSubresource(
+                data().Get(), 0, nullptr, updated, 0, 0
+            )
         );
     }
 
