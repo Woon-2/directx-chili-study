@@ -176,6 +176,16 @@ public:
         return resPair_.bindee;
     }
 
+    template <class T>
+    T& as() noexcept {
+        return *static_cast<T*>(resPair_.bindee);
+    }
+    
+    template <class T>
+    const T& as() const noexcept {
+        return *static_cast<const T*>(resPair_.bindee);
+    }
+
     IBindable* operator->() noexcept {
         return get();
     }
