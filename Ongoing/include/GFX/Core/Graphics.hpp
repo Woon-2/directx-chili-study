@@ -63,7 +63,7 @@ private:
     GFXPipeline pipeline_;
     GFXSwapChain swapchain_;
 
-    GFXStorage::ID IDAppRenderTarget_;
+    GFXMappedResource appRenderTarget_;
 };
 
 #endif  // __Graphics

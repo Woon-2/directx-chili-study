@@ -10,7 +10,7 @@
 
 Graphics::Graphics(MyWindow& wnd)
     : wnd_(wnd), storage_(), factory_(), pipeline_(),
-    swapchain_(nullptr), IDAppRenderTarget_() {
+    swapchain_(nullptr), appRenderTarget_() {
     try {
         initGFXComponents();
         constructAppRenderTarget();
@@ -46,13 +46,15 @@ void Graphics::present() {
     // After Present calls,
     // the back buffer needs to explicitly be re-bound
     // to the D3D11 immediate context before it can be used again.
-    assert( storage_.get(IDAppRenderTarget_).has_value() );
-    pipeline_.bind( storage_.get(IDAppRenderTarget_).value() );
+    assert( appRenderTarget_.valid() );
+    pipeline_.bind( appRenderTarget_.get() );
 }
 
 void Graphics::clear(float r, float g, float b) {
-    if ( auto rt = storage_.get(IDAppRenderTarget_) ) {
-        static_cast<RenderTarget*>( rt.value() )->clear(r, g, b, 1.f);
+    if ( appRenderTarget_.valid() ) {
+        static_cast<RenderTarget*>(
+            appRenderTarget_.get()
+        )->clear(r, g, b, 1.f);
     }
     else {
         // Reaching to this branch means
@@ -141,7 +143,8 @@ void Graphics::constructAppRenderTarget() {
         )
     );
 
-    IDAppRenderTarget_ = storage_.load<RenderTarget>(
+    appRenderTarget_.sync(storage_);
+    appRenderTarget_.config( GFXMappedResource::Type<RenderTarget>{},
         factory_, pBackBuffer.Get(), pDepthStencil.Get(),
         D3D11_DEPTH_STENCIL_VIEW_DESC{
             .Format = DXGI_FORMAT_D32_FLOAT,
@@ -151,9 +154,10 @@ void Graphics::constructAppRenderTarget() {
             }
         }
     );
+    appRenderTarget_.remap();
 
     auto pRenderTarget = static_cast<RenderTarget*>(
-        storage_.get(IDAppRenderTarget_).value()
+        appRenderTarget_.get()
     );
 
     pRenderTarget->enableLocalRebind();

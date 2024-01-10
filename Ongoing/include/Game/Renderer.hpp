@@ -162,8 +162,8 @@ private:
     void loadBindables(GFXFactory factory) override;
 
     GFXStorage* pStorage_;
-    GFXStorage::ID IDVertexShader_;
-    GFXStorage::ID IDPixelShader_;
+    GFXMappedResource vertexShader_;
+    GFXMappedResource pixelShader_;
 };
 
 class BlendedRenderer : public Renderer {
@@ -202,8 +202,8 @@ private:
     void loadBindables(GFXFactory factory) override;
 
     GFXStorage* pStorage_;
-    GFXStorage::ID IDVertexShader_;
-    GFXStorage::ID IDPixelShader_;
+    GFXMappedResource vertexShader_;
+    GFXMappedResource pixelShader_;
 };
 
 class TexturedRenderer : public Renderer {
@@ -250,8 +250,8 @@ private:
     void loadBindables(GFXFactory factory) override;
 
     GFXStorage* pStorage_;
-    GFXStorage::ID IDVertexShader_;
-    GFXStorage::ID IDPixelShader_;
+    GFXMappedResource vertexShader_;
+    GFXMappedResource pixelShader_;
 };
 
 class BPhongRenderer : public Renderer {
@@ -294,8 +294,8 @@ private:
     void loadBindables(GFXFactory factory) override;
 
     GFXStorage* pStorage_;
-    GFXStorage::ID IDVertexShader_;
-    GFXStorage::ID IDPixelShader_;
+    GFXMappedResource vertexShader_;
+    GFXMappedResource pixelShader_;
 };
 
 #endif  // __Renderer

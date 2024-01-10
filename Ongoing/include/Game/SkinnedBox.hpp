@@ -104,16 +104,30 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        pipeline_(pipeline), pStorage_(&storage),
-        IDPosBuffer_( storage.cache<MyVertexBuffer>(factory) ),
-        IDTexBuffer_( storage.cache<MyTexBuffer>(factory) ),
-        IDTopology_( storage.cache<MyTopology>() ),
-        IDViewport_( storage.cache<MyViewport>( wnd.client() ) ),
-        IDTransformCBuf_( storage.cache<MyTransformCBuf>(factory) ),
-        IDTexture_( storage.cache<MyTexture>(factory) ),
-        IDSampler_( storage.cache<MySampler>(factory) ) {
+        posBuffer_( GFXMappedResource::Type<MyVertexBuffer>{},
+            typeid(MyVertexBuffer), storage, factory
+        ),
+        texBuffer_( GFXMappedResource::Type<MyTexBuffer>{},
+            typeid(MyTexBuffer), storage, factory
+        ),
+        topology_( GFXMappedResource::Type<MyTopology>{},
+            typeid(MyTopology), storage
+        ),
+        viewport_( GFXMappedResource::Type<MyViewport>{},
+            typeid(MyViewport), storage,  wnd.client()
+        ),
+        transformCBuf_( GFXMappedResource::Type<MyTransformCBuf>{},
+            typeid(MyTransformCBuf), storage, factory
+        ),
+        texture_( GFXMappedResource::Type<MyTexture>{},
+            typeid(MyTexture), storage, factory
+        ),
+        sampler_( GFXMappedResource::Type<MySampler>{},
+            typeid(MySampler), storage, factory
+        ),
+        pipeline_(pipeline), pStorage_(&storage) {
 
-        transformGPUMapper_.setTCBufID(IDTransformCBuf_);
+        transformGPUMapper_.setTCBufID(transformCBuf_.id());
 
         this->setDrawCaller( std::make_unique<MyDrawCaller>(
             static_cast<UINT>( MyVertexBuffer::size() ), 0
@@ -140,35 +154,35 @@ public:
     }
 
     void sync(const TexturedRenderer& renderer) {
-        assert(pStorage_->get(IDTransformCBuf_).has_value());
-        static_cast<MyTransformCBuf*>( pStorage_->get(IDTransformCBuf_).value() )
+        assert(transformCBuf_.valid());
+        static_cast<MyTransformCBuf*>( transformCBuf_.get() )
             ->setSlot( 0u );
 
-        assert(pStorage_->get(IDPosBuffer_).has_value());
-        static_cast<MyVertexBuffer*>( pStorage_->get(IDPosBuffer_).value() )
+        assert(posBuffer_.valid());
+        static_cast<MyVertexBuffer*>( posBuffer_.get() )
             ->setSlot( TexturedRenderer::slotPosBuffer() );
 
-        assert(pStorage_->get(IDTexBuffer_).has_value());
-        static_cast<MyTexBuffer*>( pStorage_->get(IDTexBuffer_).value() )
+        assert(texBuffer_.valid());
+        static_cast<MyTexBuffer*>( texBuffer_.get() )
             ->setSlot( TexturedRenderer::slotTexBuffer() );
 
-        assert(pStorage_->get(IDTexture_).has_value());
-        static_cast<MyTexture*>( pStorage_->get(IDTexture_).value() )
+        assert(texture_.valid());
+        static_cast<MyTexture*>( texture_.get() )
             ->setSlot( TexturedRenderer::slotTexture() );
 
-        assert(pStorage_->get(IDSampler_).has_value());
-        static_cast<MySampler*>( pStorage_->get(IDSampler_).value() )
+        assert(sampler_.valid());
+        static_cast<MySampler*>( sampler_.get() )
             ->setSlot( TexturedRenderer::slotSamplerState() );
 
         this->setRODesc( RenderObjectDesc{
             .header = {
-                .IDBuffer = IDPosBuffer_,
+                .IDBuffer = posBuffer_.id(),
                 .IDType = typeid(SkinnedBox)
             },
             .IDs = {
-                IDPosBuffer_, IDTexBuffer_,
-                IDTopology_, IDViewport_, IDTransformCBuf_,
-                IDTexture_, IDSampler_
+                posBuffer_.id(), texBuffer_.id(),
+                topology_.id(), viewport_.id(), transformCBuf_.id(),
+                texture_.id(), sampler_.id()
             }
         } );
     }
@@ -185,17 +199,17 @@ private:
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     IDrawComponent::LogComponent logComponent_;
 #endif
+    GFXMappedResource posBuffer_;
+    GFXMappedResource texBuffer_;
+    GFXMappedResource topology_;
+    GFXMappedResource viewport_;
+    GFXMappedResource transformCBuf_;
+    GFXMappedResource texture_;
+    GFXMappedResource sampler_;
     std::optional<RenderObjectDesc> RODesc_;
     MyDrawCaller drawCaller_;
     GFXPipeline pipeline_;
     GFXStorage* pStorage_;
-    GFXStorage::ID IDPosBuffer_;
-    GFXStorage::ID IDTexBuffer_;
-    GFXStorage::ID IDTopology_;
-    GFXStorage::ID IDViewport_;
-    GFXStorage::ID IDTransformCBuf_;
-    GFXStorage::ID IDTexture_;
-    GFXStorage::ID IDSampler_;
 };
 
 template<>

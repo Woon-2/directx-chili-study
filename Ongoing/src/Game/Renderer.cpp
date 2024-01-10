@@ -93,19 +93,24 @@ IndexedRenderer::MyPixelShader::csoPath() const noexcept {
 const RendererDesc IndexedRenderer::rendererDesc() const {
     return RendererDesc{
             .header = {
-                .IDVertexShader = IDVertexShader_,
-                .IDPixelShader = IDPixelShader_,
+                .IDVertexShader = vertexShader_.id(),
+                .IDPixelShader = pixelShader_.id(),
                 .IDType = typeid(*this)
             },
             .IDs = {
-                IDVertexShader_, IDPixelShader_
+                vertexShader_.id(), pixelShader_.id()
             }
         };
 }
 
 void IndexedRenderer::loadBindables(GFXFactory factory) {
-    IDVertexShader_ = mappedStorage().cache<MyVertexShader>(factory);
-    IDPixelShader_ = mappedStorage().cache<MyPixelShader>(factory);
+    vertexShader_.sync(mappedStorage());
+    vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
+    vertexShader_.remap();
+
+    pixelShader_.sync(mappedStorage());
+    pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
+    pixelShader_.remap();
 }
 
 BlendedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
@@ -149,19 +154,24 @@ BlendedRenderer::MyPixelShader::csoPath() const noexcept {
 const RendererDesc BlendedRenderer::rendererDesc() const {
     return RendererDesc{
             .header = {
-                .IDVertexShader = IDVertexShader_,
-                .IDPixelShader = IDPixelShader_,
+                .IDVertexShader = vertexShader_.id(),
+                .IDPixelShader = pixelShader_.id(),
                 .IDType = typeid(*this)
             },
             .IDs = {
-                IDVertexShader_, IDPixelShader_
+                vertexShader_.id(), pixelShader_.id()
             }
         };
 }
 
 void BlendedRenderer::loadBindables(GFXFactory factory) {
-    IDVertexShader_ = mappedStorage().cache<MyVertexShader>(factory);
-    IDPixelShader_ = mappedStorage().cache<MyPixelShader>(factory);
+    vertexShader_.sync(mappedStorage());
+    vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
+    vertexShader_.remap();
+
+    pixelShader_.sync(mappedStorage());
+    pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
+    pixelShader_.remap();
 }
 
 TexturedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
@@ -205,19 +215,24 @@ TexturedRenderer::MyPixelShader::csoPath() const noexcept {
 const RendererDesc TexturedRenderer::rendererDesc() const {
     return RendererDesc{
             .header = {
-                .IDVertexShader = IDVertexShader_,
-                .IDPixelShader = IDPixelShader_,
+                .IDVertexShader = vertexShader_.id(),
+                .IDPixelShader = pixelShader_.id(),
                 .IDType = typeid(*this)
             },
             .IDs = {
-                IDVertexShader_, IDPixelShader_
+                vertexShader_.id(), pixelShader_.id()
             }
         };
 }
 
 void TexturedRenderer::loadBindables(GFXFactory factory) {
-    IDVertexShader_ = mappedStorage().cache<MyVertexShader>(factory);
-    IDPixelShader_ = mappedStorage().cache<MyPixelShader>(factory);
+    vertexShader_.sync(mappedStorage());
+    vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
+    vertexShader_.remap();
+
+    pixelShader_.sync(mappedStorage());
+    pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
+    pixelShader_.remap();
 }
 
 BPhongRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
@@ -261,17 +276,22 @@ BPhongRenderer::MyPixelShader::csoPath() const noexcept {
 const RendererDesc BPhongRenderer::rendererDesc() const {
     return RendererDesc{
             .header = {
-                .IDVertexShader = IDVertexShader_,
-                .IDPixelShader = IDPixelShader_,
+                .IDVertexShader = vertexShader_.id(),
+                .IDPixelShader = pixelShader_.id(),
                 .IDType = typeid(*this)
             },
             .IDs = {
-                IDVertexShader_, IDPixelShader_
+                vertexShader_.id(), pixelShader_.id()
             }
         };
 }
 
 void BPhongRenderer::loadBindables(GFXFactory factory) {
-    IDVertexShader_ = mappedStorage().cache<MyVertexShader>(factory);
-    IDPixelShader_ = mappedStorage().cache<MyPixelShader>(factory);
+    vertexShader_.sync(mappedStorage());
+    vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
+    vertexShader_.remap();
+
+    pixelShader_.sync(mappedStorage());
+    pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
+    pixelShader_.remap();
 }

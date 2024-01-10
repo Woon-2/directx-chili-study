@@ -109,18 +109,31 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        pipeline_(pipeline), pStorage_(&storage),
-        IDPosBuffer_( storage.cache<MyPosBuffer>(factory) ),
-        IDIndexBuffer_( storage.cache<MyIndexBuffer>(factory) ),
-        IDTopology_( storage.cache<MyTopology>() ),
-        IDViewport_( storage.cache<MyViewport>( wnd.client() ) ),
-        IDTransformCBuf_( storage.cache<MyTransformCBuf>( factory ) ),
-        IDIndexedColorCBuf_( storage.cache<MyIndexedColorCBuf>( factory ) ),
-        IDBlendedColorBuffer_( storage.cache<MyBlendedColorBuffer>(
+        posBuffer_( GFXMappedResource::Type<MyPosBuffer>{},
+            typeid(MyPosBuffer), storage, factory
+        ),
+        indexBuffer_( GFXMappedResource::Type<MyIndexBuffer>{},
+            typeid(MyIndexBuffer), storage, factory
+        ),
+        topology_( GFXMappedResource::Type<MyTopology>{},
+            typeid(MyTopology), storage
+        ),
+        viewport_( GFXMappedResource::Type<MyViewport>{},
+            typeid(MyViewport), storage, wnd.client()
+        ),
+        transformCBuf_( GFXMappedResource::Type<MyTransformCBuf>{},
+            typeid(MyTransformCBuf), storage, factory
+        ),
+        indexedColorCBuf_( GFXMappedResource::Type<MyIndexedColorCBuf>{},
+            typeid(MyIndexedColorCBuf), storage, factory
+        ),
+        blendedColorBuffer_( GFXMappedResource::Type<MyBlendedColorBuffer>{},
+            typeid(MyBlendedColorBuffer), storage,
             factory, MyPosBuffer::size()
-        ) ) {
+        ),
+        pipeline_(pipeline), pStorage_(&storage) {
 
-        transformGPUMapper_.setTCBufID(IDTransformCBuf_);
+        transformGPUMapper_.setTCBufID(transformCBuf_.id());
 
         this->setDrawCaller( std::make_unique<MyDrawCaller>(
             static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0
@@ -143,24 +156,33 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        pipeline_(pipeline), pStorage_(&storage),
-        IDPosBuffer_( storage.load<MyPosBuffer>(
-            factory, std::forward<TesselationFactors>(tesselationFactors)...
-        ) ),
-        IDIndexBuffer_( storage.load<MyIndexBuffer>(
-            factory, std::forward<TesselationFactors>(tesselationFactors)...
-        ) ),
-        IDTopology_( storage.cache<MyTopology>() ),
-        IDViewport_( storage.cache<MyViewport>( wnd.client() ) ),
-        IDTransformCBuf_( storage.cache<MyTransformCBuf>( factory ) ),
-        IDIndexedColorCBuf_( storage.cache<MyIndexedColorCBuf>( factory ) ),
-        IDBlendedColorBuffer_( storage.load<MyBlendedColorBuffer>(
+        posBuffer_( GFXMappedResource::Type<MyPosBuffer>{}, storage, factory,
+            std::forward<TesselationFactors>(tesselationFactors)...
+        ),
+        indexBuffer_( GFXMappedResource::Type<MyIndexBuffer>{}, storage, factory,
+            std::forward<TesselationFactors>(tesselationFactors)...
+        ),
+        topology_( GFXMappedResource::Type<MyTopology>{},
+            typeid(MyTopology), storage
+        ),
+        viewport_( GFXMappedResource::Type<MyViewport>{},
+            typeid(MyViewport), storage, wnd.client()
+        ),
+        transformCBuf_( GFXMappedResource::Type<MyTransformCBuf>{},
+            typeid(MyTransformCBuf), storage, factory 
+        ),
+        indexedColorCBuf_( GFXMappedResource::Type<MyIndexedColorCBuf>{},
+            typeid(MyIndexedColorCBuf), storage, factory
+        ),
+        blendedColorBuffer_( GFXMappedResource::Type<MyBlendedColorBuffer>{},
+            typeid(MyBlendedColorBuffer), storage,
             factory, MyPosBuffer::size(
                 std::forward<TesselationFactors>(tesselationFactors)...
             )
-        ) ) {
+        ),
+        pipeline_(pipeline), pStorage_(&storage) {
 
-        transformGPUMapper_.setTCBufID(IDTransformCBuf_);
+        transformGPUMapper_.setTCBufID(transformCBuf_.id());
 
         this->setDrawCaller( std::make_unique<MyDrawCaller>(
             static_cast<UINT>( MyIndexBuffer::size(
@@ -193,48 +215,48 @@ public:
     }
     
     void sync(const IndexedRenderer& renderer) {
-        assert(pStorage_->get(IDPosBuffer_).has_value());
-        static_cast<MyPosBuffer*>( pStorage_->get(IDPosBuffer_).value() )
+        assert(posBuffer_.valid());
+        static_cast<MyPosBuffer*>( posBuffer_.get() )
             ->setSlot( IndexedRenderer::slotPosBuffer() );
 
-        assert(pStorage_->get(IDTransformCBuf_).has_value());
-        static_cast<MyTransformCBuf*>( pStorage_->get(IDTransformCBuf_).value() )
+        assert(transformCBuf_.valid());
+        static_cast<MyTransformCBuf*>( transformCBuf_.get() )
             ->setSlot( 0u );
 
         this->setRODesc( RenderObjectDesc{
             .header = {
-                .IDBuffer = IDPosBuffer_,
+                .IDBuffer = posBuffer_.id(),
                 .IDType = typeid(T)
             },
             .IDs = {
-                IDPosBuffer_, IDIndexBuffer_, IDTopology_,
-                IDViewport_, IDTransformCBuf_, IDIndexedColorCBuf_
+                posBuffer_.id(), indexBuffer_.id(), topology_.id(),
+                viewport_.id(), transformCBuf_.id(), indexedColorCBuf_.id()
             }
         } );
     }
 
     void sync(const BlendedRenderer& renderer) {
-        assert(pStorage_->get(IDPosBuffer_).has_value());
-        static_cast<MyPosBuffer*>( pStorage_->get(IDPosBuffer_).value() )
+        assert(posBuffer_.valid());
+        static_cast<MyPosBuffer*>( posBuffer_.get() )
             ->setSlot( BlendedRenderer::slotPosBuffer() );
             
-        assert(pStorage_->get(IDBlendedColorBuffer_).has_value());
+        assert(blendedColorBuffer_.valid());
         static_cast<MyBlendedColorBuffer*>(
-            pStorage_->get(IDBlendedColorBuffer_).value()
+            blendedColorBuffer_.get()
         )->setSlot( BlendedRenderer::slotColorBuffer() );
 
-        assert(pStorage_->get(IDTransformCBuf_).has_value());
-        static_cast<MyTransformCBuf*>( pStorage_->get(IDTransformCBuf_).value() )
+        assert(transformCBuf_.valid());
+        static_cast<MyTransformCBuf*>( transformCBuf_.get() )
             ->setSlot( 0u );
 
         this->setRODesc( RenderObjectDesc{
             .header = {
-                .IDBuffer = IDPosBuffer_,
+                .IDBuffer = posBuffer_.id(),
                 .IDType = typeid(T)
             },
             .IDs = {
-                IDPosBuffer_, IDBlendedColorBuffer_, IDIndexBuffer_, IDTopology_,
-                IDViewport_, IDTransformCBuf_
+                posBuffer_.id(), blendedColorBuffer_.id(), indexBuffer_.id(), topology_.id(),
+                viewport_.id(), transformCBuf_.id()
             }
         } );
     }
@@ -251,15 +273,15 @@ private:
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     RCDrawCmp::LogComponent logComponent_;
 #endif
+    GFXMappedResource posBuffer_;
+    GFXMappedResource indexBuffer_;
+    GFXMappedResource topology_;
+    GFXMappedResource viewport_;
+    GFXMappedResource transformCBuf_;
+    GFXMappedResource indexedColorCBuf_;
+    GFXMappedResource blendedColorBuffer_;
     GFXPipeline pipeline_;
     GFXStorage* pStorage_;
-    GFXStorage::ID IDPosBuffer_;
-    GFXStorage::ID IDIndexBuffer_;
-    GFXStorage::ID IDTopology_;
-    GFXStorage::ID IDViewport_;
-    GFXStorage::ID IDTransformCBuf_;
-    GFXStorage::ID IDIndexedColorCBuf_;
-    GFXStorage::ID IDBlendedColorBuffer_;
 };
 
 template <class T>
