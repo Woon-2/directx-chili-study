@@ -15,6 +15,7 @@ namespace Primitives {
 struct Cube {
     using MyVertex = GFXVertex;
     using MyIndex = GFXIndex;
+    using MyNormal = GFXNormal;
 
     static constexpr auto side = 0.5f;
 
@@ -37,6 +38,19 @@ struct Cube {
         CubeVertexBufferIndependent(GFXFactory factory)
             : VertexBuffer<MyVertex>( factory,
                 Cube::modelPositionsIndependent< std::vector<MyVertex> >()
+            ) {}
+
+        static constexpr std::size_t size() {
+            return 36u;
+        }
+    };
+
+    class CubeNormalBufferIndependent : public VertexBuffer<MyNormal> {
+    public:
+        CubeNormalBufferIndependent() = default;
+        CubeNormalBufferIndependent(GFXFactory factory)
+            : VertexBuffer<MyNormal>( factory,
+                Cube::modelNormalsIndependent< std::vector<MyNormal> >()
             ) {}
 
         static constexpr std::size_t size() {
