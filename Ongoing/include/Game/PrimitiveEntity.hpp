@@ -354,8 +354,8 @@ public:
     Loader(Loader&&) = delete;
     Loader& operator=(Loader&&) = delete;
 
-    void loadAt(Scene& scene) {
-        scene.addDrawComponent(entity_.drawComponent());
+    void loadAt(Scene& scene, std::size_t idxLayer = 0u) {
+        scene.layer(idxLayer).addDrawCmp(entity_.drawComponent().get());
     }
 
 private:

@@ -36,11 +36,11 @@ void Renderer::render(Scene& scene) {
         }
     );
 
-    std::ranges::for_each( scene.drawComponents(),
-        [this, &scene](auto& dc) mutable {
+    std::ranges::for_each( scene.layers(), [this, &scene](Layer& layer) {
+        std::ranges::for_each( layer.drawCmps(), [&](auto& dc) {
             dc.sync(*this);
             dc.sync(scene.vision());
-            
+
             auto IDs = std::move(dc.renderObjectDesc().IDs);
 
             std::ranges::for_each(IDs,
@@ -52,8 +52,8 @@ void Renderer::render(Scene& scene) {
             );
 
             pipeline_.drawCall(dc.drawCaller());
-        }
-    );
+        } );
+    } );
 
 #ifdef ACTIVATE_RENDERER_LOG
     logComponent().entryStackPop();
