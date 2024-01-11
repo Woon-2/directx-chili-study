@@ -37,6 +37,12 @@ void Renderer::render(Scene& scene) {
     );
 
     std::ranges::for_each( scene.layers(), [this, &scene](Layer& layer) {
+        layer.setup();
+
+        std::ranges::for_each( layer.bindees(), [&](auto* bindee) {
+            pipeline_.bind( bindee );
+        } );
+
         std::ranges::for_each( layer.drawCmps(), [&](auto& dc) {
             dc.sync(*this);
             dc.sync(scene.vision());
