@@ -273,6 +273,10 @@ public:
         std::filesystem::path csoPath() const noexcept;
     };
 
+    BPhongRenderer() = default;
+    BPhongRenderer(GFXPipeline pipeline)
+        : Renderer(std::move(pipeline)) {}
+
     static consteval UINT slotPosBuffer() {
         return 0u;
     }

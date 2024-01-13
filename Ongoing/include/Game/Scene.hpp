@@ -49,7 +49,7 @@ public:
     auto bindees() noexcept {
         return bindees_ | std::views::transform(
             [](auto& mappedRes) { return mappedRes.get(); }
-        ) | dereference();
+        );
     }
 
     const auto bindees() const noexcept {
@@ -112,6 +112,10 @@ public:
         return layers_[idx];
     }
 
+    void addLayer() {
+        layers_.emplace_back();
+    }
+
     auto& layers() noexcept {
         return layers_;
     }
@@ -138,6 +142,66 @@ public:
 private:
     std::vector<Layer> layers_;
     CameraVision* pVision_;
+};
+
+// Scene with lights
+class LSceneAdapter {
+public:
+    LSceneAdapter() = default;
+    LSceneAdapter(Scene& scene)
+        : pRawScene_(&scene) {}
+
+    static constexpr std::size_t lightLayerIdx() noexcept {
+        return 0u;
+    }
+
+    static constexpr std::size_t meshLayerIdx() noexcept {
+        return 1u;
+    }
+
+    void sync(Scene& scene) {
+        pRawScene_ = &scene;
+    }
+
+    void addLight(const GFXMappedResource& light) {
+        lightLayer().addBindee(light);
+    }
+
+    void addDrawCmp(RCDrawCmp* drawCmp) {
+        meshLayer().addDrawCmp(drawCmp);
+    }
+
+    template <class TRenderer>
+    void sortFor(const TRenderer& renderer) {
+        return pRawScene_->sortFor(renderer);
+    }
+
+    const CameraVision& vision() const noexcept {
+        return pRawScene_->vision();
+    }
+
+    void setVision(CameraVision& vision) {
+        pRawScene_->setVision(vision);
+    }
+
+    Layer& lightLayer() noexcept {
+        return pRawScene_->layer( lightLayerIdx() );
+    }
+
+    const Layer& lightLayer() const noexcept {
+        return pRawScene_->layer( lightLayerIdx() );
+    }
+
+    Layer& meshLayer() noexcept {
+        return pRawScene_->layer( meshLayerIdx() );
+    }
+
+    const Layer& meshLayer() const noexcept {
+        return pRawScene_->layer( meshLayerIdx() );
+    }
+
+private:
+    Scene* pRawScene_;
 };
 
 #endif  // __Scene

@@ -29,23 +29,23 @@ public:
     BPDynPointLight(const BPPointLightDesc& lightDesc)
         : lightDesc_(lightDesc), res_(), dirty_(false) {}
 
-    BPDynPointLight(GFXFactory& factory, GFXStorage& storage)
-        : BPDynPointLight( factory, storage, defLightDesc() ) {}
+    BPDynPointLight(GFXFactory factory, GFXStorage& storage)
+        : BPDynPointLight( std::move(factory), storage, defLightDesc() ) {}
 
-    BPDynPointLight(GFXFactory& factory)
-        : BPDynPointLight( factory, defLightDesc() ) {}
+    BPDynPointLight(GFXFactory factory)
+        : BPDynPointLight( std::move(factory), defLightDesc() ) {}
 
-    BPDynPointLight(GFXFactory& factory, const BPPointLightDesc& lightDesc)
+    BPDynPointLight(GFXFactory factory, const BPPointLightDesc& lightDesc)
         : lightDesc_(lightDesc), res_(), dirty_(false) {
-        config(factory);
+        config(std::move(factory));
     }
 
-    BPDynPointLight( GFXFactory& factory, GFXStorage& storage,
+    BPDynPointLight( GFXFactory factory, GFXStorage& storage,
         const BPPointLightDesc& lightDesc
     ) : lightDesc_(lightDesc),
         res_( GFXMappedResource::Type<MyPSCBuffer>{}, storage,
             // the resource construction arguments follow.
-            factory, D3D11_USAGE_DEFAULT, 0,
+            std::move(factory), D3D11_USAGE_DEFAULT, 0,
             std::ranges::single_view(lightDesc_)
         ), dirty_(false) {}
 
@@ -54,8 +54,8 @@ public:
         res_.remap();
     }
 
-    void config(GFXFactory& factory) {
-        res_.config<MyPSCBuffer>( factory, D3D11_USAGE_DEFAULT, 0,
+    void config(GFXFactory factory) {
+        res_.config<MyPSCBuffer>( std::move(factory), D3D11_USAGE_DEFAULT, 0,
             std::ranges::single_view(lightDesc_)
         );
     }
@@ -145,6 +145,7 @@ private:
         }
     }
 
+    CoordSystem coord_;
     BPPointLightDesc lightDesc_;
     // res_ depends on lightDesc_ in initialization.
     // so res_ should be here.

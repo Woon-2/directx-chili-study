@@ -74,6 +74,12 @@ private:
         Mouse& mouse, Args&& ... args
     );
 
+    void createIlBox( Distribution distRadius,
+        Distribution distCTP, Distribution distDeltaCTP,
+        Distribution distDelteRTY, const ChiliWindow& wnd, Graphics& gfx,
+        Keyboard<MyChar>& kbd, Mouse& mouse
+    );
+
     RendererSystem rendererSystem_;
     InputSystem<MyChar> inputSystem_;
     CoordSystem coordSystem_;

@@ -83,6 +83,26 @@ public:
         return resourceStorage_;
     }
 
+    template <class SceneAdapter>
+    SceneAdapter adapt(Slot slot) {
+        return adapt<SceneAdapter>( scene(slot) );
+    }
+
+    template <class SceneAdapter>
+    const SceneAdapter adapt(Slot slot) const {
+        return adapt<SceneAdapter>( scene(slot) );
+    }
+
+    template <class SceneAdapter>
+    static SceneAdapter adapt(Scene& scene) {
+        return SceneAdapter(scene);
+    }
+
+    template <class SceneAdapter>
+    static const SceneAdapter adapt(const Scene& scene) {
+        return SceneAdapter(scene);
+    }
+
 private:
     GFXStorage resourceStorage_;
     std::vector< std::pair<

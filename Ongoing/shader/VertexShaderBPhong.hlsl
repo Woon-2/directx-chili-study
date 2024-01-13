@@ -1,5 +1,11 @@
-cbuffer TransCBuf {
+// separte cbuffers temporarily.
+// integrate them later when the Transform Constant Buffer class is well defined.
+
+cbuffer TransCBuf1 {
     matrix worldView;
+};
+
+cbuffer TransCBuf2 {
     matrix worldViewProj;
 };
 

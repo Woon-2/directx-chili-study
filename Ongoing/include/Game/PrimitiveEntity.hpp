@@ -358,6 +358,10 @@ public:
         scene.layer(idxLayer).addDrawCmp(entity_.drawComponent().get());
     }
 
+    void loadAt(LSceneAdapter scene) {
+        scene.addDrawCmp(entity_.drawComponent().get());
+    }
+
 private:
     const PrimitiveEntity<T>& entity_;
 };

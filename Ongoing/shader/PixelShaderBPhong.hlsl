@@ -19,6 +19,7 @@ cbuffer Material {
 };
 
 float4 main( float3 worldPos : Position, float3 n : Normal ) : SV_Target {
+    n = normalize(n);
     const float3 vToL = lightPos - worldPos;
     const float3 vToLDir = normalize(vToL);
     const float vToLDist = length(vToL);

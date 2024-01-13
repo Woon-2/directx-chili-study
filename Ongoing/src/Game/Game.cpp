@@ -7,6 +7,7 @@
 #include "Game/Sphere.hpp"
 #include "Game/Sheet.hpp"
 #include "Game/SkinnedBox.hpp"
+#include "Game/IlluminatedBox.hpp"
 
 #include "Game/GFXCMDLogger.hpp"
 #include "Game/GFXCMDLogGUIView.hpp"
@@ -50,6 +51,20 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     rendererSystem_.enableLog(slotTexturedRender);
     rendererSystem_.sync(slotTexturedRender);
     rendererSystem_.scene(slotTexturedRender).setVision( camera_.vision() );
+
+    auto slotBPhongRenderer = rendererSystem_
+        .addRenderer<BPhongRenderer>();
+    rendererSystem_.enableLog(slotBPhongRenderer);
+    rendererSystem_.sync(slotBPhongRenderer);
+    rendererSystem_.scene(slotBPhongRenderer).setVision( camera_.vision() );
+    rendererSystem_.scene(slotBPhongRenderer).addLayer();
+
+    auto light = GFXMappedResource( GFXMappedResource::Type<BPDynPointLight>{},
+        rendererSystem_.storage(), gfx.factory(), rendererSystem_.storage()
+    );
+    light.as<BPDynPointLight>().setSlot(BPhongRenderer::slotLightCBuffer());
+    auto lScene = rendererSystem_.adapt<LSceneAdapter>(slotBPhongRenderer);
+    lScene.addLight(std::move(light));
 
     inputSystem_.setListner(ic_);
 
@@ -107,10 +122,11 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
         MAKE_SPHERE,
         MAKE_SHEET,
         MAKE_SKINNED_BOX,
+        MAKE_ILLUMINATED_BOX,
         SIZE
     };
 
-    auto distType = std::uniform_int_distribution<>(MAKE_SKINNED_BOX, MAKE_SKINNED_BOX);
+    auto distType = std::uniform_int_distribution<>(MAKE_ILLUMINATED_BOX, MAKE_ILLUMINATED_BOX);
     auto distTesselation = std::uniform_int_distribution<std::size_t>(3u, 48u);
 
     for (auto i = decltype(n)(0); i < n; ++i)  {
@@ -176,6 +192,10 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
             );
             break;
 
+        case MAKE_ILLUMINATED_BOX:
+            createIlBox( BASIC_DISTS, wnd, gfx, kbd, mouse );
+            break;
+
         default:
             break;
         }
@@ -200,6 +220,23 @@ void Game::createConcreteObject( Distribution distRadius,
     obj->ctTransformComponent(distRadius, distCTP, distDeltaCTP, distDeltaRTY);
 
     obj->loader().loadAt(rendererSystem_.scene( distScene(rng) ));
+
+    entities_.push_back( std::move(obj) );
+}
+
+void Game::createIlBox( Distribution distRadius,
+    Distribution distCTP,  Distribution distDeltaCTP,
+    Distribution distDeltaRTY, const ChiliWindow& wnd, Graphics& gfx,
+    Keyboard<MyChar>& kbd, Mouse& mouse
+) {
+    auto obj = std::make_unique<Entity<IlluminatedBox>>();
+
+    obj->ctDrawComponent( gfx.factory(), gfx.pipeline(),
+        rendererSystem_.storage(), wnd
+    );
+    obj->ctTransformComponent(distRadius, distCTP, distDeltaCTP, distDeltaRTY);
+
+    obj->loader().loadAt( rendererSystem_.adapt<LSceneAdapter>(3u) );
 
     entities_.push_back( std::move(obj) );
 }
