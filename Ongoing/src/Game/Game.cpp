@@ -8,6 +8,7 @@
 #include "Game/Sheet.hpp"
 #include "Game/SkinnedBox.hpp"
 #include "Game/IlluminatedBox.hpp"
+#include "Game/PointLight.hpp"
 
 #include "Game/GFXCMDLogger.hpp"
 #include "Game/GFXCMDLogGUIView.hpp"
@@ -63,6 +64,9 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
         rendererSystem_.storage(), gfx.factory(), rendererSystem_.storage()
     );
     light.as<BPDynPointLight>().setSlot(BPhongRenderer::slotLightCBuffer());
+    light.as<BPDynPointLight>().coordSystem().setParent(coordSystem_);
+    light.as<BPDynPointLight>().sync(camera_.vision());
+
     auto lScene = rendererSystem_.adapt<LSceneAdapter>(slotBPhongRenderer);
     lScene.addLight(std::move(light));
 

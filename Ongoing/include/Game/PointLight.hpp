@@ -7,8 +7,13 @@
 #include "GFX/Core/GraphicsStorage.hpp"
 
 #include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/GraphicsException.hpp"
+
+#include "CoordSystem.hpp"
+#include "Camera.hpp"
 
 #include <ranges>
+#include <optional>
 
 struct BPPointLightDesc {
     dx::XMFLOAT3A pos;
@@ -18,11 +23,22 @@ struct BPPointLightDesc {
     float attQuad;
 };
 
+// for forward declaration of Utilized::BPDynPointLight,
+// it is required for specifying Utilized::BPDynPointLight as friend
+// in Basic::BPDynPointLight.
+namespace Utilized {
+    class BPDynPointLight;
+}
+
+namespace Basic {
+
 class BPDynPointLight : public IBindable{
 private:
     using MyPSCBuffer = PSCBuffer<BPPointLightDesc>;
 
 public:
+    friend class Utilized::BPDynPointLight;
+
     BPDynPointLight()
         : BPDynPointLight( defLightDesc() ) {}
 
@@ -84,12 +100,12 @@ public:
         return lightDesc_.attQuad;
     }
 
-    void VCALL setPos(dx::XMVECTOR posVal) {
+    void VCALL setPos(dx::FXMVECTOR posVal) {
         dx::XMStoreFloat3A(&lightDesc_.pos, posVal);
         dirty_ = true;
     }
 
-    void VCALL setColor(dx::XMVECTOR colorVal) {
+    void VCALL setColor(dx::FXMVECTOR colorVal) {
         dx::XMStoreFloat3(&lightDesc_.color, colorVal);
         dirty_ = true;
     }
@@ -151,5 +167,136 @@ private:
     GFXMappedResource res_;
     bool dirty_;
 };
+
+} // namespace Basic
+
+namespace Utilized {
+
+// utilize CoordSystem and CameraVision.
+// bind its position as on view space.
+// if more modification is needed, adopt decorater pattern.
+class BPDynPointLight : public IBindable {
+public:
+    BPDynPointLight()
+        : coord_(), base_(), pivot_(coord_) {}
+
+    BPDynPointLight(const BPPointLightDesc& lightDesc)
+        : coord_(), base_(lightDesc), pivot_(coord_) {}
+
+    BPDynPointLight(GFXFactory factory, GFXStorage& storage)
+        : coord_(), base_(std::move(factory), storage), pivot_(coord_) {}
+
+    BPDynPointLight(GFXFactory factory)
+        : coord_(), base_(std::move(factory)), pivot_(coord_) {}
+
+    BPDynPointLight(GFXFactory factory, const BPPointLightDesc& lightDesc)
+        : coord_(), base_(std::move(factory), lightDesc), pivot_(coord_) {}
+
+    BPDynPointLight( GFXFactory factory, GFXStorage& storage,
+        const BPPointLightDesc& lightDesc
+    ) : coord_(), base_(std::move(factory), storage, lightDesc),
+        pivot_(coord_) {}
+
+    void sync(GFXStorage& storage) {
+        base_.sync(storage);
+    }
+
+    void config(GFXFactory factory) {
+        base_.config(std::move(factory));
+    }
+
+    const BPPointLightDesc& lightDesc() const noexcept {
+        return base_.lightDesc();
+    }
+
+    const dx::XMVECTOR VCALL color() const noexcept {
+        return base_.color();
+    }
+
+    const float attConst() const noexcept {
+        return base_.attConst();
+    }
+
+    const float attLin() const noexcept {
+        return base_.attLin();
+    }
+
+    const float attQuad() const noexcept {
+        return base_.attQuad();
+    }
+
+    void VCALL setPos(dx::FXMVECTOR posVal) {
+        base_.setPos(posVal);
+    }
+
+    void VCALL setColor(dx::FXMVECTOR colorVal) {
+        base_.setColor(colorVal);
+    }
+
+    void setAttConst(float attConstVal) {
+        base_.setAttConst(attConstVal);
+    }
+
+    void setAttLin(float attLinVal) {
+        base_.setAttLin(attLinVal);
+    }
+
+    void setAttQuad(float attQuadVal) {
+        base_.setAttQuad(attQuadVal);
+    }
+
+    UINT slot() const {
+        return base_.slot();
+    }
+
+    void setSlot(UINT val) {
+        base_.setSlot(val);
+    }
+
+    CoordSystem& coordSystem() noexcept {
+        return coord_;
+    }
+
+    const CoordSystem& coordSystem() const noexcept {
+        return coord_;
+    }
+
+    CoordPt& pos() noexcept {
+        return pivot_;
+    }
+
+    const CoordPt& pos() const noexcept {
+        return pivot_;
+    }
+
+    void sync(const CameraVision& vision) {
+        pVision_ = &vision;
+    }
+
+private:
+    void bind(GFXPipeline& pipeline) override {
+        if (!pVision_.has_value()) {
+            throw GFX_EXCEPT_CUSTOM( "Utilized::BPDynPointLight must be synchronized"
+                "with CameraVision when it is going to be bound."
+            );
+        }
+
+        pivot_.update();
+        base_.setPos( dx::XMVector3Transform(
+            pivot_.abs(), pVision_.value()->viewTrans().get()
+        ) );
+
+        base_.bind(pipeline);
+    }
+
+    CoordSystem coord_;
+    Basic::BPDynPointLight base_;
+    CoordPt pivot_;
+    std::optional<const CameraVision*> pVision_;
+};
+
+} // namespace Utilized
+
+using namespace Utilized;
 
 #endif  // __PointLight
