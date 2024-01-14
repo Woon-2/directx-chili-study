@@ -169,10 +169,12 @@ public:
         : abs_(dx::XMVectorZero()), rep_(dx::XMVectorZero()), base() {}
 
     CoordBase(dx::XMVECTOR absolute)
-        : abs_(absolute), rep_(absolute), base_() {
+        : abs_(absolute), rep_(absolute), base_() {}
 
-    }
-    CoordBase(const CoordSystem& base, dx::XMVECTOR representation)
+    CoordBase(const CoordSystem& base)
+        : CoordBase(base, dx::XMVectorZero()) {}
+
+    CoordBase(const CoordSystem& base, dx::FXMVECTOR representation)
         : abs_(), rep_(representation), base_(&base) {
             calcAbsFromRep();
     }
@@ -242,11 +244,35 @@ struct CoordVecTrans {
 }
 
 class CoordPt : public detail::CoordBase< detail::CoordPtTrans >{
+    CoordPt()
+        : detail::CoordBase< detail::CoordPtTrans >() {}
 
+    CoordPt(dx::XMVECTOR absolute)
+        : detail::CoordBase< detail::CoordPtTrans >(absolute) {}
+
+    CoordPt(const CoordSystem& base)
+        : detail::CoordBase< detail::CoordPtTrans >(base) {}
+
+    CoordPt(const CoordSystem& base, dx::FXMVECTOR representation)
+        : detail::CoordBase< detail::CoordPtTrans >(
+            base, representation
+        ) {}
 };
 
 class CoordVec : public detail::CoordBase< detail::CoordVecTrans >{
+    CoordVec()
+        : detail::CoordBase< detail::CoordVecTrans >() {}
 
+    CoordVec(dx::XMVECTOR absolute)
+        : detail::CoordBase< detail::CoordVecTrans >(absolute) {}
+
+    CoordVec(const CoordSystem& base)
+        : detail::CoordBase< detail::CoordVecTrans >(base) {}
+
+    CoordVec(const CoordSystem& base, dx::FXMVECTOR representation)
+        : detail::CoordBase< detail::CoordVecTrans >(
+            base, representation
+        ) {}
 };
 
 inline CoordPt coordConv(const CoordPt& coord, const CoordSystem& base) {
