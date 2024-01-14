@@ -165,14 +165,16 @@ namespace detail {
 template <class TransFn>
 class CoordBase {
 public:
-    CoordBase() = default;
+    CoordBase()
+        : abs_(dx::XMVectorZero()), rep_(dx::XMVectorZero()), base() {}
+
     CoordBase(dx::XMVECTOR absolute)
         : abs_(absolute), rep_(absolute), base_() {
 
     }
     CoordBase(const CoordSystem& base, dx::XMVECTOR representation)
         : abs_(), rep_(representation), base_(&base) {
-
+            calcAbsFromRep();
     }
 
     void adapt(const CoordSystem& cs) {
