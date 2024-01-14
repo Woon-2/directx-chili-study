@@ -143,8 +143,8 @@ private:
             .pos = dx::XMFLOAT3A(0.f, 0.f, 0.f),
             .color = dx::XMFLOAT3(1.f, 1.f, 1.f),
             .attConst = 1.f,
-            .attLin = 0.045f,
-            .attQuad = 0.0075f
+            .attLin = 0.14f,
+            .attQuad = 0.07f
         };
     }
 

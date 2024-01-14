@@ -31,5 +31,5 @@ float4 main( float3 worldPos : Position, float3 n : Normal ) : SV_Target {
     const float3 specular = pow( max( dot(halfway, n), 0 ), specularShinyness ) * specularColor;
     const float3 ambient = ambientColor;
 
-    return float4( (diffuse + specular + ambient + emmisiveColor), 1.0f );
+    return float4( saturate(diffuse + specular + ambient + emmisiveColor), 1.0f );
 }

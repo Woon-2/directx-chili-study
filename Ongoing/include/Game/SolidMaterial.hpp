@@ -115,9 +115,9 @@ public:
 private:
     static const SolidMaterialDesc defMatDesc() noexcept {
         return SolidMaterialDesc{
-            .diffuse = dx::XMFLOAT3A(0.5f, 0.5f, 0.5f),
-            .specular = dx::XMFLOAT3(0.1f, 0.1f, 0.1f),
-            .shinyness = 4.f,
+            .diffuse = dx::XMFLOAT3A(0.6f, 0.6f, 0.6f),
+            .specular = dx::XMFLOAT3(0.6f, 0.6f, 0.6f),
+            .shinyness = 51.2f,
             .ambient = dx::XMFLOAT3A(0.f, 0.f, 0.f),
             .emmisive = dx::XMFLOAT3A(0.f, 0.f, 0.f)
         };
