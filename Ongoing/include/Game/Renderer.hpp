@@ -129,6 +129,51 @@ private:
 #endif // ACTIVATE_RENDERER_LOG
 };
 
+class SolidRenderer : public Renderer {
+public:
+    class MyVertexShader : public VertexShader {
+    public:
+        MyVertexShader(GFXFactory factory);
+
+    private:
+        std::vector<D3D11_INPUT_ELEMENT_DESC> inputElemDescs() const noexcept;
+        std::filesystem::path csoPath() const noexcept;
+    };
+
+    class MyPixelShader : public PixelShader {
+    public:
+        MyPixelShader(GFXFactory factory);
+
+    private:
+        std::filesystem::path csoPath() const noexcept;
+    };
+
+    static consteval UINT slotPosBuffer() {
+        return 0u;
+    }
+
+    static consteval UINT slotTransCBuf() {
+        return 0u;
+    }
+
+    static consteval UINT slotColorCBuf() {
+        return 0u;
+    }
+
+    SolidRenderer() = default;
+    SolidRenderer(GFXPipeline pipeline)
+        : Renderer(std::move(pipeline)) {}
+
+private:
+    const RendererDesc rendererDesc() const override;
+
+    void loadBindables(GFXFactory factory) override;
+
+    GFXStorage* pStorage_;
+    GFXMappedResource vertexShader_;
+    GFXMappedResource pixelShader_;
+};
+
 class IndexedRenderer : public Renderer {
 public:
     class MyVertexShader : public VertexShader {

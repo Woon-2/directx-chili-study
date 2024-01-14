@@ -66,6 +66,57 @@ void Renderer::render(Scene& scene) {
 #endif
 }
 
+SolidRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
+    : VertexShader(factory, inputElemDescs(), csoPath()) {}
+
+std::vector<D3D11_INPUT_ELEMENT_DESC>
+SolidRenderer::MyVertexShader::inputElemDescs() const noexcept {
+    return std::vector<D3D11_INPUT_ELEMENT_DESC>{
+        { .SemanticName = "Position",
+            .SemanticIndex = 0,
+            .Format = DXGI_FORMAT_R32G32B32_FLOAT,
+            .InputSlot = 0,
+            .AlignedByteOffset = 0,
+            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
+            .InstanceDataStepRate = 0
+        }
+    };
+}
+
+std::filesystem::path
+SolidRenderer::MyVertexShader::csoPath() const noexcept {
+    return compiledShaderPath/L"VertexShaderSolid.cso";
+}
+
+SolidRenderer::MyPixelShader::MyPixelShader(GFXFactory factory)
+    : PixelShader(factory, csoPath()) {}
+
+std::filesystem::path
+SolidRenderer::MyPixelShader::csoPath() const noexcept {
+    return compiledShaderPath/L"PixelShaderSolid.cso";
+}
+
+const RendererDesc SolidRenderer::rendererDesc() const {
+    return RendererDesc{
+            .header = {
+                .IDVertexShader = vertexShader_.id(),
+                .IDPixelShader = pixelShader_.id(),
+                .IDType = typeid(*this)
+            },
+            .IDs = {
+                vertexShader_.id(), pixelShader_.id()
+            }
+        };
+}
+
+void SolidRenderer::loadBindables(GFXFactory factory) {
+    vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
+    vertexShader_.sync(mappedStorage());
+
+    pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
+    pixelShader_.sync(mappedStorage());
+}
+
 IndexedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
     : VertexShader(factory, inputElemDescs(), csoPath()) {}
 
