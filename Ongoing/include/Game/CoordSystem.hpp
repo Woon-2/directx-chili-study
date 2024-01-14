@@ -166,7 +166,7 @@ template <class TransFn>
 class CoordBase {
 public:
     CoordBase()
-        : abs_(dx::XMVectorZero()), rep_(dx::XMVectorZero()), base() {}
+        : abs_(dx::XMVectorZero()), rep_(dx::XMVectorZero()), base_() {}
 
     CoordBase(dx::XMVECTOR absolute)
         : abs_(absolute), rep_(absolute), base_() {}
@@ -200,6 +200,10 @@ public:
 
     const dx::XMVECTOR VCALL abs() const noexcept {
         return rep_;
+    }
+
+    void update() {
+        calcAbsFromRep();
     }
 
 protected:
