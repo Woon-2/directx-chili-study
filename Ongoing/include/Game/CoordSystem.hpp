@@ -12,6 +12,8 @@
 #include <vector>
 #include <cassert>
 
+#include "GFX/Core/GraphicsNamespaces.hpp"
+
 class CoordSystemID {
 public:
     CoordSystemID()
@@ -157,5 +159,114 @@ private:
     mutable std::vector<CoordSystem*> children_;
     CoordSystemID id_;
 };
+
+namespace detail {
+
+template <class TransFn>
+class CoordBase {
+public:
+    CoordBase() = default;
+    CoordBase(dx::XMVECTOR absolute)
+        : abs_(absolute), rep_(absolute), base_() {
+
+    }
+    CoordBase(const CoordSystem& base, dx::XMVECTOR representation)
+        : abs_(), rep_(representation), base_(&base) {
+
+    }
+
+    void adapt(const CoordSystem& cs) {
+        base_ = &cs;
+        calcRepFromAbs();
+    }
+
+    void VCALL setRep(dx::FXMVECTOR val) noexcept {
+        rep_ = val;
+        calcAbsFromRep();
+    }
+
+    const dx::XMVECTOR VCALL rep() const noexcept {
+        return rep_;
+    }
+
+    void VCALL setAbs(dx::FXMVECTOR val) noexcept {
+        abs_ = val;
+        calcRepFromAbs();
+    }
+
+    const dx::XMVECTOR VCALL abs() const noexcept {
+        return rep_;
+    }
+
+protected:
+    void calcAbsFromRep() {
+        if (!base_.has_value()) [[unlikely]] {
+            abs_ = rep_;
+        }
+
+        abs_ = std::invoke(TransFn{}, rep_, base_.value()->total().get());
+    }
+
+    void calcRepFromAbs() {
+        if (!base_.has_value()) [[unlikely]] {
+            rep_ = abs_;
+        }
+
+        auto inv = dx::XMMatrixInverse(nullptr, base_.value()->total().get());
+        rep_ = std::invoke(TransFn{}, abs_, inv);
+    }
+
+    dx::XMVECTOR abs_;
+    dx::XMVECTOR rep_;
+    std::optional<const CoordSystem*> base_;
+};
+
+struct CoordPtTrans {
+    dx::XMVECTOR VCALL operator()(
+        dx::FXMVECTOR vec, dx::FXMMATRIX trans
+    ) noexcept {
+        return dx::XMVector3Transform(vec, trans);
+    }
+};
+
+struct CoordVecTrans {
+    dx::XMVECTOR VCALL operator()(
+        dx::FXMVECTOR vec, dx::FXMMATRIX trans
+    ) noexcept {
+        return dx::XMVector3TransformNormal(vec, trans);
+    }
+};
+
+}
+
+class CoordPt : public detail::CoordBase< detail::CoordPtTrans >{
+
+};
+
+class CoordVec : public detail::CoordBase< detail::CoordVecTrans >{
+
+};
+
+inline CoordPt coordConv(const CoordPt& coord, const CoordSystem& base) {
+    auto ret = coord;
+    ret.adapt(base);
+    return ret;
+}
+
+inline CoordPt coordConv(CoordPt&& coord, const CoordSystem& base) {
+    coord.adapt(base);
+    return std::move(coord);
+}
+
+inline CoordVec coordConv(const CoordVec& coord, const CoordSystem& base) {
+    auto ret = coord;
+    ret.adapt(base);
+    return ret;
+}
+
+inline CoordVec coordConv(CoordVec&& coord, const CoordSystem& base) {
+    coord.adapt(base);
+    return std::move(coord);
+}
 
 #endif  // __CoordSystem

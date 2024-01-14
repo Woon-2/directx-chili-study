@@ -145,7 +145,6 @@ private:
         }
     }
 
-    CoordSystem coord_;
     BPPointLightDesc lightDesc_;
     // res_ depends on lightDesc_ in initialization.
     // so res_ should be here.
