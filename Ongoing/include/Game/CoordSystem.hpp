@@ -244,6 +244,7 @@ struct CoordVecTrans {
 }
 
 class CoordPt : public detail::CoordBase< detail::CoordPtTrans >{
+public:
     CoordPt()
         : detail::CoordBase< detail::CoordPtTrans >() {}
 
@@ -260,6 +261,7 @@ class CoordPt : public detail::CoordBase< detail::CoordPtTrans >{
 };
 
 class CoordVec : public detail::CoordBase< detail::CoordVecTrans >{
+public:
     CoordVec()
         : detail::CoordBase< detail::CoordVecTrans >() {}
 
