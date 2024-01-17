@@ -29,9 +29,9 @@ void MapTransformGPU::beforeDrawCall(GFXPipeline& pipeline) {
 }
 
 void ApplyTransform::beforeDrawCall(GFXPipeline& pipeline) {
-    mapper_.pushBackApplyee(transform_);
+    mapper_->pushBackApplyee(transform_);
 }
 
 void ApplyTransform::afterDrawCall(GFXPipeline& pipeline) {
-    mapper_.popBackApplyee();
+    mapper_->popBackApplyee();
 }

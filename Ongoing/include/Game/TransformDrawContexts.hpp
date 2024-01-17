@@ -45,7 +45,7 @@ private:
 class ApplyTransform : public IDrawContext {
 public:
     ApplyTransform(MapTransformGPU& mapper)
-        : transform_(), mapper_(mapper) {}
+        : transform_(), mapper_(&mapper) {}
 
     void setTransform(Transform transform) {
         transform_ = transform;
@@ -54,9 +54,17 @@ public:
     void beforeDrawCall(GFXPipeline& pipeline) override;
     void afterDrawCall(GFXPipeline& pipeline) override;
 
+    void linkMapper(MapTransformGPU& mapper) {
+        mapper_ = &mapper;
+    }
+
+    void swap(ApplyTransform& ohter) noexcept {
+        std::swap(transform_, ohter.transform_);
+    }
+
 private:
     Transform transform_;
-    MapTransformGPU& mapper_;
+    MapTransformGPU* mapper_;
 };
 
 #endif  // __TransformDrawContexts
