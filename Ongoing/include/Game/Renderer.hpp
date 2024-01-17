@@ -11,7 +11,6 @@
 #include "GFX/Core/GraphicsStorage.hpp"
 
 #include "GFX/PipelineObjects/Buffer.hpp"
-#include "Pointlight.hpp"
 
 #include <d3d11.h>
 
