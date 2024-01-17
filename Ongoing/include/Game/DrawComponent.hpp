@@ -31,6 +31,28 @@ protected:
             entryStackPush();
         }
 
+        LogComponent(const LogComponent& other) noexcept
+            : logSrc_(other.logSrc_), bLogEnabled_(other.bLogEnabled_) {
+            if (logEnabled()) {
+                entryStackPush();
+            }
+        }
+
+        LogComponent& operator=(LogComponent other) noexcept {
+            other.swap(*this);
+            return *this;
+        }
+
+        LogComponent(LogComponent&& other) noexcept
+            : logSrc_(other.logSrc_), bLogEnabled_(other.bLogEnabled_) {
+            other.logSrc_ = nullptr;
+            other.bLogEnabled_ = false;
+        }
+
+        void setLogSrc(const void* src) {
+            logSrc_ = src;
+        }
+
         void enableLog() noexcept {
             bLogEnabled_ = true;
         }
@@ -52,6 +74,11 @@ protected:
 
         void entryStackPop() noexcept {
             GFXCMDLOG.entryStackPop();
+        }
+
+        void swap(LogComponent& rhs) noexcept {
+            std::swap(logSrc_, rhs.logSrc_);
+            std::swap(bLogEnabled_, rhs.bLogEnabled_);
         }
 
     private:
