@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project (PUtility VERSION 2023.12.14
+project (PUtility VERSION 2024.01.17
     DESCRIPTION "Project for devloper-utility functionalities"
     LANGUAGES CXX
 )
@@ -70,6 +70,7 @@ add_library_target(aconcepts INTERFACE AdditionalConcepts.hpp)
 add_library_target(aranges INTERFACE AdditionalRanges.hpp)
 add_library_target(string_like INTERFACE StringLike.hpp)
 add_library_target(timer INTERFACE Timer.hpp)
+add_library_target(pointers INTERFACE pointers.hpp)
 
 target_compile_features(enum_util INTERFACE cxx_std_20)
 target_compile_features(literal INTERFACE cxx_std_17)
@@ -77,6 +78,7 @@ target_compile_features(aconcepts INTERFACE cxx_std_20)
 target_compile_features(aranges INTERFACE cxx_std_20)
 target_compile_features(string_like INTERFACE cxx_std_20)
 target_compile_features(timer INTERFACE cxx_std_11)
+target_compile_features(pointers INTERFACE cxx_std_11)
 
 target_link_libraries(iterate_call INTERFACE num_args)
 target_link_libraries(onehot_encode INTERFACE num_args)
@@ -86,6 +88,8 @@ target_link_libraries(aranges INTERFACE aconcepts)
 # concrete libraries
 
 add_library_target(woon2_exception PRIVATE "Woon2Exception.cpp;Woon2Exception.hpp")
+
+target_link_libraries(pointers INTERFACE woon2_exception)
 
 # See below link for msvc options
 # https://learn.microsoft.com/en-us/cpp/build/reference/compiler-options?view=msvc-170
