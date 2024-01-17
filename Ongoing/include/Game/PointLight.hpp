@@ -132,7 +132,6 @@ public:
     void setSlot(UINT val) {
         auto& res = res_.as<MyPSCBuffer>();
         res.setSlot(val);
-        res.enableLocalRebindTemporary();
     }
 
 private:
@@ -298,5 +297,441 @@ private:
 } // namespace Utilized
 
 using namespace Utilized;
+
+
+#include "Entity.hpp"
+#include "Scene.hpp"
+#include "Renderer.hpp"
+#include "RCDrawComponent.hpp"
+#include "TransformDrawContexts.hpp"
+
+#include "GFX/PipelineObjects/Buffer.hpp"
+#include "GFX/PipelineObjects/Viewport.hpp"
+#include "GFX/PipelineObjects/Topology.hpp"
+#include "GFX/PipelineObjects/DrawCaller.hpp"
+#include "GFX/Primitives/Sphere.hpp"
+
+#include <tuple>
+
+class Luminance : public IEntity {
+public:
+    friend class Loader<Luminance>;
+
+    Luminance(GFXFactory factory, GFXStorage& storage)
+        : res_( GFXMappedResource::Type<BPDynPointLight>{}, storage,
+            std::move(factory), storage
+        ) {}
+
+    void sync(const Renderer& renderer) {
+        if (typeid(renderer) == typeid(BPhongRenderer)) {
+            sync( static_cast<const BPhongRenderer&>(renderer) );
+        }
+        else {
+            throw GFX_EXCEPT_CUSTOM(
+                "Luminance tried to synchronize with"
+                "uncompatible renderer.\n"
+            );
+        }
+    }
+
+    void sync(const BPhongRenderer& renderer) {
+        assert(res_.valid());
+        res_.as<BPDynPointLight>().setSlot(
+            BPhongRenderer::slotLightCBuffer()
+        );
+    }
+
+    GFXMappedResource& res() noexcept {
+        return res_;
+    }
+
+    const GFXMappedResource& res() const noexcept {
+        return res_;
+    }
+
+    void update(milliseconds elasped) override {}
+
+    Loader<Luminance> loader() noexcept;
+
+private:
+
+    GFXMappedResource res_;
+};
+
+template <>
+class Loader<Luminance> {
+public:
+    Loader(Luminance& entity)
+        : entity_(entity) {}
+
+    void loadAt(LSceneAdapter scene) {
+        scene.addLight(entity_.res());
+        entity_.res().as<BPDynPointLight>().sync(scene.vision());
+    }
+    void loadAt(const CoordSystem& coord) {
+        entity_.res().as<BPDynPointLight>()
+            .coordSystem().setParent(coord);
+    }
+
+private:
+    Luminance& entity_;
+};
+
+inline Loader<Luminance> Luminance::loader() noexcept {
+    return Loader<Luminance>(*this);
+}
+
+class LightViz : public IEntity {
+public:
+    friend class Loader<LightViz>;
+
+    LightViz( GFXFactory factory, GFXStorage& storage,
+        const Win32::Client& client
+    ) : dc_( std::move(factory), storage, client ),
+        base_(nullptr) {}
+
+    LightViz( const Luminance& base, GFXFactory factory,
+        GFXStorage& storage, const Win32::Client& client
+    ) : dc_( std::move(factory), storage, client ),
+        base_(&base) {}
+
+    void setBase(const Luminance& base) {
+        base_ = &base;
+    }
+
+    void update(milliseconds elasped) override {
+        dc_.update( base_->res().as<BPDynPointLight>().coordSystem().total() );
+    }
+
+    Loader<LightViz> loader() noexcept;
+
+private:
+    class DrawComponentLViz : public RCDrawCmp {
+    public:
+        class MyVertexBuffer : public Primitives::Sphere::SphereVertexBuffer {
+        public:
+            MyVertexBuffer(GFXFactory factory)
+                : Primitives::Sphere::SphereVertexBuffer(
+                    std::move(factory), 32u, 32u
+                ) {}
+        };
+
+        class MyIndexBuffer : public Primitives::Sphere::SphereIndexBuffer {
+        public:
+            MyIndexBuffer(GFXFactory factory)
+                : Primitives::Sphere::SphereIndexBuffer(
+                    std::move(factory), 32u, 32u
+                ) {}
+
+            static std::size_t size() noexcept {
+                return Primitives::Sphere::SphereIndexBuffer::size(32u, 32u);
+            }
+        };
+
+        class MyColorCBuf : public PSCBuffer<dx::XMVECTOR> {
+        public:
+            MyColorCBuf(GFXFactory factory)
+                : PSCBuffer<dx::XMVECTOR>( std::move(factory),
+                    D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE,
+                    std::ranges::single_view(dx::XMVectorReplicate(1.f))
+                ) {}
+        };
+
+        class MyDynColorCBuf : public IBindable {
+        public:
+            MyDynColorCBuf(GFXFactory factory, GFXStorage& storage)
+                : colorCBuf_( GFXMappedResource::Type<MyColorCBuf>{},
+                    typeid(MyColorCBuf), storage, std::move(factory) ),
+                color_( dx::XMVectorReplicate(1.f) ) {
+            }
+
+            void setSlot(UINT slot) {
+                colorCBuf_.as<MyColorCBuf>().setSlot(slot);
+            }
+
+            UINT slot() const {
+                return colorCBuf_.as<MyColorCBuf>().slot();
+            }
+            
+        private:
+            void bind(GFXPipeline& pipeline) override {
+                pipeline.bind(colorCBuf_.get());
+                colorCBuf_.as<MyColorCBuf>().dynamicUpdate(
+                    pipeline, [this]() { return &color_; }
+                );
+            }
+
+            GFXMappedResource colorCBuf_;
+            dx::XMVECTOR color_;
+        };
+
+        class MyTransformCBuf : public VSCBuffer<dx::XMMATRIX>{
+        public:
+            MyTransformCBuf() = default;
+            MyTransformCBuf(GFXFactory factory)
+                : VSCBuffer<dx::XMMATRIX>(factory, D3D11_USAGE_DYNAMIC,
+                    D3D11_CPU_ACCESS_WRITE,
+                    std::ranges::single_view(dx::XMMatrixIdentity())
+                ) {}
+        };
+
+        class MyViewport : public Viewport {
+        public:
+            MyViewport(const Win32::Client& client)
+                : Viewport( D3D11_VIEWPORT{
+                    .TopLeftX = 0.f,
+                    .TopLeftY = 0.f,
+                    .Width = static_cast<FLOAT>(client.width),
+                    .Height = static_cast<FLOAT>(client.height),
+                    .MinDepth = 0.f,
+                    .MaxDepth = 1.f
+                } ) {}
+        };
+
+        class MyTopology : public Topology {
+        public:
+            MyTopology()
+                : Topology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) {}
+        };
+
+        using MyDrawCaller = DrawCallerIndexed;
+
+        DrawComponentLViz( GFXFactory factory, GFXStorage& storage,
+            const Win32::Client& client
+        ) : transformGPUMapper_(storage),
+            transformApplyer_(transformGPUMapper_),
+        #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+            logComponent_(this),
+        #endif
+            vBuf_( GFXMappedResource::Type<MyVertexBuffer>{},
+                typeid(MyVertexBuffer), storage, factory
+            ), iBuf_( GFXMappedResource::Type<MyIndexBuffer>{},
+            typeid(MyIndexBuffer), storage, factory
+            ), colorCBuf_( GFXMappedResource::Type<MyDynColorCBuf>{},
+                storage, factory, storage
+            ), transCBuf_( GFXMappedResource::Type<MyTransformCBuf>{},
+                typeid(MyTransformCBuf), storage, factory
+            ), viewport_( GFXMappedResource::Type<MyViewport>{},
+                typeid(MyViewport), storage, client
+            ), topology_( GFXMappedResource::Type<MyTopology>{},
+                typeid(MyTopology), storage
+            ) {
+            transformGPUMapper_.setTCBufID(transCBuf_.id());
+
+            this->setDrawCaller( std::make_unique<MyDrawCaller>(
+                static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0
+            ) );
+
+            this->drawCaller().addDrawContext(&transformApplyer_);
+            this->drawCaller().addDrawContext(&transformGPUMapper_);
+        #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+            logComponent_.entryStackPop();
+        #endif
+        }
+
+        DrawComponentLViz(DrawComponentLViz&& other) noexcept
+            : RCDrawCmp(std::move(other)),
+            transformGPUMapper_( std::move(other.transformGPUMapper_) ),
+            transformApplyer_( std::move(other.transformApplyer_) ),
+        #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+            logComponent_( std::move(other.logComponent_) ),
+        #endif
+            vBuf_( std::move(other.vBuf_) ),
+            iBuf_( std::move(other.iBuf_) ),
+            colorCBuf_( std::move(other.colorCBuf_) ),
+            transCBuf_( std::move(other.transCBuf_) ),
+            viewport_( std::move(other.viewport_) ),
+            topology_( std::move(other.topology_) ) {
+
+            transformApplyer_.linkMapper(transformGPUMapper_);
+
+            this->setDrawCaller( std::make_unique<MyDrawCaller>(
+                static_cast<UINT>( MyIndexBuffer::size() ), 0u, 0
+            ) );
+
+            this->drawCaller().addDrawContext(&transformApplyer_);
+            this->drawCaller().addDrawContext(&transformGPUMapper_);
+
+        #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+            logComponent_.setLogSrc(this);
+        #endif
+        }
+
+        DrawComponentLViz& operator=(DrawComponentLViz&& other) noexcept {
+            other.swap(*this);
+            return *this;
+        }
+
+        void update(const Transform transform) {
+            transformGPUMapper_.update(transform);
+        }
+
+        void sync(const Renderer& renderer) override {
+            if (typeid(renderer) == typeid(SolidRenderer)) {
+                sync(static_cast<const SolidRenderer&>(renderer));
+            }
+            else {
+                throw GFX_EXCEPT_CUSTOM("PointLight's Visualization DrawComponent"
+                    "tried to synchronize with unsupported Renderer.\n"
+                );
+            }
+        }
+
+        void sync(const SolidRenderer& renderer) {
+            assert(vBuf_.valid());
+            vBuf_.as<MyVertexBuffer>().setSlot( SolidRenderer::slotPosBuffer() );
+
+            assert(colorCBuf_.valid());
+            colorCBuf_.as<MyDynColorCBuf>().setSlot( SolidRenderer::slotColorCBuf() );
+
+            assert(transCBuf_.valid());
+            transCBuf_.as<MyTransformCBuf>().setSlot( SolidRenderer::slotTransCBuf() );
+
+            this->setRODesc( RenderObjectDesc{
+                .header = RenderObjectDesc::Header{
+                    .IDBuffer = vBuf_.id(),
+                    .IDType = typeid(*this)
+                },
+                .IDs = {
+                    vBuf_.id(), iBuf_.id(), colorCBuf_.id(),
+                    transCBuf_.id(), viewport_.id(), topology_.id()
+                }
+            } );
+        }
+
+        void sync(const CameraVision& vision) override {
+            transformApplyer_.setTransform(
+                vision.viewTrans() * vision.projTrans()
+            );
+        }
+
+        auto reflect() noexcept {
+            return std::tie( transformGPUMapper_, transformApplyer_,
+                logComponent_, vBuf_, iBuf_, colorCBuf_, transCBuf_,
+                viewport_, topology_
+            );
+        }
+
+        auto reflect() const noexcept {
+            return std::tie( transformGPUMapper_, transformApplyer_,
+                logComponent_, vBuf_, iBuf_, colorCBuf_, transCBuf_,
+                viewport_, topology_
+            );
+        }
+
+        void swap(DrawComponentLViz& rhs) {
+            auto rhsR = rhs.reflect();
+            reflect().swap(rhsR);
+            transformApplyer_.linkMapper(transformGPUMapper_);
+            rhs.transformApplyer_.linkMapper(rhs.transformGPUMapper_);
+        #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+            logComponent_.setLogSrc(this);
+            rhs.logComponent_.setLogSrc(&rhs);
+        #endif
+        }
+
+    private:
+        MapTransformGPU transformGPUMapper_;
+        ApplyTransform transformApplyer_;
+    #ifdef ACTIVATE_DRAWCOMPONENT_LOG
+        RCDrawCmp::LogComponent logComponent_;
+    #endif
+        GFXMappedResource vBuf_;
+        GFXMappedResource iBuf_;
+        GFXMappedResource colorCBuf_;
+        GFXMappedResource transCBuf_;
+        GFXMappedResource viewport_;
+        GFXMappedResource topology_;
+    };  // class DrawComponentLViz
+
+    DrawComponentLViz& dc() noexcept {
+        return dc_;
+    }
+
+    const DrawComponentLViz& dc() const noexcept {
+        return dc_;
+    }
+
+    DrawComponentLViz dc_;
+    const Luminance* base_;
+};
+
+template <>
+class Loader<LightViz> {
+public:
+    Loader(LightViz& entity)
+        : entity_(entity) {}
+
+    void loadAt(Layer& layer) {
+        layer.addDrawCmp(&entity_.dc());
+    }
+
+    void loadAt(Scene& scene, std::size_t layerIdx) {
+        loadAt(scene.layer(layerIdx));
+    }
+
+private:
+    LightViz& entity_;
+};
+
+inline Loader<LightViz> LightViz::loader() noexcept {
+    return Loader<LightViz>(*this);
+}
+
+class LightEntity : public IEntity {
+public:
+    void update(milliseconds elapsed) override {
+        if (luminance_.has_value()) [[likely]] {
+            luminance_.value().update(elapsed);
+        }
+        if (viz_.has_value()) {
+            viz_.value().update(elapsed);
+        }
+    }
+
+    void ctLuminance(GFXFactory factory, GFXStorage& storage) {
+        luminance_ = Luminance(std::move(factory), storage);
+        if (viz_.has_value()) {
+            viz_.value().setBase(luminance_.value());
+        }
+    }
+
+    void ctViz( GFXFactory factory, GFXStorage& storage,
+        const Win32::Client& client
+    ) {
+        if (luminance_.has_value()) {
+            viz_ = LightViz( luminance_.value(),
+                std::move(factory), storage, client
+            );
+        }
+        else {
+            viz_ = LightViz(std::move(factory), storage, client);
+        }
+    }
+
+    Luminance& luminance() noexcept {
+        assert(luminance_.has_value());
+        return luminance_.value();
+    }
+
+    const Luminance& luminance() const noexcept {
+        assert(luminance_.has_value());
+        return luminance_.value();
+    }
+
+    LightViz& viz() noexcept {
+        assert(viz_.has_value());
+        return viz_.value();
+    }
+
+    const LightViz& viz() const noexcept {
+        assert(viz_.has_value());
+        return viz_.value();
+    }
+
+private:
+    std::optional<Luminance> luminance_;
+    std::optional<LightViz> viz_;
+};
 
 #endif  // __PointLight

@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2024.01.14 LANGUAGES CXX)
+project(POngoing VERSION 2024.01.16 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -280,6 +280,14 @@ compile_hlsl("${PROJECT_SOURCE_DIR}/shader/VertexShaderBPhong.hlsl"
 )
 compile_hlsl("${PROJECT_SOURCE_DIR}/shader/PixelShaderBPhong.hlsl"
     "${COMPILED_SHADER_PATH}/PixelShaderBPhong.cso"
+    "ps_4_0"
+)
+compile_hlsl("${PROJECT_SOURCE_DIR}/shader/VertexShaderSolid.hlsl"
+    "${COMPILED_SHADER_PATH}/VertexShaderSolid.cso"
+    "vs_4_0"
+)
+compile_hlsl("${PROJECT_SOURCE_DIR}/shader/PixelShaderSolid.hlsl"
+    "${COMPILED_SHADER_PATH}/PixelShaderSolid.cso"
     "ps_4_0"
 )
 add_hlsl_target("${HLSL_COMPILED_SHADERS}")

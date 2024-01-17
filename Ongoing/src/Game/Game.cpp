@@ -60,15 +60,32 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     rendererSystem_.scene(slotBPhongRenderer).setVision( camera_.vision() );
     rendererSystem_.scene(slotBPhongRenderer).addLayer();
 
-    auto light = GFXMappedResource( GFXMappedResource::Type<BPDynPointLight>{},
-        rendererSystem_.storage(), gfx.factory(), rendererSystem_.storage()
-    );
-    light.as<BPDynPointLight>().setSlot(BPhongRenderer::slotLightCBuffer());
-    light.as<BPDynPointLight>().coordSystem().setParent(coordSystem_);
-    light.as<BPDynPointLight>().sync(camera_.vision());
+    auto slotSolidRenderer = rendererSystem_
+        .addRenderer<SolidRenderer>();
+    rendererSystem_.enableLog(slotSolidRenderer);
+    rendererSystem_.sync(slotSolidRenderer);
+    rendererSystem_.scene(slotSolidRenderer).setVision( camera_.vision() );
 
-    auto lScene = rendererSystem_.adapt<LSceneAdapter>(slotBPhongRenderer);
-    lScene.addLight(std::move(light));
+    auto pLight = std::make_unique<LightEntity>();
+    pLight->ctLuminance(gfx.factory(), rendererSystem_.storage());
+    pLight->luminance().loader().loadAt(
+        rendererSystem_.adapt<LSceneAdapter>(slotBPhongRenderer)
+    );
+    pLight->luminance().sync(rendererSystem_.renderer(slotBPhongRenderer));
+    pLight->ctViz(gfx.factory(), rendererSystem_.storage(), wnd.client());
+    pLight->viz().loader().loadAt(rendererSystem_.scene(slotSolidRenderer).layer(0));
+
+    entities_.push_back(std::move(pLight));
+
+    // auto light = GFXMappedResource( GFXMappedResource::Type<BPDynPointLight>{},
+    //     rendererSystem_.storage(), gfx.factory(), rendererSystem_.storage()
+    // );
+    // light.as<BPDynPointLight>().setSlot(BPhongRenderer::slotLightCBuffer());
+    // light.as<BPDynPointLight>().coordSystem().setParent(coordSystem_);
+    // light.as<BPDynPointLight>().sync(camera_.vision());
+
+    // auto lScene = rendererSystem_.adapt<LSceneAdapter>(slotBPhongRenderer);
+    // lScene.addLight(std::move(light));
 
     inputSystem_.setListner(ic_);
 

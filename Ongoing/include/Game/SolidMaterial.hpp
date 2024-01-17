@@ -109,7 +109,6 @@ public:
     void setSlot(UINT val) {
         auto& res = res_.as<MyPSCBuffer>();
         res.setSlot(val);
-        res.enableLocalRebindTemporary();
     }
 
 private:

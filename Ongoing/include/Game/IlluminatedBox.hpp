@@ -75,7 +75,7 @@ public:
             typeid(MyVertexBuffer), storage, factory
         ),
         normalBuffer_( GFXMappedResource::Type<MyNormalBuffer>{},
-            typeid(MyVertexBuffer), storage, factory
+            typeid(MyNormalBuffer), storage, factory
         ),
         material_( GFXMappedResource::Type<MyMaterial>{},
             typeid(MyMaterial), storage, factory, storage
