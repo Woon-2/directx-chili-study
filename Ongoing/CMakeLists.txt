@@ -84,13 +84,6 @@ target_sources(chili PRIVATE
     src/Game/SolidMaterial.cpp
     include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp
-    include/Game/Box.hpp
-    include/Game/SkinnedBox.hpp
-    include/Game/Cone.hpp
-    include/Game/Plane.hpp
-    include/Game/Prism.hpp
-    include/Game/Sphere.hpp
-    include/Game/Sheet.hpp
     include/Game/Entity.hpp
     include/Game/Renderer.hpp
     include/Game/RendererSystem.hpp
