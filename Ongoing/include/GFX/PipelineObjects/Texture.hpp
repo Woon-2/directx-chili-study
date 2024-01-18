@@ -11,9 +11,9 @@
 
 #include "Image/Surface.hpp"
 
-class TextureBinder : public BinderInterface<TextureBinder> {
+class TextureBinder : public SlotBinderInterface<TextureBinder> {
 public:
-    friend class BinderInterface<TextureBinder>; 
+    friend class SlotBinderInterface<TextureBinder>; 
 
 private:
     void doBind( GFXPipeline& pipeline, UINT slot,
@@ -22,9 +22,9 @@ private:
 };
 
 class Texture : public IBindable,
-    LocalRebindInterface<Texture> {
+    SlotLocalRebindInterface<Texture> {
 public:
-    friend class LocalRebindInterface<Texture>; 
+    friend class SlotLocalRebindInterface<Texture>; 
 
     Texture( GFXFactory factory, const Surface& surface
     #ifdef ACTIVATE_BINDABLE_LOG
@@ -37,9 +37,6 @@ public:
     }
 
     void setSlot(UINT val) noexcept {
-        if (val != slot_) {
-            binder_.enableLocalRebindTemporary();
-        }
         slot_ = val;
     }
 

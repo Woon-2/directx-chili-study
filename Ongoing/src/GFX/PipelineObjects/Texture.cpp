@@ -74,7 +74,7 @@ Texture::Texture( GFXFactory factory, const Surface& surface
 }
 
 void Texture::bind(GFXPipeline& pipeline) {
-    [[maybe_unused]] auto bBindOccured = binder_.bind(
+    [[maybe_unused]] auto bBindOccured = binder_.bind( slot_,
         pipeline, slot_, pSRV_.GetAddressOf()
     );
 

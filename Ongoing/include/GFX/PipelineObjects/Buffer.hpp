@@ -86,9 +86,9 @@ private:
     wrl::ComPtr<ID3D11Buffer> data_;
 };
 
-class VertexBufferBinder : public BinderInterface<VertexBufferBinder> {
+class VertexBufferBinder : public SlotBinderInterface<VertexBufferBinder> {
 public:
-    friend class BinderInterface<VertexBufferBinder>;
+    friend class SlotBinderInterface<VertexBufferBinder>;
 
 private:
     void doBind(GFXPipeline& pipeline, UINT slot, ID3D11Buffer** pBuffers,
@@ -99,10 +99,10 @@ private:
 
 template <class VertexT>
 class VertexBuffer : public Buffer,
-    public LocalRebindInterface< VertexBuffer<VertexT> > {
+    public SlotLocalRebindInterface< VertexBuffer<VertexT> > {
 public:
     using MyVertex = VertexT;
-    friend class LocalRebindInterface< VertexBuffer<VertexT> >;
+    friend class SlotLocalRebindInterface< VertexBuffer<VertexT> >;
 
     template <std::ranges::contiguous_range R>
     VertexBuffer( GFXFactory factory,
@@ -144,9 +144,6 @@ public:
     }
 
     void setSlot(UINT val) noexcept {
-        if (val != slot_) {
-            binder_.enableLocalRebindTemporary();
-        }
         slot_ = val;
     }
 
@@ -155,7 +152,7 @@ private:
         const auto stride = static_cast<UINT>( sizeof(MyVertex) );
         const auto offset = static_cast<UINT>( 0u );
 
-        [[maybe_unused]] auto bBindOccured = binder_.bind(
+        [[maybe_unused]] auto bBindOccured = binder_.bind( slot_,
             pipeline, slot_, data().GetAddressOf(), &stride, &offset
         );
 
@@ -299,9 +296,9 @@ private:
     virtual void bind(GFXPipeline& pipeline) = 0;
 };
 
-class VSCBufferBinder : public BinderInterface<VSCBufferBinder> {
+class VSCBufferBinder : public SlotBinderInterface<VSCBufferBinder> {
 public:
-    friend class BinderInterface<VSCBufferBinder>;
+    friend class SlotBinderInterface<VSCBufferBinder>;
 
 private:
     void doBind(GFXPipeline& pipeline, UINT slot, ID3D11Buffer** pBuffers);
@@ -309,11 +306,11 @@ private:
 
 template <class ValT>
 class VSCBuffer : public CBuffer<ValT>,
-    public LocalRebindInterface< VSCBuffer<ValT> > {
+    public SlotLocalRebindInterface< VSCBuffer<ValT> > {
 public:
     using MyValue = ValT;
     using Buffer::data;
-    friend class LocalRebindInterface< VSCBuffer<ValT> >;
+    friend class SlotLocalRebindInterface< VSCBuffer<ValT> >;
 
     template <std::ranges::contiguous_range R>
     VSCBuffer( GFXFactory factory, D3D11_USAGE usage,
@@ -341,15 +338,12 @@ public:
     }
 
     void setSlot(UINT val) noexcept {
-        if (val != slot_) {
-            binder_.enableLocalRebindTemporary();
-        }
         slot_ = val;
     }
 
 private:
     void bind(GFXPipeline& pipeline) override final {
-        [[maybe_unused]] auto bBindOccured = binder_.bind(
+        [[maybe_unused]] auto bBindOccured = binder_.bind( slot_,
             pipeline, slot_, data().GetAddressOf()
         );
 
@@ -367,9 +361,9 @@ private:
     VSCBufferBinder binder_;
 };
 
-class PSCBufferBinder : public BinderInterface<PSCBufferBinder> {
+class PSCBufferBinder : public SlotBinderInterface<PSCBufferBinder> {
 public:
-    friend class BinderInterface<PSCBufferBinder>;
+    friend class SlotBinderInterface<PSCBufferBinder>;
 
 private:
     void doBind(GFXPipeline& pipeline, UINT slot, ID3D11Buffer** pBuffers);
@@ -377,11 +371,11 @@ private:
 
 template <class ValT>
 class PSCBuffer : public CBuffer<ValT>,
-    public LocalRebindInterface< PSCBuffer<ValT> > {
+    public SlotLocalRebindInterface< PSCBuffer<ValT> > {
 public:
     using MyValue = ValT;
     using Buffer::data;
-    friend class LocalRebindInterface< PSCBuffer<ValT> >;
+    friend class SlotLocalRebindInterface< PSCBuffer<ValT> >;
 
     template <std::ranges::contiguous_range R>
     PSCBuffer( GFXFactory factory, D3D11_USAGE usage,
@@ -409,15 +403,12 @@ public:
     }
 
     void setSlot(UINT val) noexcept {
-        if (val != slot_) {
-            binder_.enableLocalRebindTemporary();
-        }
         slot_ = val;
     }
 
 private:
     void bind(GFXPipeline& pipeline) override final {
-        [[maybe_unused]] auto bBindOccured = binder_.bind(
+        [[maybe_unused]] auto bBindOccured = binder_.bind( slot_,
             pipeline, slot_, data().GetAddressOf()
         );
 

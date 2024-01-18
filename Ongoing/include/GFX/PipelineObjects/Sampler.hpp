@@ -9,9 +9,9 @@
 #include "GFX/Core/GraphicsNamespaces.hpp"
 #include "GFX/Core/GraphicsException.hpp"
 
-class SamplerBinder : public BinderInterface<SamplerBinder> {
+class SamplerBinder : public SlotBinderInterface<SamplerBinder> {
 public:
-    friend class BinderInterface<SamplerBinder>;
+    friend class SlotBinderInterface<SamplerBinder>;
 
 private:
     void doBind( GFXPipeline& pipeline, UINT slot, 
@@ -20,9 +20,9 @@ private:
 };
 
 class Sampler : public IBindable,
-    LocalRebindInterface<Sampler> {
+    SlotLocalRebindInterface<Sampler> {
 public:
-    friend class LocalRebindInterface<Sampler>;
+    friend class SlotLocalRebindInterface<Sampler>;
 
     Sampler( GFXFactory factory
     #ifdef ACTIVATE_BINDABLE_LOG
@@ -35,9 +35,6 @@ public:
     }
 
     void setSlot(UINT val) noexcept {
-        if (val != slot_) {
-            binder_.enableLocalRebindTemporary();
-        }
         slot_ = val;
     }
 

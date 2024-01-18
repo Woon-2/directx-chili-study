@@ -32,7 +32,7 @@ Sampler::Sampler( GFXFactory factory
 }
 
 void Sampler::bind(GFXPipeline& pipeline) {
-    [[maybe_unused]] auto bBindOccured = binder_.bind(
+    [[maybe_unused]] auto bBindOccured = binder_.bind( slot_,
         pipeline, slot_, pSampler_.Get()
     );
 
