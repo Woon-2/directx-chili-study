@@ -59,14 +59,7 @@ public:
         float l, float t, float r, float b
     ) : client_(wndClient), left_(l), top_(t), right_(r), bottom_(b) {}
 
-    AppMousePoint convert(const Mouse::Point& pt) const {
-        return AppMousePoint{
-            .x = ( pt.x - static_cast<int>(client_.x) ) / static_cast<float>(client_.width)
-                * (right() - left()) + left(),
-            .y = ( pt.y - static_cast<int>(client_.y) ) / static_cast<float>(client_.height)
-                * (bottom() - top()) + top()
-        };
-    }
+    AppMousePoint convert(const Mouse::Point& pt) const;
 
     void setClient(const Win32::Client& client) {
         client_ = client;

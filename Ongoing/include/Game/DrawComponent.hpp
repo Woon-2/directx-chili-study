@@ -16,75 +16,7 @@ class BasicDrawCaller;
 class IDrawComponent {
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
 protected:
-    class LogComponent {
-    public:
-        LogComponent() noexcept
-            : logSrc_(nullptr), bLogEnabled_(false) {}
-        
-        LogComponent( const void* parent,
-            bool enableLogOnCreation = true
-        ) noexcept
-            : logSrc_(parent),
-            bLogEnabled_(enableLogOnCreation) {
-            // must call corresponding entryStackPop
-            // in concrete DrawComponent's constructor.
-            entryStackPush();
-        }
-
-        LogComponent(const LogComponent& other) noexcept
-            : logSrc_(other.logSrc_), bLogEnabled_(other.bLogEnabled_) {
-            if (logEnabled()) {
-                entryStackPush();
-            }
-        }
-
-        LogComponent& operator=(LogComponent other) noexcept {
-            other.swap(*this);
-            return *this;
-        }
-
-        LogComponent(LogComponent&& other) noexcept
-            : logSrc_(other.logSrc_), bLogEnabled_(other.bLogEnabled_) {
-            other.logSrc_ = nullptr;
-            other.bLogEnabled_ = false;
-        }
-
-        void setLogSrc(const void* src) {
-            logSrc_ = src;
-        }
-
-        void enableLog() noexcept {
-            bLogEnabled_ = true;
-        }
-
-        void disableLog() noexcept {
-            bLogEnabled_ = false;
-        }
-
-        bool logEnabled() const noexcept {
-            return bLogEnabled_;
-        }
-
-        void entryStackPush() {
-            GFXCMDLOG.entryStackPush( GFXCMDSource{
-                .category = logCategory(),
-                .pSource = logSrc_
-            } );
-        }
-
-        void entryStackPop() noexcept {
-            GFXCMDLOG.entryStackPop();
-        }
-
-        void swap(LogComponent& rhs) noexcept {
-            std::swap(logSrc_, rhs.logSrc_);
-            std::swap(bLogEnabled_, rhs.bLogEnabled_);
-        }
-
-    private:
-        const void* logSrc_;
-        bool bLogEnabled_;
-    };
+    class LogComponent;
 #endif  // ACTIVATE_DRAWCOMPONENT_LOG
 public:
     virtual ~IDrawComponent() = 0 {}
@@ -105,6 +37,78 @@ public:
         return lhs.renderObjectDesc() <=> rhs.renderObjectDesc();
     }
 };
+
+#ifdef ACTIVATE_DRAWCOMPONENT_LOG
+class IDrawComponent::LogComponent {
+public:
+    LogComponent() noexcept
+        : logSrc_(nullptr), bLogEnabled_(false) {}
+    
+    LogComponent( const void* parent,
+        bool enableLogOnCreation = true
+    ) noexcept
+        : logSrc_(parent),
+        bLogEnabled_(enableLogOnCreation) {
+        // must call corresponding entryStackPop
+        // in concrete DrawComponent's constructor.
+        entryStackPush();
+    }
+
+    LogComponent(const LogComponent& other) noexcept
+        : logSrc_(other.logSrc_), bLogEnabled_(other.bLogEnabled_) {
+        if (logEnabled()) {
+            entryStackPush();
+        }
+    }
+
+    LogComponent& operator=(LogComponent other) noexcept {
+        other.swap(*this);
+        return *this;
+    }
+
+    LogComponent(LogComponent&& other) noexcept
+        : logSrc_(other.logSrc_), bLogEnabled_(other.bLogEnabled_) {
+        other.logSrc_ = nullptr;
+        other.bLogEnabled_ = false;
+    }
+
+    void setLogSrc(const void* src) {
+        logSrc_ = src;
+    }
+
+    void enableLog() noexcept {
+        bLogEnabled_ = true;
+    }
+
+    void disableLog() noexcept {
+        bLogEnabled_ = false;
+    }
+
+    bool logEnabled() const noexcept {
+        return bLogEnabled_;
+    }
+
+    void entryStackPush() {
+        GFXCMDLOG.entryStackPush( GFXCMDSource{
+            .category = logCategory(),
+            .pSource = logSrc_
+        } );
+    }
+
+    void entryStackPop() noexcept {
+        GFXCMDLOG.entryStackPop();
+    }
+
+    void swap(LogComponent& rhs) noexcept {
+        std::swap(logSrc_, rhs.logSrc_);
+        std::swap(bLogEnabled_, rhs.bLogEnabled_);
+    }
+
+private:
+    const void* logSrc_;
+    bool bLogEnabled_;
+};
+#endif  // ACTIVATE_DRAWCOMPONENT_LOG
 
 class DynDrawCmpBase : public IDrawComponent {
 public:
@@ -130,7 +134,9 @@ public:
     }
 
 protected:
+#ifdef ACTIVATE_DRAWCOMPONENT_LOG
     using LogComponent = IDrawComponent::LogComponent;
+#endif
 
     void setRODesc(const RenderObjectDesc& roDesc) {
         roDesc_ = roDesc;
@@ -163,6 +169,7 @@ private:
     std::optional< std::unique_ptr<BasicDrawCaller> > drawCaller_;
 };
 
+/******** Deprecated ********/
 // Prevent instantiation with general type T.
 // DrawComponent has to be specialized.
 // There's no common implementation between other type of DrawComponents,

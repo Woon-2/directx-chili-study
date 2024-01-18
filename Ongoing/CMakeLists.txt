@@ -67,7 +67,6 @@ target_sources(chili PRIVATE
     src/Game/Game.cpp
     src/Game/InputSystem.cpp
     src/Game/Renderer.cpp
-    src/Game/RendererSystem.cpp
     src/Game/GTransformComponent.cpp
     src/Game/GFXCMDLogger.cpp
     src/Game/GFXCMDSummarizer.cpp

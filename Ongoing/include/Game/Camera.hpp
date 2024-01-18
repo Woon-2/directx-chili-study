@@ -70,8 +70,6 @@ private:
     CameraProjTransDesc projTransDesc_;
 };
 
-
-
 class Camera {
 private:
     class CameraCoordComponent {
@@ -79,29 +77,7 @@ private:
         CameraCoordComponent()
             : coordSystem_() {}
 
-        const CameraViewTransDesc makeVTDesc() const noexcept {
-            auto worldTrans = coordSystem_.total();
-            
-            auto eye = dx::XMVector4Transform(
-                dx::XMVectorSet(0.f, 0.f, 0.f, 1.f),
-                worldTrans.get()
-            );
-            auto at = dx::XMVector4Transform(
-                dx::XMVectorSet(0.f, 0.f, 1.f, 1.f),
-                worldTrans.get()
-            );
-            auto up = dx::XMVector4Transform(
-                dx::XMVectorSet(0.f, 1.f, 0.f, 0.f),
-                worldTrans.get()
-            );
-
-            auto ret = CameraViewTransDesc{};
-            dx::XMStoreFloat3(&ret.eye, eye);
-            dx::XMStoreFloat3(&ret.at, at);
-            dx::XMStoreFloat3(&ret.up, up);
-
-            return ret;
-        }
+        const CameraViewTransDesc makeVTDesc() const noexcept;
 
         CoordSystem& coordSystem() noexcept {
             return coordSystem_;

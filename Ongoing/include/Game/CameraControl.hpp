@@ -7,10 +7,7 @@ class CoordSystem;
 
 class CameraControl {
 public:
-    CameraControl()
-        : r_(20.f), theta_(0.f), phi_(0.f),
-        chi_(0.f), roll_(0.f), pitch_(0.f),
-        yaw_(0.f), willShow_(false) {}
+    CameraControl() noexcept;
 
     void render();
     void reflect(CoordSystem& cameraCoord);
@@ -27,15 +24,7 @@ public:
         willShow_ = false;
     }
 
-    void reset() noexcept {
-        r_ = 20.f;
-        theta_ = 0.f;
-        phi_ = 0.f;
-        chi_ = 0.f;
-        roll_ = 0.f;
-        pitch_ = 0.f;
-        yaw_ = 0.f;
-    }
+    void reset() noexcept;
 
 private:
     float r_;

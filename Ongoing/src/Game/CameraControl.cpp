@@ -4,6 +4,11 @@
 
 #include "imgui.h"
 
+CameraControl::CameraControl() noexcept
+    : r_(20.f), theta_(0.f), phi_(0.f),
+    chi_(0.f), roll_(0.f), pitch_(0.f),
+    yaw_(0.f), willShow_(false) {}
+
 void CameraControl::render() {
     if ( !shown() ) {
         return;
@@ -38,4 +43,14 @@ void CameraControl::reflect(CoordSystem& cameraCoord) {
         dx::XMMatrixTranslation(0.f, 0.f, -r_)
         * dx::XMMatrixRotationRollPitchYaw(phi_, chi_, theta_)
     );
+}
+
+void CameraControl::reset() noexcept {
+    r_ = 20.f;
+    theta_ = 0.f;
+    phi_ = 0.f;
+    chi_ = 0.f;
+    roll_ = 0.f;
+    pitch_ = 0.f;
+    yaw_ = 0.f;
 }

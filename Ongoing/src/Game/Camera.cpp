@@ -55,6 +55,31 @@ void CameraVision::updateProj(const CameraProjTransDesc& ptd) {
     projTransDesc_ = ptd;
 }
 
+const CameraViewTransDesc
+Camera::CameraCoordComponent::makeVTDesc() const noexcept {
+    auto worldTrans = coordSystem_.total();
+    
+    auto eye = dx::XMVector4Transform(
+        dx::XMVectorSet(0.f, 0.f, 0.f, 1.f),
+        worldTrans.get()
+    );
+    auto at = dx::XMVector4Transform(
+        dx::XMVectorSet(0.f, 0.f, 1.f, 1.f),
+        worldTrans.get()
+    );
+    auto up = dx::XMVector4Transform(
+        dx::XMVectorSet(0.f, 1.f, 0.f, 0.f),
+        worldTrans.get()
+    );
+
+    auto ret = CameraViewTransDesc{};
+    dx::XMStoreFloat3(&ret.eye, eye);
+    dx::XMStoreFloat3(&ret.at, at);
+    dx::XMStoreFloat3(&ret.up, up);
+
+    return ret;
+}
+
 void Camera::setParams( std::optional<float> fovy,
     std::optional<float> aspect,
     std::optional<float> nearZ,

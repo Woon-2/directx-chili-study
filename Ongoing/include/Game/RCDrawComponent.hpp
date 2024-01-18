@@ -12,7 +12,9 @@ public:
     virtual void sync(const CameraVision&) = 0;
 
 protected:
+#ifdef ACTIVATE_DRAWCOMPONENT_LOG
     using LogComponent = DynDrawCmpBase::LogComponent;
+#endif
 };
 
 #endif  // __RCDrawComponent

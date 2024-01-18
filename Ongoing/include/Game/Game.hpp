@@ -13,7 +13,6 @@
 #include "App/Keyboard.hpp"
 #include "App/Mouse.hpp"
 #include "GFX/Core/Graphics.hpp"
-#include "GFX/Core/GraphicsStorage.hpp"
 
 // include for distributions temporary.
 #include "GTransformComponent.hpp"
