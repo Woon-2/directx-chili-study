@@ -53,6 +53,8 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
 
     inputSystem_.setListner(ic_);
 
+    coordSystem_.traverse();
+
     createObjects(80u, wnd, gfx, kbd, mouse);
 }
 
@@ -64,12 +66,12 @@ void Game::update() {
     auto elapsed = timer_.mark();
     // update systems
     inputSystem_.update();
+    pointLightControl_.submit(light_);
     cameraControl_.reflect(camera_.coordSystem());
 
     // coord system may be affected by other systems,
     // so update coord system lastly.
     coordSystem_.traverse();
-    pointLightControl_.submit(light_);
 
     // update camera vision via updated coordinate systems.
     // (it doesn't modifies other cooridnate systems.)
