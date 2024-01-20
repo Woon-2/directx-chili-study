@@ -109,19 +109,9 @@ public:
         res.setSlot(val);
     }
 
-private:
-    // referenced attenuation coefficient constants from
-    // https://wiki.ogre3d.org/-Point+Light+Attenuation
-    static const BPPointLightDesc defLightDesc() noexcept {
-        return BPPointLightDesc{
-            .pos = dx::XMFLOAT3A(0.f, 0.f, 0.f),
-            .color = dx::XMFLOAT3(1.f, 1.f, 1.f),
-            .attConst = 1.f,
-            .attLin = 0.14f,
-            .attQuad = 0.07f
-        };
-    }
+    static const BPPointLightDesc defLightDesc() noexcept;
 
+private:
     void bind(GFXPipeline& pipeline);
 
     BPPointLightDesc lightDesc_;
@@ -178,7 +168,11 @@ public:
     }
 
     void VCALL setPos(dx::FXMVECTOR posVal) {
-        base_.setPos(posVal);
+        pivot_.setRep(posVal);
+    }
+
+    void VCALL setAbsPos(dx::FXMVECTOR posVal) {
+        pivot_.setAbs(posVal);
     }
 
     void VCALL setColor(dx::FXMVECTOR colorVal) {
@@ -316,7 +310,11 @@ public:
     }
 
     void update(milliseconds elasped) override {
-        dc_.update( base_->res().as<BPDynPointLight>().coordSystem().total() );
+        auto& res = base_->res().as<BPDynPointLight>();
+        dc_.updateTrans( res.coordSystem().total().get()
+            * dx::XMMatrixTranslationFromVector( res.pos().rep() )
+        );
+        dc_.updateColor( res.color() );
     }
 
     Loader<LightViz> loader() noexcept;
@@ -339,9 +337,8 @@ private:
         DrawComponentLViz(DrawComponentLViz&& other) noexcept;
         DrawComponentLViz& operator=(DrawComponentLViz&& other) noexcept;
 
-        void update(const Transform transform) {
-            transformGPUMapper_.update(transform);
-        }
+        void VCALL updateTrans(const Transform transform);
+        void VCALL updateColor(dx::FXMVECTOR color);
 
         void sync(const Renderer& renderer) override;
         void sync(const SolidRenderer& renderer);
@@ -443,23 +440,31 @@ public:
     }
 
     Luminance& luminance() noexcept {
-        assert(luminance_.has_value());
+        assert(hasLuminance());
         return luminance_.value();
     }
 
     const Luminance& luminance() const noexcept {
-        assert(luminance_.has_value());
+        assert(hasLuminance());
         return luminance_.value();
     }
 
+    bool hasLuminance() const noexcept {
+        return luminance_.has_value();
+    }
+
     LightViz& viz() noexcept {
-        assert(viz_.has_value());
+        assert(hasViz());
         return viz_.value();
     }
 
     const LightViz& viz() const noexcept {
-        assert(viz_.has_value());
+        assert(hasViz());
         return viz_.value();
+    }
+
+    bool hasViz() const noexcept {
+        return viz_.has_value();
     }
 
 private:

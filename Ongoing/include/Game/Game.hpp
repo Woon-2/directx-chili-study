@@ -17,6 +17,10 @@
 // include for distributions temporary.
 #include "GTransformComponent.hpp"
 
+// include for controlling point light temporary.
+#include "PointLight.hpp"
+#include "PointLightControl.hpp"
+
 #include "InputComponent.hpp"
 #include "SimulationUI.hpp"
 
@@ -62,6 +66,8 @@ public:
     void render();
 
 private:
+    void updateEntities(milliseconds elapsed);
+
     void createObjects(std::size_t n, const ChiliWindow& wnd,
         Graphics& gfx, Keyboard<MyChar>& kbd, Mouse& mouse
     );
@@ -86,6 +92,8 @@ private:
     Camera camera_;
     CameraControl cameraControl_;
     std::vector< std::unique_ptr<IEntity> > entities_;
+    LightEntity light_;
+    PointLightControl pointLightControl_;
     SimulationUI simulationUI_;
 
     std::shared_ptr<MyIC> ic_;

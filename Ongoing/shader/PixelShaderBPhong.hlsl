@@ -1,7 +1,3 @@
-cbuffer FaceColors {
-    float3 face_color[6];
-};
-
 cbuffer Light {
     float3 lightPos;
     float3 lightColor;
@@ -28,9 +24,9 @@ float4 main( float3 worldPos : Position, float3 n : Normal ) : SV_Target {
 
     const float att = 1.0f / (attConst + attLin * vToLDist + attQuad * vToLDist * vToLDist);
     const float rambertCoef = max(dot(vToLDir, n), 0);
-    const float3 diffuse = rambertCoef * diffuseColor;
-    const float3 specular = pow( max( dot(halfway, n), 0 ), specularShinyness ) * specularColor;
-    const float3 ambient = ambientColor;
+    const float3 diffuse = rambertCoef * diffuseColor * lightColor;
+    const float3 specular = pow( max( dot(halfway, n), 0 ), specularShinyness ) * specularColor * lightColor;
+    const float3 ambient = ambientColor * lightColor;
 
-    return float4( saturate(diffuse + specular + ambient + emmisiveColor), 1.0f );
+    return float4( saturate( att * (diffuse + specular + ambient + emmisiveColor) ), 1.0f );
 }

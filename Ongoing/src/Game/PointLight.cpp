@@ -39,6 +39,18 @@ void BPDynPointLight::config(GFXFactory factory) {
     );
 }
 
+// referenced attenuation coefficient constants from
+// https://wiki.ogre3d.org/-Point+Light+Attenuation
+const BPPointLightDesc BPDynPointLight::defLightDesc() noexcept {
+    return BPPointLightDesc{
+        .pos = dx::XMFLOAT3A(0.f, 0.f, 0.f),
+        .color = dx::XMFLOAT3(1.f, 1.f, 1.f),
+        .attConst = 1.f,
+        .attLin = 0.014f,
+        .attQuad = 0.0007f
+    };
+}
+
 void BPDynPointLight::bind(GFXPipeline& pipeline) /* overriden */ {
     // if rebind required, rebind
     // it is handled in PSCBuffer internally
@@ -132,7 +144,7 @@ class LightViz::DrawComponentLViz::MyVertexBuffer
 public:
     MyVertexBuffer(GFXFactory factory)
         : Primitives::Sphere::SphereVertexBuffer(
-            std::move(factory), 32u, 32u
+            std::move(factory), 256u, 256u
         ) {}
 };
 
@@ -141,11 +153,11 @@ class LightViz::DrawComponentLViz::MyIndexBuffer
 public:
     MyIndexBuffer(GFXFactory factory)
         : Primitives::Sphere::SphereIndexBuffer(
-            std::move(factory), 32u, 32u
+            std::move(factory), 256u, 256u
         ) {}
 
     static std::size_t size() noexcept {
-        return Primitives::Sphere::SphereIndexBuffer::size(32u, 32u);
+        return Primitives::Sphere::SphereIndexBuffer::size(256u, 256u);
     }
 };
 
@@ -174,6 +186,14 @@ public:
 
     UINT slot() const {
         return colorCBuf_.as<MyColorCBuf>().slot();
+    }
+
+    dx::XMVECTOR VCALL color() const noexcept {
+        return color_;
+    }
+
+    void VCALL setColor(dx::FXMVECTOR val) noexcept {
+        color_ = val;
     }
     
 private:
@@ -288,6 +308,16 @@ LightViz::DrawComponentLViz&
 LightViz::DrawComponentLViz::operator=(DrawComponentLViz&& other) noexcept {
     other.swap(*this);
     return *this;
+}
+
+void VCALL LightViz::DrawComponentLViz
+    ::updateTrans(const Transform transform) {
+    transformGPUMapper_.update(transform);
+}
+
+void VCALL LightViz::DrawComponentLViz
+    ::updateColor(dx::FXMVECTOR color) {
+    colorCBuf_.as<MyDynColorCBuf>().setColor(color);
 }
 
 void LightViz::DrawComponentLViz::sync(

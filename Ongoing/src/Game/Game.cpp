@@ -1,7 +1,6 @@
 #include "Game/Game.hpp"
 
 #include "Game/IlluminatedBox.hpp"
-#include "Game/PointLight.hpp"
 
 #include "Game/GFXCMDLogger.hpp"
 #include "Game/GFXCMDLogGUIView.hpp"
@@ -19,7 +18,8 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
 ) : rendererSystem_( gfx.factory(), gfx.pipeline() ),
     inputSystem_( kbd, mouse, wnd.client() ),
     coordSystem_(), timer_(), camera_(),
-    cameraControl_(), entities_(),
+    cameraControl_(), entities_(), light_(),
+    pointLightControl_(),
     simulationUI_(), ic_( std::make_shared<MyIC>() ) {
 
     camera_.setParams(dx::XM_PIDIV2, 1.f, 0.5f, 40.f);
@@ -42,16 +42,14 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     rendererSystem_.sync(slotSolidRenderer);
     rendererSystem_.scene(slotSolidRenderer).setVision( camera_.vision() );
 
-    auto pLight = std::make_unique<LightEntity>();
-    pLight->ctLuminance(gfx.factory(), rendererSystem_.storage());
-    pLight->luminance().loader().loadAt(
+    light_.ctLuminance(gfx.factory(), rendererSystem_.storage());
+    light_.luminance().loader().loadAt(
         rendererSystem_.adapt<LSceneAdapter>(slotBPhongRenderer)
     );
-    pLight->luminance().sync(rendererSystem_.renderer(slotBPhongRenderer));
-    pLight->ctViz(gfx.factory(), rendererSystem_.storage(), wnd.client());
-    pLight->viz().loader().loadAt(rendererSystem_.scene(slotSolidRenderer).layer(0));
-
-    entities_.push_back(std::move(pLight));
+    light_.luminance().loader().loadAt(coordSystem_);
+    light_.luminance().sync(rendererSystem_.renderer(slotBPhongRenderer));
+    light_.ctViz(gfx.factory(), rendererSystem_.storage(), wnd.client());
+    light_.viz().loader().loadAt(rendererSystem_.scene(slotSolidRenderer).layer(0));
 
     inputSystem_.setListner(ic_);
 
@@ -71,19 +69,13 @@ void Game::update() {
     // coord system may be affected by other systems,
     // so update coord system lastly.
     coordSystem_.traverse();
+    pointLightControl_.submit(light_);
 
     // update camera vision via updated coordinate systems.
     // (it doesn't modifies other cooridnate systems.)
     camera_.update();
 
-    // update entities
-    if (ic_->willSimulate()) {
-        std::ranges::for_each(entities_ | dereference(),
-            [this, elapsed](auto& entity) {
-                entity.update( elapsed * simulationUI_.speedFactor() );
-            }
-        );
-    }
+    updateEntities(elapsed);
 
     // coord systems may be changed during updating entities,
     // so update coord system once more.
@@ -94,8 +86,21 @@ void Game::render() {
     rendererSystem_.render();
     simulationUI_.render();
     cameraControl_.render();
+    pointLightControl_.render();
     GFXCMDLOG.advance();
     GFXCMDLOG_GUIVIEW.render();
+}
+
+void Game::updateEntities(milliseconds elapsed) {
+    if (ic_->willSimulate()) {
+        light_.update(elapsed);
+
+        std::ranges::for_each(entities_ | dereference(),
+            [this, elapsed](auto& entity) {
+                entity.update( elapsed * simulationUI_.speedFactor() );
+            }
+        );
+    }
 }
 
 void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
