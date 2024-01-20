@@ -15,7 +15,7 @@ public:
     using MyMouse = Mouse;
 
     App(const Win32::WndFrame& frame
-        = { .x=200, .y=200, .width=800, .height=600 }
+        = { .x=200, .y=200, .width=1024, .height=780 }
     );
 
     ~App();
