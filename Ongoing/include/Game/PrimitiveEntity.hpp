@@ -295,7 +295,7 @@ public:
     void update(milliseconds elapsed) override {
         tc_->update(elapsed);
         tc_->setTotal( tc_->local() * tc_->global() );
-        dc_->update(tc_->total());
+        dc_->updateTrans(tc_->total());
     }
 
     // ct stands for construct

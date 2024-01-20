@@ -111,9 +111,37 @@ public:
     #endif
     }
 
-    void update(const Transform transform) {
+    void VCALL updateTrans(const Transform transform) {
         transformGPUMapperV_.update(transform);
         transformGPUMapperVP_.update(transform);
+    }
+
+    void VCALL updateDiffuse(dx::FXMVECTOR color) {
+        material_.as<MyMaterial>().setDiffuse(color);
+    }
+
+    void VCALL updateSpecular(dx::FXMVECTOR color) {
+        material_.as<MyMaterial>().setSpecular(color);
+    }
+
+    void updateShinyness(float shinyness) {
+        material_.as<MyMaterial>().setShinyness(shinyness);
+    }
+
+    void VCALL updateAmbient(dx::FXMVECTOR color) {
+        material_.as<MyMaterial>().setAmbient(color);
+    }
+
+    void VCALL updateEmmisive(dx::FXMVECTOR color) {
+        material_.as<MyMaterial>().setEmmisive(color);
+    }
+
+    void updateMaterial(const SolidMaterialDesc& desc) {
+        updateDiffuse( dx::XMLoadFloat3A(&desc.diffuse) );
+        updateSpecular( dx::XMLoadFloat3(&desc.specular) );
+        updateShinyness(desc.shinyness);
+        updateAmbient( dx::XMLoadFloat3A(&desc.ambient) );
+        updateAmbient( dx::XMLoadFloat3A(&desc.emmisive) );
     }
 
     void sync(const Renderer& renderer) override {

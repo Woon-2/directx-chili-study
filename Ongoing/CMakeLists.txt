@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2024.01.19 LANGUAGES CXX)
+project(POngoing VERSION 2024.01.20 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -80,7 +80,6 @@ target_sources(chili PRIVATE
     src/Game/CameraControl.cpp
     src/Game/PointLight.cpp
     src/Game/PointLightControl.cpp
-    src/Game/IlluminatedBox.cpp
     src/Game/SolidMaterial.cpp
     include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp

@@ -73,7 +73,7 @@ public:
         dx::XMStoreFloat3(&matDesc_.specular, color);
     }
 
-    void setShyniness(float val) {
+    void setShinyness(float val) {
         matDesc_.shinyness = val;
     }
 
