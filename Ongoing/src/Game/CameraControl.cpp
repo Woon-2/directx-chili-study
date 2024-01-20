@@ -34,7 +34,7 @@ void CameraControl::render() {
     }
 }
 
-void CameraControl::reflect(CoordSystem& cameraCoord) {
+void CameraControl::submit(CoordSystem& cameraCoord) {
     cameraCoord.setLocal(
         dx::XMMatrixRotationRollPitchYaw(pitch_, yaw_, roll_)
     );

@@ -10,7 +10,7 @@ public:
     CameraControl() noexcept;
 
     void render();
-    void reflect(CoordSystem& cameraCoord);
+    void submit(CoordSystem& cameraCoord);
 
     bool shown() const noexcept {
         return willShow_;

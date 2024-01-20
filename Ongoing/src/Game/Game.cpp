@@ -67,7 +67,7 @@ void Game::update() {
     // update systems
     inputSystem_.update();
     pointLightControl_.submit(light_);
-    cameraControl_.reflect(camera_.coordSystem());
+    cameraControl_.submit(camera_.coordSystem());
 
     // coord system may be affected by other systems,
     // so update coord system lastly.
