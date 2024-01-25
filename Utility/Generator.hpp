@@ -29,6 +29,9 @@ public:
     using pointer = T*;
     using const_pointer = const T*;
 
+    Generator() noexcept
+        : Generator(std::coroutine_handle<Promise>(nullptr)) {}
+
     explicit Generator(std::coroutine_handle<Promise> h) noexcept
         : h_(h) {}
 

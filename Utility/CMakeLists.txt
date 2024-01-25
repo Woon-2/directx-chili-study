@@ -80,7 +80,7 @@ target_compile_features(aranges INTERFACE cxx_std_20)
 target_compile_features(string_like INTERFACE cxx_std_20)
 target_compile_features(timer INTERFACE cxx_std_11)
 target_compile_features(pointers INTERFACE cxx_std_11)
-target_compile_features(generator cxx_std_20)
+target_compile_features(generator INTERFACE cxx_std_20)
 
 target_link_libraries(iterate_call INTERFACE num_args)
 target_link_libraries(onehot_encode INTERFACE num_args)
