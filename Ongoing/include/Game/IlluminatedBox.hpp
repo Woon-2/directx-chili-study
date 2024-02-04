@@ -21,6 +21,14 @@ class IlluminatedBox {
 template <>
 class DrawComponent<IlluminatedBox> : public RCDrawCmp {
 public:
+    struct {} tagVertexBuffer;
+    struct {} tagNormalBuffer;
+    struct {} tagMaterial;
+    struct {} tagTopology;
+    struct {} tagTransformCBufV;
+    struct {} tagTransformCBufVP;
+    struct {} tagViewport;
+
     class MyVertexBuffer : public Primitives::Cube::CubeVertexBufferIndependent {
     public:
         MyVertexBuffer(GFXFactory factory)
@@ -71,27 +79,13 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        posBuffer_( GFXMappedResource::Type<MyVertexBuffer>{},
-            typeid(MyVertexBuffer), storage, factory
-        ),
-        normalBuffer_( GFXMappedResource::Type<MyNormalBuffer>{},
-            typeid(MyNormalBuffer), storage, factory
-        ),
-        material_( GFXMappedResource::Type<MyMaterial>{},
-            typeid(MyMaterial), storage, factory, storage
-        ),
-        topology_( GFXMappedResource::Type<MyTopology>{},
-            typeid(MyTopology), storage
-        ),
-        viewport_( GFXMappedResource::Type<MyViewport>{},
-            typeid(MyViewport), storage,  wnd.client()
-        ),
-        transformCBufV_( GFXMappedResource::Type<MyTransformCBufV>{},
-            typeid(MyTransformCBufV), storage, factory
-        ),
-        transformCBufVP_( GFXMappedResource::Type<MyTransformCBufVP>{},
-            typeid(MyTransformCBufVP), storage, factory
-        ),
+        posBuffer_( GFXRes::makeCached<MyVertexBuffer>(storage, tagVertexBuffer, factory) ),
+        normalBuffer_( GFXRes::makeCached<MyNormalBuffer>(storage, tagNormalBuffer, factory) ),
+        material_( GFXRes::makeCached<MyMaterial>(storage, tagMaterial, factory, storage) ),
+        topology_( GFXRes::makeCached<MyTopology>(storage, tagTopology) ),
+        viewport_( GFXRes::makeCached<MyViewport>(storage, tagViewport, wnd.client() )),
+        transformCBufV_( GFXRes::makeCached<MyTransformCBufV>(storage, tagTransformCBufV, factory) ),
+        transformCBufVP_( GFXRes::makeCached<MyTransformCBufVP>(storage, tagTransformCBufVP, factory) ),
         pipeline_(pipeline), pStorage_(&storage) {
 
         transformGPUMapperV_.setTCBufID(transformCBufV_.id());
@@ -201,13 +195,13 @@ private:
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     IDrawComponent::LogComponent logComponent_;
 #endif
-    GFXMappedResource posBuffer_;
-    GFXMappedResource normalBuffer_;
-    GFXMappedResource material_;
-    GFXMappedResource topology_;
-    GFXMappedResource viewport_;
-    GFXMappedResource transformCBufV_;
-    GFXMappedResource transformCBufVP_;
+    GFXRes posBuffer_;
+    GFXRes normalBuffer_;
+    GFXRes material_;
+    GFXRes topology_;
+    GFXRes viewport_;
+    GFXRes transformCBufV_;
+    GFXRes transformCBufVP_;
     std::optional<RenderObjectDesc> RODesc_;
     MyDrawCaller drawCaller_;
     GFXPipeline pipeline_;

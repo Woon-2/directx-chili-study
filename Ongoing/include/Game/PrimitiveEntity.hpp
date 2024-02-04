@@ -88,6 +88,14 @@ public:
 template < class T, class PosBufferT, class IndexBufferT >
 class PEDrawComponent : public RCDrawCmp {
 public:
+    struct {} tagPosBuffer;
+    struct {} tagIndexBuffer;
+    struct {} tagTopology;
+    struct {} tagTransformCBuf;
+    struct {} tagIndexedColorCBuf;
+    struct {} tagBlendedColorBuffer;
+    struct {} tagViewport;
+
     using MyType = DrawComponent<T>;
     using MyVertex = GFXVertex;
     using MyIndex = GFXIndex;
@@ -109,28 +117,15 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        posBuffer_( GFXMappedResource::Type<MyPosBuffer>{},
-            typeid(MyPosBuffer), storage, factory
-        ),
-        indexBuffer_( GFXMappedResource::Type<MyIndexBuffer>{},
-            typeid(MyIndexBuffer), storage, factory
-        ),
-        topology_( GFXMappedResource::Type<MyTopology>{},
-            typeid(MyTopology), storage
-        ),
-        viewport_( GFXMappedResource::Type<MyViewport>{},
-            typeid(MyViewport), storage, wnd.client()
-        ),
-        transformCBuf_( GFXMappedResource::Type<MyTransformCBuf>{},
-            typeid(MyTransformCBuf), storage, factory
-        ),
-        indexedColorCBuf_( GFXMappedResource::Type<MyIndexedColorCBuf>{},
-            typeid(MyIndexedColorCBuf), storage, factory
-        ),
-        blendedColorBuffer_( GFXMappedResource::Type<MyBlendedColorBuffer>{},
-            typeid(MyBlendedColorBuffer), storage,
-            factory, MyPosBuffer::size()
-        ),
+        posBuffer_( GFXRes::makeLoaded<MyPosBuffer>(storage, factory) ),
+        indexBuffer_( GFXRes::makeLoaded<MyIndexBuffer>(storage, factory) ),
+        topology_( GFXRes::makeCached<MyTopology>(storage, tagTopology) ),
+        viewport_( GFXRes::makeCached<MyViewport>(storage, tagViewport, wnd.client()) ),
+        transformCBuf_( GFXRes::makeCached<MyTransformCBuf>(storage, tagTransformCBuf, factory) ),
+        indexedColorCBuf_( GFXRes::makeCached<MyIndexedColorCBuf>(storage, tagIndexedColorCBuf, factory) ),
+        blendedColorBuffer_( GFXRes::makeLoaded<MyBlendedColorBuffer>(
+            storage, factory, MyPosBuffer::size()
+        ) ),
         pipeline_(pipeline), pStorage_(&storage) {
 
         transformGPUMapper_.setTCBufID(transformCBuf_.id());
@@ -156,30 +151,19 @@ public:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        posBuffer_( GFXMappedResource::Type<MyPosBuffer>{}, storage, factory,
+        posBuffer_( GFXRes::makeLoaded<MyPosBuffer>( storage, factory,
             std::forward<TesselationFactors>(tesselationFactors)...
-        ),
-        indexBuffer_( GFXMappedResource::Type<MyIndexBuffer>{}, storage, factory,
+        ) ),
+        indexBuffer_( GFXRes::makeLoaded<MyIndexBuffer>( storage, factory,
             std::forward<TesselationFactors>(tesselationFactors)...
-        ),
-        topology_( GFXMappedResource::Type<MyTopology>{},
-            typeid(MyTopology), storage
-        ),
-        viewport_( GFXMappedResource::Type<MyViewport>{},
-            typeid(MyViewport), storage, wnd.client()
-        ),
-        transformCBuf_( GFXMappedResource::Type<MyTransformCBuf>{},
-            typeid(MyTransformCBuf), storage, factory 
-        ),
-        indexedColorCBuf_( GFXMappedResource::Type<MyIndexedColorCBuf>{},
-            typeid(MyIndexedColorCBuf), storage, factory
-        ),
-        blendedColorBuffer_( GFXMappedResource::Type<MyBlendedColorBuffer>{},
-            typeid(MyBlendedColorBuffer), storage,
-            factory, MyPosBuffer::size(
-                std::forward<TesselationFactors>(tesselationFactors)...
-            )
-        ),
+        ) ),
+        topology_( GFXRes::makeCached( storage, tagTopology ) ),
+        viewport_( GFXRes::makeCached( storage, tagViewport, wnd.client() ) ),
+        transformCBuf_( GFXRes::makeCached( storage, tagTransformCBuf, factory ) ),
+        indexedColorCBuf_( GFXRes::makeCached( storage, tagIndexedColorCBuf, factory ) ),
+        blendedColorBuffer_( GFXRes::makeLoaded(storage, factory, MyPosBuffer::size(
+            std::forward<TesselationFactors>(tesselationFactors)...
+        ) ) ),
         pipeline_(pipeline), pStorage_(&storage) {
 
         transformGPUMapper_.setTCBufID(transformCBuf_.id());
@@ -273,13 +257,13 @@ private:
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     RCDrawCmp::LogComponent logComponent_;
 #endif
-    GFXMappedResource posBuffer_;
-    GFXMappedResource indexBuffer_;
-    GFXMappedResource topology_;
-    GFXMappedResource viewport_;
-    GFXMappedResource transformCBuf_;
-    GFXMappedResource indexedColorCBuf_;
-    GFXMappedResource blendedColorBuffer_;
+    GFXRes posBuffer_;
+    GFXRes indexBuffer_;
+    GFXRes topology_;
+    GFXRes viewport_;
+    GFXRes transformCBuf_;
+    GFXRes indexedColorCBuf_;
+    GFXRes blendedColorBuffer_;
     GFXPipeline pipeline_;
     GFXStorage* pStorage_;
 };

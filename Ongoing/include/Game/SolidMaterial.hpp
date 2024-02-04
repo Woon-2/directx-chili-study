@@ -21,25 +21,11 @@ private:
     using MyPSCBuffer = PSCBuffer<SolidMaterialDesc>;
 
 public:
-    SolidMaterial();
-    SolidMaterial(const SolidMaterialDesc& matDesc);
+    SolidMaterial() = default;
     SolidMaterial(GFXFactory factory, GFXStorage& storage);
-    SolidMaterial(GFXFactory factory);
-    SolidMaterial(GFXFactory factory, const SolidMaterialDesc& matDesc);
     SolidMaterial( GFXFactory factory, GFXStorage& storage,
         const SolidMaterialDesc& matDesc
     );
-
-    void sync(GFXStorage& storage) {
-        res_.sync(storage);
-        res_.remap();
-    }
-
-    void config(GFXFactory factory) {
-        res_.config<MyPSCBuffer>( std::move(factory), D3D11_USAGE_DEFAULT, 0,
-            std::ranges::single_view(matDesc_)
-        );
-    }
 
     const SolidMaterialDesc& matDesc() const noexcept {
         return matDesc_;
@@ -86,11 +72,11 @@ public:
     }
 
     UINT slot() const {
-        return res_.as<MyPSCBuffer>().slot();
+        return cbuf_.slot();
     }
 
     void setSlot(UINT val) {
-        res_.as<MyPSCBuffer>().setSlot(val);
+        cbuf_.setSlot(val);
     }
 
 private:
@@ -99,9 +85,7 @@ private:
     void bind(GFXPipeline& pipeline) override;
 
     SolidMaterialDesc matDesc_;
-    // res_ depends on matDesc_ in initialization.
-    // so res_ should be here.
-    GFXMappedResource res_;
+    MyPSCBuffer cbuf_;
 };
 
 #endif  // __SolidMaterial

@@ -2,42 +2,15 @@
 
 namespace Basic {
 
-BPDynPointLight::BPDynPointLight()
-    : BPDynPointLight( defLightDesc() ) {}
-
-BPDynPointLight::BPDynPointLight(const BPPointLightDesc& lightDesc)
-    : lightDesc_(lightDesc), res_(), dirty_(false) {}
-
-BPDynPointLight::BPDynPointLight(GFXFactory factory, GFXStorage& storage)
-    : BPDynPointLight( std::move(factory), storage, defLightDesc() ) {}
-
 BPDynPointLight::BPDynPointLight(GFXFactory factory)
     : BPDynPointLight( std::move(factory), defLightDesc() ) {}
 
-BPDynPointLight::BPDynPointLight(GFXFactory factory, const BPPointLightDesc& lightDesc)
-    : lightDesc_(lightDesc), res_(), dirty_(false) {
-    config(std::move(factory));
-}
-
-BPDynPointLight::BPDynPointLight( GFXFactory factory, GFXStorage& storage,
+BPDynPointLight::BPDynPointLight( GFXFactory factory,
     const BPPointLightDesc& lightDesc
 ) : lightDesc_(lightDesc),
-    res_( GFXMappedResource::Type<MyPSCBuffer>{}, storage,
-        // the resource construction arguments follow.
-        std::move(factory), D3D11_USAGE_DEFAULT, 0,
+    cbuf_( std::move(factory), D3D11_USAGE_DEFAULT, 0,
         std::ranges::single_view(lightDesc_)
     ), dirty_(false) {}
-
-void BPDynPointLight::sync(GFXStorage& storage) {
-    res_.sync(storage);
-    res_.remap();
-}
-
-void BPDynPointLight::config(GFXFactory factory) {
-    res_.config<MyPSCBuffer>( std::move(factory), D3D11_USAGE_DEFAULT, 0,
-        std::ranges::single_view(lightDesc_)
-    );
-}
 
 // referenced attenuation coefficient constants from
 // https://wiki.ogre3d.org/-Point+Light+Attenuation
@@ -54,10 +27,10 @@ const BPPointLightDesc BPDynPointLight::defLightDesc() noexcept {
 void BPDynPointLight::bind(GFXPipeline& pipeline) /* overriden */ {
     // if rebind required, rebind
     // it is handled in PSCBuffer internally
-    pipeline.bind(res_.get());
+    pipeline.bind(&cbuf_);
 
     if (dirty_) {
-        res_.as<MyPSCBuffer>().stage( pipeline, [this](){
+        cbuf_.stage( pipeline, [this](){
             return &lightDesc_;
         } );
         dirty_ = false;
@@ -68,24 +41,12 @@ void BPDynPointLight::bind(GFXPipeline& pipeline) /* overriden */ {
 
 namespace Utilized {
 
-BPDynPointLight::BPDynPointLight()
-    : coord_(), base_(), pivot_(coord_) {}
-
-BPDynPointLight::BPDynPointLight(const BPPointLightDesc& lightDesc)
-    : coord_(), base_(lightDesc), pivot_(coord_) {}
-
-BPDynPointLight::BPDynPointLight(GFXFactory factory, GFXStorage& storage)
-    : coord_(), base_(std::move(factory), storage), pivot_(coord_) {}
-
 BPDynPointLight::BPDynPointLight(GFXFactory factory)
     : coord_(), base_(std::move(factory)), pivot_(coord_) {}
 
-BPDynPointLight::BPDynPointLight(GFXFactory factory, const BPPointLightDesc& lightDesc)
-    : coord_(), base_(std::move(factory), lightDesc), pivot_(coord_) {}
-
-BPDynPointLight::BPDynPointLight( GFXFactory factory, GFXStorage& storage,
+BPDynPointLight::BPDynPointLight( GFXFactory factory,
     const BPPointLightDesc& lightDesc
-) : coord_(), base_(std::move(factory), storage, lightDesc),
+) : coord_(), base_(std::move(factory), lightDesc),
     pivot_(coord_) {}
 
 void BPDynPointLight::bind(GFXPipeline& pipeline) /* overriden */ {
@@ -106,9 +67,9 @@ void BPDynPointLight::bind(GFXPipeline& pipeline) /* overriden */ {
 }   // namespace Utilized
 
 Luminance::Luminance(GFXFactory factory, GFXStorage& storage)
-    : res_( GFXMappedResource::Type<BPDynPointLight>{}, storage,
-        std::move(factory), storage
-    ) {}
+    : res_( GFXRes::makeLoaded<BPDynPointLight>(
+        storage, std::move(factory)
+    ) ) {}
 
 void Luminance::sync(const Renderer& renderer) {
     if (typeid(renderer) == typeid(BPhongRenderer)) {
@@ -174,18 +135,16 @@ public:
 class LightViz::DrawComponentLViz::MyDynColorCBuf
     : public IBindable {
 public:
-    MyDynColorCBuf(GFXFactory factory, GFXStorage& storage)
-        : colorCBuf_( GFXMappedResource::Type<MyColorCBuf>{},
-            typeid(MyColorCBuf), storage, std::move(factory) ),
-        color_( dx::XMVectorReplicate(1.f) ) {
-    }
+    MyDynColorCBuf(GFXFactory factory)
+        : wrapped_( std::move(factory) ),
+        color_( dx::XMVectorReplicate(1.f) ) {}
 
     void setSlot(UINT slot) {
-        colorCBuf_.as<MyColorCBuf>().setSlot(slot);
+        wrapped_.setSlot(slot);
     }
 
     UINT slot() const {
-        return colorCBuf_.as<MyColorCBuf>().slot();
+        return wrapped_.slot();
     }
 
     dx::XMVECTOR VCALL color() const noexcept {
@@ -198,13 +157,13 @@ public:
     
 private:
     void bind(GFXPipeline& pipeline) override {
-        pipeline.bind(colorCBuf_.get());
-        colorCBuf_.as<MyColorCBuf>().dynamicUpdate(
+        pipeline.bind(&wrapped_);
+        wrapped_.dynamicUpdate(
             pipeline, [this]() { return &color_; }
         );
     }
 
-    GFXMappedResource colorCBuf_;
+    MyColorCBuf wrapped_;
     dx::XMVECTOR color_;
 };
 
@@ -248,19 +207,13 @@ LightViz::DrawComponentLViz::DrawComponentLViz(
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     logComponent_(this),
 #endif
-    vBuf_( GFXMappedResource::Type<MyVertexBuffer>{},
-        typeid(MyVertexBuffer), storage, factory
-    ), iBuf_( GFXMappedResource::Type<MyIndexBuffer>{},
-    typeid(MyIndexBuffer), storage, factory
-    ), colorCBuf_( GFXMappedResource::Type<MyDynColorCBuf>{},
-        storage, factory, storage
-    ), transCBuf_( GFXMappedResource::Type<MyTransformCBuf>{},
-        typeid(MyTransformCBuf), storage, factory
-    ), viewport_( GFXMappedResource::Type<MyViewport>{},
-        typeid(MyViewport), storage, client
-    ), topology_( GFXMappedResource::Type<MyTopology>{},
-        typeid(MyTopology), storage
-    ) {
+    vBuf_( GFXRes::makeCached<MyVertexBuffer>(storage, tagVertexBuffer, factory) ),
+    iBuf_( GFXRes::makeCached<MyIndexBuffer>(storage, tagIndexBuffer, factory) ),
+    colorCBuf_( GFXRes::makeLoaded<MyDynColorCBuf>(storage, factory) ),
+    transCBuf_( GFXRes::makeCached<MyTransformCBuf>(storage, tagTransformCBuf, factory) ),
+    viewport_( GFXRes::makeCached<MyViewport>(storage, tagViewport, client) ),
+    topology_( GFXRes::makeCached<MyTopology>(storage, tagTopology) ) {
+
     transformGPUMapper_.setTCBufID(transCBuf_.id());
 
     this->setDrawCaller( std::make_unique<MyDrawCaller>(
@@ -272,6 +225,7 @@ LightViz::DrawComponentLViz::DrawComponentLViz(
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     logComponent_.entryStackPop();
 #endif
+
 }
 
 LightViz::DrawComponentLViz::DrawComponentLViz(

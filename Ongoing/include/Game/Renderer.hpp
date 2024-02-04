@@ -130,6 +130,9 @@ private:
 
 class SolidRenderer : public Renderer {
 public:
+    struct {} tagVertexShader;
+    struct {} tagPixelShader;
+
     class MyVertexShader : public VertexShader {
     public:
         MyVertexShader(GFXFactory factory);
@@ -169,12 +172,15 @@ private:
     void loadBindables(GFXFactory factory) override;
 
     GFXStorage* pStorage_;
-    GFXMappedResource vertexShader_;
-    GFXMappedResource pixelShader_;
+    GFXRes vertexShader_;
+    GFXRes pixelShader_;
 };
 
 class IndexedRenderer : public Renderer {
 public:
+    struct {} tagVertexShader;
+    struct {} tagPixelShader;
+
     class MyVertexShader : public VertexShader {
     public:
         MyVertexShader(GFXFactory factory);
@@ -206,12 +212,15 @@ private:
     void loadBindables(GFXFactory factory) override;
 
     GFXStorage* pStorage_;
-    GFXMappedResource vertexShader_;
-    GFXMappedResource pixelShader_;
+    GFXRes vertexShader_;
+    GFXRes pixelShader_;
 };
 
 class BlendedRenderer : public Renderer {
 public:
+    struct {} tagVertexShader;
+    struct {} tagPixelShader;
+
     class MyVertexShader : public VertexShader {
     public:
         MyVertexShader(GFXFactory factory);
@@ -246,12 +255,15 @@ private:
     void loadBindables(GFXFactory factory) override;
 
     GFXStorage* pStorage_;
-    GFXMappedResource vertexShader_;
-    GFXMappedResource pixelShader_;
+    GFXRes vertexShader_;
+    GFXRes pixelShader_;
 };
 
 class TexturedRenderer : public Renderer {
 public:
+    struct {} tagVertexShader;
+    struct {} tagPixelShader;
+
     class MyVertexShader : public VertexShader {
     public:
         MyVertexShader(GFXFactory factory);
@@ -294,12 +306,15 @@ private:
     void loadBindables(GFXFactory factory) override;
 
     GFXStorage* pStorage_;
-    GFXMappedResource vertexShader_;
-    GFXMappedResource pixelShader_;
+    GFXRes vertexShader_;
+    GFXRes pixelShader_;
 };
 
 class BPhongRenderer : public Renderer {
 public:
+    struct {} tagVertexShader;
+    struct {} tagPixelShader;
+    
     class MyVertexShader : public VertexShader {
     public:
         MyVertexShader(GFXFactory factory);
@@ -342,8 +357,8 @@ private:
     void loadBindables(GFXFactory factory) override;
 
     GFXStorage* pStorage_;
-    GFXMappedResource vertexShader_;
-    GFXMappedResource pixelShader_;
+    GFXRes vertexShader_;
+    GFXRes pixelShader_;
 };
 
 #endif  // __Renderer

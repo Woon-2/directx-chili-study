@@ -47,21 +47,11 @@ void Graphics::present() {
     // the back buffer needs to explicitly be re-bound
     // to the D3D11 immediate context before it can be used again.
     assert( appRenderTarget_.valid() );
-    pipeline_.bind( appRenderTarget_.get() );
+    pipeline_.bind( &appRenderTarget_.get() );
 }
 
 void Graphics::clear(float r, float g, float b) {
-    if ( appRenderTarget_.valid() ) {
-        static_cast<RenderTarget*>(
-            appRenderTarget_.get()
-        )->clear(r, g, b, 1.f);
-    }
-    else {
-        // Reaching to this branch means
-        // application render target has been removed.
-        // And it's regarded pragma error.
-        assert(false);
-    }
+    appRenderTarget_.as<RenderTarget>().clear(r, g, b, 1.f);
 }
 
 void Graphics::initGFXComponents() {
@@ -143,8 +133,8 @@ void Graphics::constructAppRenderTarget() {
         )
     );
 
-    appRenderTarget_.config( GFXMappedResource::Type<RenderTarget>{},
-        factory_, pBackBuffer.Get(), pDepthStencil.Get(),
+    appRenderTarget_ = GFXRes::makeLoaded<RenderTarget>( storage_, factory_,
+        pBackBuffer.Get(), pDepthStencil.Get(),
         D3D11_DEPTH_STENCIL_VIEW_DESC{
             .Format = DXGI_FORMAT_D32_FLOAT,
             .ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D,
@@ -153,13 +143,7 @@ void Graphics::constructAppRenderTarget() {
             }
         }
     );
-    appRenderTarget_.sync(storage_);
 
-    auto pRenderTarget = static_cast<RenderTarget*>(
-        appRenderTarget_.get()
-    );
-
-    pRenderTarget->enableLocalRebind();
-
-    pipeline_.bind(pRenderTarget);
+    appRenderTarget_.as<RenderTarget>().enableLocalRebind();
+    pipeline_.bind(&appRenderTarget_.get());
 }

@@ -39,12 +39,9 @@ private:
 public:
     friend class Utilized::BPDynPointLight;
 
-    BPDynPointLight();
-    BPDynPointLight(const BPPointLightDesc& lightDesc);
-    BPDynPointLight(GFXFactory factory, GFXStorage& storage);
+    BPDynPointLight() = default;
     BPDynPointLight(GFXFactory factory);
-    BPDynPointLight(GFXFactory factory, const BPPointLightDesc& lightDesc);
-    BPDynPointLight( GFXFactory factory, GFXStorage& storage,
+    BPDynPointLight( GFXFactory factory, 
         const BPPointLightDesc& lightDesc
     );
 
@@ -101,12 +98,11 @@ public:
     }
 
     UINT slot() const {
-        return res_.as<MyPSCBuffer>().slot();
+        return cbuf_.slot();
     }
 
     void setSlot(UINT val) {
-        auto& res = res_.as<MyPSCBuffer>();
-        res.setSlot(val);
+        cbuf_.setSlot(val);
     }
 
     static const BPPointLightDesc defLightDesc() noexcept;
@@ -115,9 +111,7 @@ private:
     void bind(GFXPipeline& pipeline);
 
     BPPointLightDesc lightDesc_;
-    // res_ depends on lightDesc_ in initialization.
-    // so res_ should be here.
-    GFXMappedResource res_;
+    MyPSCBuffer cbuf_;
     bool dirty_;
 };
 
@@ -130,22 +124,11 @@ namespace Utilized {
 // if more modification is needed, adopt decorater pattern.
 class BPDynPointLight : public IBindable {
 public:
-    BPDynPointLight();
-    BPDynPointLight(const BPPointLightDesc& lightDesc);
-    BPDynPointLight(GFXFactory factory, GFXStorage& storage);
+    BPDynPointLight() = default;
     BPDynPointLight(GFXFactory factory);
-    BPDynPointLight(GFXFactory factory, const BPPointLightDesc& lightDesc);
-    BPDynPointLight( GFXFactory factory, GFXStorage& storage,
+    BPDynPointLight( GFXFactory factory,
         const BPPointLightDesc& lightDesc
     );
-
-    void sync(GFXStorage& storage) {
-        base_.sync(storage);
-    }
-
-    void config(GFXFactory factory) {
-        base_.config(std::move(factory));
-    }
 
     const BPPointLightDesc& lightDesc() const noexcept {
         return base_.lightDesc();
@@ -255,11 +238,11 @@ public:
     void sync(const Renderer& renderer);
     void sync(const BPhongRenderer& renderer);
 
-    GFXMappedResource& res() noexcept {
+    GFXRes& res() noexcept {
         return res_;
     }
 
-    const GFXMappedResource& res() const noexcept {
+    const GFXRes& res() const noexcept {
         return res_;
     }
 
@@ -268,7 +251,7 @@ public:
     Loader<Luminance> loader() noexcept;
 
 private:
-    GFXMappedResource res_;
+    GFXRes res_;
 };
 
 template <>
@@ -322,6 +305,14 @@ public:
 private:
     class DrawComponentLViz : public RCDrawCmp {
     public:
+        struct {} tagVertexBuffer;
+        struct {} tagIndexBuffer;
+        struct {} tagColorCBuf;
+        struct {} tagDynColorCBuf;
+        struct {} tagTransformCBuf;
+        struct {} tagViewport;
+        struct {} tagTopology;
+
         class MyVertexBuffer;
         class MyIndexBuffer;
         class MyColorCBuf;
@@ -366,12 +357,12 @@ private:
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         RCDrawCmp::LogComponent logComponent_;
     #endif
-        GFXMappedResource vBuf_;
-        GFXMappedResource iBuf_;
-        GFXMappedResource colorCBuf_;
-        GFXMappedResource transCBuf_;
-        GFXMappedResource viewport_;
-        GFXMappedResource topology_;
+        GFXRes vBuf_;
+        GFXRes iBuf_;
+        GFXRes colorCBuf_;
+        GFXRes transCBuf_;
+        GFXRes viewport_;
+        GFXRes topology_;
     };  // class DrawComponentLViz
 
     DrawComponentLViz& dc() noexcept {

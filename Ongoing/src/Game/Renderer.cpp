@@ -39,8 +39,8 @@ void Renderer::render(Scene& scene) {
     std::ranges::for_each( scene.layers(), [this, &scene](Layer& layer) {
         layer.setup();
 
-        std::ranges::for_each( layer.bindees(), [&](auto* bindee) {
-            pipeline_.bind( bindee );
+        std::ranges::for_each( layer.bindees(), [&](GFXResView bindee) {
+            pipeline_.bind( &bindee->get() );
         } );
 
         std::ranges::for_each( layer.drawCmps(), [&](auto& dc) {
@@ -110,11 +110,12 @@ const RendererDesc SolidRenderer::rendererDesc() const {
 }
 
 void SolidRenderer::loadBindables(GFXFactory factory) {
-    vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
-    vertexShader_.sync(mappedStorage());
-
-    pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
-    pixelShader_.sync(mappedStorage());
+    vertexShader_ = GFXRes::makeCached<MyVertexShader>(
+        mappedStorage(), tagVertexShader, factory
+    );
+    pixelShader_ = GFXRes::makeCached<MyPixelShader>(
+        mappedStorage(), tagPixelShader, factory
+    );
 }
 
 IndexedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
@@ -161,11 +162,12 @@ const RendererDesc IndexedRenderer::rendererDesc() const {
 }
 
 void IndexedRenderer::loadBindables(GFXFactory factory) {
-    vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
-    vertexShader_.sync(mappedStorage());
-
-    pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
-    pixelShader_.sync(mappedStorage());
+    vertexShader_ = GFXRes::makeCached<MyVertexShader>(
+        mappedStorage(), tagVertexShader, factory
+    );
+    pixelShader_ = GFXRes::makeCached<MyPixelShader>(
+        mappedStorage(), tagPixelShader, factory
+    );
 }
 
 BlendedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
@@ -220,11 +222,12 @@ const RendererDesc BlendedRenderer::rendererDesc() const {
 }
 
 void BlendedRenderer::loadBindables(GFXFactory factory) {
-    vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
-    vertexShader_.sync(mappedStorage());
-
-    pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
-    pixelShader_.sync(mappedStorage());
+    vertexShader_ = GFXRes::makeCached<MyVertexShader>(
+        mappedStorage(), tagVertexShader, factory
+    );
+    pixelShader_ = GFXRes::makeCached<MyPixelShader>(
+        mappedStorage(), tagPixelShader, factory
+    );
 }
 
 TexturedRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
@@ -279,11 +282,12 @@ const RendererDesc TexturedRenderer::rendererDesc() const {
 }
 
 void TexturedRenderer::loadBindables(GFXFactory factory) {
-    vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
-    vertexShader_.sync(mappedStorage());
-
-    pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
-    pixelShader_.sync(mappedStorage());
+    vertexShader_ = GFXRes::makeCached<MyVertexShader>(
+        mappedStorage(), tagVertexShader, factory
+    );
+    pixelShader_ = GFXRes::makeCached<MyPixelShader>(
+        mappedStorage(), tagPixelShader, factory
+    );
 }
 
 BPhongRenderer::MyVertexShader::MyVertexShader(GFXFactory factory)
@@ -338,9 +342,10 @@ const RendererDesc BPhongRenderer::rendererDesc() const {
 }
 
 void BPhongRenderer::loadBindables(GFXFactory factory) {
-    vertexShader_.config( GFXMappedResource::Type<MyVertexShader>{}, factory );
-    vertexShader_.sync(mappedStorage());
-
-    pixelShader_.config( GFXMappedResource::Type<MyPixelShader>{}, factory );
-    pixelShader_.sync(mappedStorage());
+    vertexShader_ = GFXRes::makeCached<MyVertexShader>(
+        mappedStorage(), tagVertexShader, factory
+    );
+    pixelShader_ = GFXRes::makeCached<MyPixelShader>(
+        mappedStorage(), tagPixelShader, factory
+    );
 }

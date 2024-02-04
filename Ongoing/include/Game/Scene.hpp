@@ -22,20 +22,12 @@ public:
 
     }
 
-    void addBindee(const GFXMappedResource& res) {
+    void addBindee(GFXResView res) {
         bindees_.push_back(res);
     }
 
-    void addBindee(GFXMappedResource&& res) {
-        bindees_.push_back(std::move(res));
-    }
-
     template <std::ranges::range R>
-        requires ( std::same_as< std::ranges::range_value_t<R>,
-            GFXMappedResource
-        > || std::same_as< std::ranges::range_value_t<R>,
-            const GFXMappedResource
-        > )
+        requires GFXResRepresentable< std::ranges::range_value_t<R> >
     void addBindee(R&& range) {
         if constexpr ( std::ranges::sized_range<R> ) {
             bindees_.reserve( std::size(range) );
@@ -46,13 +38,11 @@ public:
 
     // to be added: removeBindee
 
-    auto bindees() noexcept {
-        return bindees_ | std::views::transform(
-            [](auto& mappedRes) { return mappedRes.get(); }
-        );
+    auto& bindees() noexcept {
+        return bindees_;
     }
 
-    const auto bindees() const noexcept {
+    const auto& bindees() const noexcept {
         return const_cast<Layer*>(this)->bindees();
     }
 
@@ -94,7 +84,7 @@ public:
 
 private:
     std::vector<RCDrawCmp*> drawCmps_;
-    std::vector<GFXMappedResource> bindees_;
+    std::vector<GFXResView> bindees_;
 };
 
 class Scene {
@@ -163,8 +153,8 @@ public:
         pRawScene_ = &scene;
     }
 
-    void addLight(const GFXMappedResource& light) {
-        lightLayer().addBindee(light);
+    void addLight(GFXResView res) {
+        lightLayer().addBindee(res);
     }
 
     void addDrawCmp(RCDrawCmp* drawCmp) {
