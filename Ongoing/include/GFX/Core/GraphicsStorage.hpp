@@ -133,7 +133,7 @@ public:
         );
     }
 
-    ID id() const noexcept {
+    ID id() const {
         if (!valid()) [[unlikely]] {
             reconstruct();
         }
@@ -141,7 +141,7 @@ public:
         return stored_.value().id;
     }
 
-    IBindable& get() noexcept {
+    IBindable& get() {
         if (!valid()) [[unlikely]] {
             reconstruct();
         }
