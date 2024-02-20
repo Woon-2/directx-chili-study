@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project (PUtility VERSION 2024.01.25
+project (PUtility VERSION 2024.02.20
     DESCRIPTION "Project for devloper-utility functionalities"
     LANGUAGES CXX
 )

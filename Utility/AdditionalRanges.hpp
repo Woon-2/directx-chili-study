@@ -203,18 +203,18 @@ namespace detail {
 
 static detail::dereference_view_adaptor dereference;
 
-template <std::ranges::range R>
-[[maybe_unused]] constexpr bool reserve_if_possible(R&& r, std::size_t new_cap) {
-    return false;
-}
+template <class R>
+concept reservable_range = std::ranges::range<R>
+    && requires (R& _r, std::size_t _n) {
+        _r.reserve(_n);
+    };
 
 template <std::ranges::range R>
-    requires requires (R& r, std::size_t n) {
-        r.reserve(n);
+[[maybe_unused]] R&& reserve_if_possible(R&& range, std::size_t newCapicity) {
+    if constexpr ( reservable_range<R> ) {
+        range.reserve(newCapicity);
     }
-[[maybe_unused]] constexpr bool reserve_if_possible(R&& r, std::size_t new_cap) {
-    r.reserve(new_cap);
-    return true;
+    return std::forward<R>(range);
 }
 
 #endif  // __AdditionalRanges
