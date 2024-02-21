@@ -1,7 +1,7 @@
 # *****************************
 # Copylight @Woon2
 # (wkdauddns9@gmail.com)
-# Simple script for building DirectX12 Project
+# Simple script for building DirectX11 Project
 # *****************************
 
 cmake_minimum_required(VERSION 3.18)
