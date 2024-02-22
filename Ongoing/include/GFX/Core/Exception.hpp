@@ -6,7 +6,7 @@
 #ifndef NDEBUG
 #include <dxgidebug.h>
 #endif  // NDEBUG
-#include "GraphicsNamespaces.hpp"
+#include "Namespaces.hpp"
 
 #include <string>
 #include <bitset>

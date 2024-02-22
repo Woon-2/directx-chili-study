@@ -2,7 +2,7 @@
 #define __GFXFactory
 
 #include <d3d11.h>
-#include "GraphicsNamespaces.hpp"
+#include "Namespaces.hpp"
 
 class GFXFactory {
 public:

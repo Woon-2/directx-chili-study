@@ -3,10 +3,10 @@
 
 #include "Bindable.hpp"
 #include "GFX/Core/Pipeline.hpp"
-#include "GFX/Core/GFXFactory.hpp"
+#include "GFX/Core/Factory.hpp"
 
 #include <d3d11.h>
-#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/Namespaces.hpp"
 
 class RenderTargetBinder : public BinderInterface<RenderTargetBinder> {
 public:

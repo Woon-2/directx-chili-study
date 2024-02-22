@@ -1,12 +1,12 @@
 #ifndef __PPrism
 #define __PPrism
 
-#include "GFX/Core/GFXFactory.hpp"
+#include "GFX/Core/Factory.hpp"
 #include "GFX/PipelineObjects/IA.hpp"
 #include "GFX/PipelineObjects/Buffer.hpp"
 
 #include <DirectXMath.h>
-#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/Namespaces.hpp"
 
 #include <ranges>
 #include <iterator>

@@ -1,4 +1,4 @@
-#include "GFX/Core/GraphicsStorage.hpp"
+#include "GFX/Core/Storage.hpp"
 
 std::optional<GFXRes::Dummy> GFXRes::nullTag;
 

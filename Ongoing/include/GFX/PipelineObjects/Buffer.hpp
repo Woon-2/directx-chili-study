@@ -3,13 +3,13 @@
 
 #include "Bindable.hpp"
 #include "GFX/Core/Pipeline.hpp"
-#include "GFX/Core/GFXFactory.hpp"
+#include "GFX/Core/Factory.hpp"
 
 #include "App/ChiliWindow.hpp"
 #include <d3d11.h>
 #include <DirectXMath.h>
-#include "GFX/Core/GraphicsNamespaces.hpp"
-#include "GFX/Core/GraphicsException.hpp"
+#include "GFX/Core/Namespaces.hpp"
+#include "GFX/Core/Exception.hpp"
 
 #include <ranges>
 #include <type_traits>

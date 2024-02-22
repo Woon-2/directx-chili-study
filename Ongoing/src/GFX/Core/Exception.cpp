@@ -1,4 +1,4 @@
-#include "GFX/Core/GraphicsException.hpp"
+#include "GFX/Core/Exception.hpp"
 
 #include <ranges>
 #include <iterator>

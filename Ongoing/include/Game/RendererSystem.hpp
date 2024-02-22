@@ -4,8 +4,8 @@
 #include "Renderer.hpp"
 #include "Scene.hpp"
 
-#include "GFX/Core/GraphicsStorage.hpp"
-#include "GFX/Core/GFXFactory.hpp"
+#include "GFX/Core/Storage.hpp"
+#include "GFX/Core/Factory.hpp"
 #include "GFX/Core/Pipeline.hpp"
 
 #include <vector>

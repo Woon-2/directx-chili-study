@@ -1,7 +1,7 @@
 #ifndef __PPlain
 #define __PPlain
 
-#include "GFX/Core/GFXFactory.hpp"
+#include "GFX/Core/Factory.hpp"
 #include "GFX/PipelineObjects/IA.hpp"
 #include "GFX/PipelineObjects/Buffer.hpp"
 

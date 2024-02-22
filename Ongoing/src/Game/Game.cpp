@@ -7,7 +7,7 @@
 #include "Game/GFXCMDLogFileView.hpp"
 
 #include "AdditionalRanges.hpp"
-#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/Namespaces.hpp"
 
 #include "Image/GDIPlusMgr.hpp"
 // do as chili do, it's temporary.

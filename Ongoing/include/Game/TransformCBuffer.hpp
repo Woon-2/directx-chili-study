@@ -2,7 +2,7 @@
 #define __TransformCBuffer
 
 #include "GFX/PipelineObjects/Buffer.hpp"
-#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/Namespaces.hpp"
 
 template <class TCBuffer>
 class TransformCBuf : public TCBuffer {

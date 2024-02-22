@@ -3,7 +3,7 @@
 
 #include "PointLight.hpp"
 
-#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/Namespaces.hpp"
 
 class PointLightControlBase {
 public:

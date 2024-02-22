@@ -4,7 +4,7 @@
 #include "RCDrawComponent.hpp"
 #include "Camera.hpp"
 
-#include "GFX/Core/GraphicsStorage.hpp"
+#include "GFX/Core/Storage.hpp"
 
 #include <ranges>
 #include <algorithm>

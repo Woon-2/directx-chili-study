@@ -1,7 +1,7 @@
 #ifndef __RenderObjectDesc
 #define __RenderObjectDesc
 
-#include "GFX/Core/GraphicsStorage.hpp"
+#include "GFX/Core/Storage.hpp"
 
 #include <typeindex>
 #include <tuple>

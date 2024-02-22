@@ -1,6 +1,6 @@
-#include "GFX/Core/GFXSwapChain.hpp"
+#include "GFX/Core/SwapChain.hpp"
 
-#include "GFX/Core/GraphicsException.hpp"
+#include "GFX/Core/Exception.hpp"
 
 void GFXSwapChain::present() {
     if ( auto hr = pSwapChain_->Present(1u, 0u); FAILED(hr) ) {

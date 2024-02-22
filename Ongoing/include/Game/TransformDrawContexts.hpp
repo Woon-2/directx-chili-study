@@ -4,10 +4,10 @@
 #include "GFX/PipelineObjects/DrawContext.hpp"
 #include "Transform.hpp"
 
-#include "GFX/Core/GraphicsStorage.hpp"
+#include "GFX/Core/Storage.hpp"
 #include "GFX/Core/Pipeline.hpp"
 
-#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/Namespaces.hpp"
 
 #include <optional>
 

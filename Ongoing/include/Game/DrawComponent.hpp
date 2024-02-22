@@ -4,7 +4,7 @@
 #define ACTIVATE_DRAWCOMPONENT_LOG
 
 #include "RenderObjectDesc.hpp"
-#include "GFX/Core/GraphicsException.hpp"
+#include "GFX/Core/Exception.hpp"
 
 #include "GFXCMDLogger.hpp"
 

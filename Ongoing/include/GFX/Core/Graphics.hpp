@@ -2,10 +2,10 @@
 #define __Graphics
 
 #include "App/ChiliWindow.hpp"
-#include "GFXFactory.hpp"
+#include "Factory.hpp"
 #include "Pipeline.hpp"
-#include "GFXSwapChain.hpp"
-#include "GraphicsStorage.hpp"
+#include "SwapChain.hpp"
+#include "Storage.hpp"
 
 class Graphics {
 public:

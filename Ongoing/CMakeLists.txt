@@ -114,17 +114,17 @@ target_sources(chili PRIVATE
 
 # GFX sources
 target_sources(chili PRIVATE
-    src/GFX/Core/GraphicsStorage.cpp
-    src/GFX/Core/GraphicsException.cpp
-    src/GFX/Core/GFXSwapChain.cpp
+    src/GFX/Core/Storage.cpp
+    src/GFX/Core/Exception.cpp
+    src/GFX/Core/SwapChain.cpp
     src/GFX/Core/Graphics.cpp
     include/GFX/Core/Graphics.hpp
-    include/GFX/Core/GFXFactory.hpp
-    include/GFX/Core/GFXSwapChain.hpp
-    include/GFX/Core/GraphicsStorage.hpp
+    include/GFX/Core/Factory.hpp
+    include/GFX/Core/SwapChain.hpp
+    include/GFX/Core/Storage.hpp
     include/GFX/Core/Pipeline.hpp
-    include/GFX/Core/GraphicsException.hpp
-    include/GFX/Core/GraphicsNamespaces.hpp
+    include/GFX/Core/Exception.hpp
+    include/GFX/Core/Namespaces.hpp
 
     src/GFX/PipelineObjects/Buffer.cpp
     src/GFX/PipelineObjects/DrawCaller.cpp

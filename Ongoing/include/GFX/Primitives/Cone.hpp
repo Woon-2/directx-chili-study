@@ -1,13 +1,13 @@
 #ifndef __PCone
 #define __PCone
 
-#include "GFX/Core/GFXFactory.hpp"
+#include "GFX/Core/Factory.hpp"
 #include "GFX/PipelineObjects/IA.hpp"
 #include "GFX/PipelineObjects/Buffer.hpp"
 
 #include <DirectXMath.h>
-#include "GFX/Core/GraphicsException.hpp"
-#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/Exception.hpp"
+#include "GFX/Core/Namespaces.hpp"
 
 #include <ranges>
 #include <iterator>

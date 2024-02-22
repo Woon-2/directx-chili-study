@@ -5,8 +5,8 @@
 #include "GFX/PipelineObjects/DrawCaller.hpp"
 
 #include <d3d11.h>
-#include "GraphicsNamespaces.hpp"
-#include "GraphicsException.hpp"
+#include "Namespaces.hpp"
+#include "Exception.hpp"
 
 class GFXPipeline {
 public:

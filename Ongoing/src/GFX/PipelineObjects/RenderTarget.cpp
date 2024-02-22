@@ -1,6 +1,6 @@
 #include "GFX/PipelineObjects/RenderTarget.hpp"
 
-#include "GFX/Core/GraphicsException.hpp"
+#include "GFX/Core/Exception.hpp"
 
 namespace {
     constexpr const GFXCMDSourceCategory logCategory() noexcept {

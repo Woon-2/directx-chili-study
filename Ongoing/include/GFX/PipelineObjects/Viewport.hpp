@@ -5,8 +5,8 @@
 #include "GFX/Core/Pipeline.hpp"
 
 #include <d3d11.h>
-#include "GFX/Core/GraphicsNamespaces.hpp"
-#include "GFX/Core/GraphicsException.hpp"
+#include "GFX/Core/Namespaces.hpp"
+#include "GFX/Core/Exception.hpp"
 
 class ViewportBinder : public BinderInterface<ViewportBinder> {
 public:

@@ -1,7 +1,7 @@
 #ifndef __Transform
 #define __Transform
 
-#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/Namespaces.hpp"
 
 #include <vector>
 #include <memory>

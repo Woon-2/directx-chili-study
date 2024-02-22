@@ -1,7 +1,7 @@
 #include "GFX/PipelineObjects/DrawCaller.hpp"
 
 #include "GFX/Core/Pipeline.hpp"
-#include "GFX/Core/GraphicsException.hpp"
+#include "GFX/Core/Exception.hpp"
 
 void DrawCaller::basicDrawCall(GFXPipeline& pipeline) const {
     GFX_THROW_FAILED_VOID(

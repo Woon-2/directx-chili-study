@@ -7,7 +7,7 @@
 
 #include "GFX/Primitives/Cube.hpp"
 #include "App/ChiliWindow.hpp"
-#include "GFX/Core/GFXFactory.hpp"
+#include "GFX/Core/Factory.hpp"
 
 #include "SolidMaterial.hpp"
 #include "Image/Surface.hpp"

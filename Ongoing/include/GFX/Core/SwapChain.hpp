@@ -3,7 +3,7 @@
 
 #include <d3d11.h>
 #include <dxgi.h>
-#include "GraphicsNamespaces.hpp"
+#include "Namespaces.hpp"
 
 class GFXSwapChain {
 public:

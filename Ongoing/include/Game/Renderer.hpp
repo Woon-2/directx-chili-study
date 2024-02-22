@@ -8,7 +8,7 @@
 
 #include "GFX/Core/Pipeline.hpp"
 #include "GFX/PipelineObjects/Shader.hpp"
-#include "GFX/Core/GraphicsStorage.hpp"
+#include "GFX/Core/Storage.hpp"
 
 #include "GFX/PipelineObjects/Buffer.hpp"
 

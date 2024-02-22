@@ -3,10 +3,10 @@
 
 #include "GFX/PipelineObjects/Bindable.hpp"
 #include "GFX/PipelineObjects/Buffer.hpp"
-#include "GFX/Core/GFXFactory.hpp"
-#include "GFX/Core/GraphicsStorage.hpp"
+#include "GFX/Core/Factory.hpp"
+#include "GFX/Core/Storage.hpp"
 
-#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/Namespaces.hpp"
 
 struct SolidMaterialDesc {
     dx::XMFLOAT3A diffuse;

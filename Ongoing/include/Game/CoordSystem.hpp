@@ -12,7 +12,7 @@
 #include <vector>
 #include <cassert>
 
-#include "GFX/Core/GraphicsNamespaces.hpp"
+#include "GFX/Core/Namespaces.hpp"
 
 class CoordSystemID {
 public:
