@@ -299,6 +299,7 @@ PRIVATE
     Utility::aranges
     Utility::onehot_encode
     Utility::enum_util
+    Utility::generator
     Resource::resource
     woon2cache::LRUCache
     d3d11.lib

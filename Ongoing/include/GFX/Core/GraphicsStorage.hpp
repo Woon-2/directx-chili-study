@@ -11,8 +11,6 @@
 #include <ranges>
 #include <algorithm>
 #include <coroutine>
-#include <exception>
-#include <variant>
 #include <optional>
 #include <functional>
 #include <type_traits>
@@ -20,6 +18,7 @@
 #include <concepts>
 
 #include "LRUCache.hpp"
+#include "Generator.hpp"
 
 class GFXRes;
 
@@ -76,111 +75,6 @@ public:
 };
 
 class GFXStorage;
-
-namespace detail {
-
-template <class T>
-class GFXResGen {
-private:
-    struct Promise;
-
-public:
-    using promise_type = Promise;
-
-    GFXResGen() = default;
-    explicit GFXResGen(std::coroutine_handle<Promise> h)
-        : h_(h) {}
-
-    GFXResGen(const GFXResGen& other) = default;
-    GFXResGen& operator=(const GFXResGen& other) = default;
-
-    GFXResGen(GFXResGen&& other) noexcept
-        : h_( std::exchange(other.h_, nullptr) ) {}
-
-    GFXResGen& operator=(GFXResGen&& other) noexcept {
-        if (this != &other) {
-            h_ = std::exchange(other.h_, nullptr);
-        }
-
-        return *this;
-    }
-
-    ~GFXResGen() {
-        destroy();
-    }
-
-    void destroy() noexcept {
-        if (h_) {
-            h_.destroy();
-            h_ = nullptr;
-        }
-    }
-
-    T gen() {
-        resume(*this);
-        return h_.promise().get();
-    }
-
-private:
-    static void resume(GFXResGen& gen);
-
-    std::coroutine_handle<Promise> h_;
-};
-
-template <class T>
-struct GFXResGen<T>::Promise {
-    GFXResGen get_return_object() noexcept {
-        return GFXResGen( std::coroutine_handle<Promise>
-            ::from_promise(*this)
-        );
-    }
-
-    std::suspend_always initial_suspend() noexcept {
-        return {};
-    }
-
-    std::suspend_never final_suspend() noexcept {
-        return {};
-    }
-
-    void unhandled_exception() noexcept {
-        stored_ = std::current_exception();
-    }
-
-    void return_void() noexcept {}
-
-    std::suspend_always yield_value(T value) noexcept {
-        stored_ = std::move(value);
-        return {};
-    }
-
-    T& peek() {
-        assert(std::holds_alternative<T>(stored_));
-        return std::get<T>(stored_);
-    }
-
-    T get() {
-        assert(std::holds_alternative<T>(stored_));
-        return std::move( std::get<T>(stored_) );
-    }
-
-    std::variant< std::monostate, T, std::exception_ptr > stored_;
-};
-
-template <class T>
-void GFXResGen<T>::resume(GFXResGen& gen) {
-    gen.h_.resume();
-
-    if ( std::holds_alternative<std::exception_ptr>(
-        gen.h_.promise().stored_
-    ) ) [[unlikely]] {
-        std::rethrow_exception(
-            std::get<std::exception_ptr>(gen.h_.promise().stored_)
-        );
-    }
-}
-
-}
 
 class GFXRes {
 private:
@@ -311,15 +205,15 @@ private:
 
     template <class T, class ... Args>
         requires std::is_base_of_v<IBindable, T>
-    detail::GFXResGen<Pair> makeGenStandAlone(Args ... args);
+    Generator<Pair> makeGenStandAlone(Args ... args);
 
     template <class T, class ... Args>
         requires std::is_base_of_v<IBindable, T>
-    detail::GFXResGen<Pair> makeGenStorageLoad(GFXStorage& storage, Args ... args);
+    Generator<Pair> makeGenStorageLoad(GFXStorage& storage, Args ... args);
 
     template <class T, class Tag, class ... Args>
         requires std::is_base_of_v<IBindable, T>
-    detail::GFXResGen<Pair> makeGenStorageCache(GFXStorage& storage, Tag tag, Args ... args);
+    Generator<Pair> makeGenStorageCache(GFXStorage& storage, Tag tag, Args ... args);
 
     template <class Arg>
     auto packArg(Arg&& arg) {
@@ -346,10 +240,11 @@ private:
     }
 
     void reconstruct() const {
-        stored_ = gen_.gen();
+        gen_.resume();
+        stored_ = gen_.value();
     }
 
-    mutable detail::GFXResGen<Pair> gen_;
+    mutable Generator<Pair> gen_;
     mutable std::optional<Pair> stored_;
     GenMode genMode_;
 };
@@ -389,7 +284,7 @@ GFXRes::GFXRes( Type<T>, GenMode gmod,
         break;
     }
 
-    stored_ = gen_.gen();
+    stored_ = gen_.value();
 }
 
 template <class T>
@@ -526,7 +421,7 @@ private:
 
 template <class T, class ... Args>
     requires std::is_base_of_v<IBindable, T>
-detail::GFXResGen<GFXRes::Pair> GFXRes::makeGenStandAlone(Args ... args) {
+Generator<GFXRes::Pair> GFXRes::makeGenStandAlone(Args ... args) {
     for (;;) {
         co_yield Pair{
             .id = detail::makeGFXResID(),
@@ -537,7 +432,7 @@ detail::GFXResGen<GFXRes::Pair> GFXRes::makeGenStandAlone(Args ... args) {
 
 template <class T, class ... Args>
     requires std::is_base_of_v<IBindable, T>
-detail::GFXResGen<GFXRes::Pair> GFXRes::makeGenStorageLoad(
+Generator<GFXRes::Pair> GFXRes::makeGenStorageLoad(
     GFXStorage& storage, Args ... args
 ) {
     for (;;) {
@@ -547,7 +442,7 @@ detail::GFXResGen<GFXRes::Pair> GFXRes::makeGenStorageLoad(
 
 template <class T, class Tag, class ... Args>
     requires std::is_base_of_v<IBindable, T>
-detail::GFXResGen<GFXRes::Pair> GFXRes::makeGenStorageCache(
+Generator<GFXRes::Pair> GFXRes::makeGenStorageCache(
     GFXStorage& storage, Tag tag, Args ... args
 ) {
     for (;;) {
