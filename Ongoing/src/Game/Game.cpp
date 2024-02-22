@@ -4,6 +4,7 @@
 
 #include "Game/GFXCMDLogger.hpp"
 #include "Game/GFXCMDLogGUIView.hpp"
+#include "Game/GFXCMDLogFileView.hpp"
 
 #include "AdditionalRanges.hpp"
 #include "GFX/Core/GraphicsNamespaces.hpp"
@@ -91,6 +92,7 @@ void Game::render() {
     pointLightControl_.render();
     GFXCMDLOG.advance();
     GFXCMDLOG_GUIVIEW.render();
+    GFXCMDLOG_FILEVIEW.report();
 }
 
 void Game::updateEntities(milliseconds elapsed) {
