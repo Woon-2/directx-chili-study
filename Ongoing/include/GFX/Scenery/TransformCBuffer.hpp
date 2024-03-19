@@ -4,6 +4,9 @@
 #include "GFX/PipelineObjects/Buffer.hpp"
 #include "GFX/Core/Namespaces.hpp"
 
+namespace gfx {
+namespace scenery {
+
 template <class TCBuffer>
 class TransformCBuf : public TCBuffer {
 public:
@@ -19,7 +22,10 @@ private:
     }
 };
 
-class VSTransformCBuf : public TransformCBuf< VSCBuffer<dx::XMMATRIX> > {};
-class PSTransformCBuf : public TransformCBuf< PSCBuffer<dx::XMMATRIX> > {};
+class VSTransformCBuf : public TransformCBuf< po::VSCBuffer<dx::XMMATRIX> > {};
+class PSTransformCBuf : public TransformCBuf< po::PSCBuffer<dx::XMMATRIX> > {};
+
+}   // namespace gfx::scenery
+}   // namespace gfx
 
 #endif  // __TransformCBuffer

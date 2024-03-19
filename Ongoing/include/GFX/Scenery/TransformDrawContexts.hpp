@@ -2,7 +2,7 @@
 #define __TransformDrawContexts
 
 #include "GFX/PipelineObjects/DrawContext.hpp"
-#include "Transform.hpp"
+#include "GFX/Core/Transform.hpp"
 
 #include "GFX/Core/Storage.hpp"
 #include "GFX/Core/Pipeline.hpp"
@@ -11,7 +11,10 @@
 
 #include <optional>
 
-class MapTransformGPU : public IDrawContext {
+namespace gfx {
+namespace scenery {
+
+class MapTransformGPU : public po::IDrawContext {
 public:
     using MatrixType = dx::XMMATRIX;
 
@@ -42,7 +45,7 @@ private:
     std::optional<GFXStorage::ID> IDTransCBuf_;
 };
 
-class ApplyTransform : public IDrawContext {
+class ApplyTransform : public po::IDrawContext {
 public:
     ApplyTransform(MapTransformGPU& mapper)
         : transform_(), mapper_(&mapper) {}
@@ -66,5 +69,8 @@ private:
     Transform transform_;
     MapTransformGPU* mapper_;
 };
+
+}  // namespace gfx::scenery
+}  // namespace gfx
 
 #endif  // __TransformDrawContexts

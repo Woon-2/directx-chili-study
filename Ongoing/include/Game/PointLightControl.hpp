@@ -1,7 +1,7 @@
 #ifndef __PointLightControl
 #define __PointLightControl
 
-#include "PointLight.hpp"
+#include "GFX/Scenery/PointLight.hpp"
 
 #include "GFX/Core/Namespaces.hpp"
 
@@ -9,11 +9,11 @@ class PointLightControlBase {
 public:
     PointLightControlBase(bool willShow = true)
         : PointLightControlBase(
-            Basic::BPDynPointLight::defLightDesc(),
+            gfx::scenery::Basic::BPDynPointLight::defLightDesc(),
             willShow
         ) {}
 
-    PointLightControlBase( const BPPointLightDesc& desc,
+    PointLightControlBase( const gfx::scenery::BPPointLightDesc& desc,
         bool willShow = true
     );
 
@@ -34,7 +34,7 @@ public:
     void reset() noexcept;
 
 protected:
-    BPPointLightDesc initialData_;
+    gfx::scenery::BPPointLightDesc initialData_;
     dx::XMVECTOR pos_;
     dx::XMVECTOR color_;
     float attConst_;
@@ -50,13 +50,13 @@ public:
     PointLightControl(bool willShow = true)
         : PointLightControlBase(willShow) {}
 
-    PointLightControl( const BPPointLightDesc& desc,
+    PointLightControl( const gfx::scenery::BPPointLightDesc& desc,
         bool willShow = true
     ) : PointLightControlBase(desc, willShow) {}
 
-    void submit(Basic::BPDynPointLight& lum);
-    void submit(Luminance& lum);
-    void submit(LightEntity& light);
+    void submit(gfx::scenery::Basic::BPDynPointLight& lum);
+    void submit(gfx::scenery::Luminance& lum);
+    void submit(gfx::scenery::LightEntity& light);
 };
 
 }  // namespace Basic
@@ -68,13 +68,13 @@ public:
     PointLightControl(bool willShow = true)
         : PointLightControlBase(willShow) {}
 
-    PointLightControl( const BPPointLightDesc& desc,
+    PointLightControl( const gfx::scenery::BPPointLightDesc& desc,
         bool willShow = true
     ) : PointLightControlBase(desc, willShow) {}
 
-    void submit(Utilized::BPDynPointLight& lum);
-    void submit(Luminance& lum);
-    void submit(LightEntity& light);
+    void submit(gfx::scenery::Utilized::BPDynPointLight& lum);
+    void submit(gfx::scenery::Luminance& lum);
+    void submit(gfx::scenery::LightEntity& light);
 };
 
 }  // namespace Utilized

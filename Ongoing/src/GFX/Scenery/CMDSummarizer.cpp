@@ -1,6 +1,9 @@
-#include "Game/GFXCMDSummarizer.hpp"
+#include "GFX/Scenery/CMDSummarizer.hpp"
 
 #include <optional>
+
+namespace gfx {
+namespace scenery {
 
 const GFXCMDSummarizer::PHTotalCreateCnt 
     GFXCMDSummarizer::phTotalCreateCnt;
@@ -542,3 +545,6 @@ GFXCMDSummarizer& getGFXCMDSummarizer() {
 
     return inst.value();
 }
+
+}  // namespace gfx::scenery
+}  // namespace gfx

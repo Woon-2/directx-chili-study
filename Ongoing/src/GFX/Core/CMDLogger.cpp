@@ -1,6 +1,8 @@
-#include "Game/GFXCMDLogger.hpp"
+#include "GFX/Core/CMDLogger.hpp"
 
 #include <optional>
+
+namespace gfx {
 
 void GFXCMDLogger::CountLogger::advance() {
     idx_ = (idx_ + 1) % historySize;
@@ -254,3 +256,5 @@ GFXCMDLogger& getGFXCMDLogger() {
 
     return inst.value();
 }
+
+}  // namespace gfx

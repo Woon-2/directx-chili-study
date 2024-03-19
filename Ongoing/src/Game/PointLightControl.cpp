@@ -2,7 +2,7 @@
 #include "imgui.h"
 
 PointLightControlBase::PointLightControlBase(
-    const BPPointLightDesc& desc, bool willShow
+    const gfx::scenery::BPPointLightDesc& desc, bool willShow
 ) : initialData_(desc),
     pos_( dx::XMLoadFloat3A(&desc.pos) ),
     color_( dx::XMLoadFloat3(&desc.color) ),
@@ -46,7 +46,7 @@ void PointLightControlBase::render() {
 
 namespace Basic {
 
-void PointLightControl::submit(Basic::BPDynPointLight& lum) {
+void PointLightControl::submit(gfx::scenery::Basic::BPDynPointLight& lum) {
     lum.setPos(pos_);
     lum.setColor(color_);
     lum.setAttConst(attConst_);
@@ -54,12 +54,12 @@ void PointLightControl::submit(Basic::BPDynPointLight& lum) {
     lum.setAttQuad(attQuad_);
 }
 
-void PointLightControl::submit(Luminance& lum) {
+void PointLightControl::submit(gfx::scenery::Luminance& lum) {
     assert( lum.res().valid() );
-    submit( lum.res().as<Basic::BPDynPointLight>() );
+    submit( lum.res().as<gfx::scenery::Basic::BPDynPointLight>() );
 }
 
-void PointLightControl::submit(LightEntity& light) {
+void PointLightControl::submit(gfx::scenery::LightEntity& light) {
     if (light.hasLuminance()) {
         submit(light.luminance());
     }
@@ -70,7 +70,7 @@ void PointLightControl::submit(LightEntity& light) {
 
 namespace Utilized {
 
-void PointLightControl::submit(Utilized::BPDynPointLight& lum) {
+void PointLightControl::submit(gfx::scenery::Utilized::BPDynPointLight& lum) {
     lum.setPos(pos_);
     lum.setColor(color_);
     lum.setAttConst(attConst_);
@@ -78,12 +78,12 @@ void PointLightControl::submit(Utilized::BPDynPointLight& lum) {
     lum.setAttQuad(attQuad_);
 }
 
-void PointLightControl::submit(Luminance& lum) {
+void PointLightControl::submit(gfx::scenery::Luminance& lum) {
     assert( lum.res().valid() );
-    submit( lum.res().as<Utilized::BPDynPointLight>() );
+    submit( lum.res().as<gfx::scenery::Utilized::BPDynPointLight>() );
 }
 
-void PointLightControl::submit(LightEntity& light) {
+void PointLightControl::submit(gfx::scenery::LightEntity& light) {
     if (light.hasLuminance()) {
         submit(light.luminance());
     }

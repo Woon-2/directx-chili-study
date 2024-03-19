@@ -1,5 +1,7 @@
 #include "GFX/Core/Storage.hpp"
 
+namespace gfx {
+
 std::optional<GFXRes::Dummy> GFXRes::nullTag;
 
 GFXRes::GFXRes(GFXRes&& other) noexcept
@@ -27,3 +29,5 @@ GFXRes& GFXRes::operator=(GFXRes&& other) noexcept {
 
     return *this;
 }
+
+}   // namespace gfx

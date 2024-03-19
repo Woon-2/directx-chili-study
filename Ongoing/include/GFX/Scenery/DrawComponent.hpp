@@ -6,12 +6,17 @@
 #include "RenderObjectDesc.hpp"
 #include "GFX/Core/Exception.hpp"
 
-#include "GFXCMDLogger.hpp"
+#include "GFX/Core/CMDLogger.hpp"
 
 #include <optional>
 #include <memory>
 
+namespace gfx {
+namespace po {
 class BasicDrawCaller;
+}   // namespace po
+
+namespace scenery {
 
 class IDrawComponent {
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
@@ -22,8 +27,8 @@ public:
     virtual ~IDrawComponent() = 0 {}
 
     virtual const RenderObjectDesc& renderObjectDesc() const = 0;
-    virtual BasicDrawCaller& drawCaller() = 0;
-    virtual const BasicDrawCaller& drawCaller() const = 0;
+    virtual po::BasicDrawCaller& drawCaller() = 0;
+    virtual const po::BasicDrawCaller& drawCaller() const = 0;
 
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
     static constexpr const GFXCMDSourceCategory
@@ -119,14 +124,14 @@ public:
         return roDesc_.value();
     }
 
-    BasicDrawCaller& drawCaller() final override {
+    po::BasicDrawCaller& drawCaller() final override {
         if (!drawCaller_.has_value()) {
             throw GFX_EXCEPT_CUSTOM(errMsgNoDrawCaller());
         }
         return *drawCaller_.value().get();
     }
 
-    const BasicDrawCaller& drawCaller() const final override {
+    const po::BasicDrawCaller& drawCaller() const final override {
         if (!drawCaller_.has_value()) {
             throw GFX_EXCEPT_CUSTOM(errMsgNoDrawCaller());
         }
@@ -146,7 +151,7 @@ protected:
         roDesc_.reset();
     }
 
-    void setDrawCaller(std::unique_ptr<BasicDrawCaller>&& drawCaller) {
+    void setDrawCaller(std::unique_ptr<po::BasicDrawCaller>&& drawCaller) {
         drawCaller_ = std::move(drawCaller);
     }
 
@@ -166,7 +171,7 @@ private:
     }
 
     std::optional< RenderObjectDesc > roDesc_;
-    std::optional< std::unique_ptr<BasicDrawCaller> > drawCaller_;
+    std::optional< std::unique_ptr<po::BasicDrawCaller> > drawCaller_;
 };
 
 /******** Deprecated ********/
@@ -180,5 +185,8 @@ private:
 // Note: The specialization of this class template must inherit IDrawComponent.
 template <class T>
 class DrawComponent;
+
+}   // namespace gfx::scenery
+}   // namespace gfx
 
 #endif  // __DrawComponent

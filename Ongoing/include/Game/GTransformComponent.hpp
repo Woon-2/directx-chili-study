@@ -1,7 +1,7 @@
 #ifndef __GTransformComponent
 #define __GTransformComponent
 
-#include "Transform.hpp"
+#include "GFX/Core/Transform.hpp"
 
 #include "Chrono.hpp"
 
@@ -11,7 +11,7 @@ using Distribution = std::normal_distribution<float>;
 static std::random_device rd;
 static std::mt19937 rng( rd() );
 
-class GTransformComponent : public BasicTransformComponent {
+class GTransformComponent : public gfx::BasicTransformComponent {
 public:
     GTransformComponent() = default;
     template <class DistributionT>
@@ -28,16 +28,16 @@ public:
 
     void update(milliseconds elapsed);
 
-    void VCALL setTotal(Transform total) noexcept {
+    void VCALL setTotal(gfx::Transform total) noexcept {
         total_ = total;
     }
 
-    const Transform& total() const noexcept {
+    const gfx::Transform& total() const noexcept {
         return total_;
     }
 
 private:
-    Transform total_;
+    gfx::Transform total_;
 
     float radius_;
 

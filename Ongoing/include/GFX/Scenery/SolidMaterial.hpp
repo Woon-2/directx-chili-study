@@ -1,12 +1,15 @@
 #ifndef __SolidMaterial
 #define __SolidMaterial
 
-#include "GFX/PipelineObjects/Bindable.hpp"
+#include "GFX/PipelineObjects/PipelineObject.hpp"
 #include "GFX/PipelineObjects/Buffer.hpp"
 #include "GFX/Core/Factory.hpp"
 #include "GFX/Core/Storage.hpp"
 
 #include "GFX/Core/Namespaces.hpp"
+
+namespace gfx {
+namespace scenery {
 
 struct SolidMaterialDesc {
     dx::XMFLOAT3A diffuse;
@@ -16,9 +19,9 @@ struct SolidMaterialDesc {
     dx::XMFLOAT3A emmisive;
 };
 
-class SolidMaterial : public IBindable{
+class SolidMaterial : public po::IPipelineObject {
 private:
-    using MyPSCBuffer = PSCBuffer<SolidMaterialDesc>;
+    using MyPSCBuffer = po::PSCBuffer<SolidMaterialDesc>;
 
 public:
     SolidMaterial() = default;
@@ -87,5 +90,8 @@ private:
     SolidMaterialDesc matDesc_;
     MyPSCBuffer cbuf_;
 };
+
+}  // namespace scenery
+}  // namespace gfx
 
 #endif  // __SolidMaterial

@@ -1,12 +1,15 @@
 #ifndef __Topology
 #define __Topology
 
-#include "Bindable.hpp"
+#include "PipelineObject.hpp"
 #include "GFX/Core/Pipeline.hpp"
 
 #include <d3d11.h>
 #include "GFX/Core/Namespaces.hpp"
 #include "GFX/Core/Exception.hpp"
+
+namespace gfx {
+namespace po {
 
 class TopologyBinder : public BinderInterface<TopologyBinder> {
 public:
@@ -20,7 +23,7 @@ private:
     }
 };
 
-class Topology : public IBindable,
+class Topology : public IPipelineObject,
     public LocalRebindInterface<Topology> {
 public:
     using MyValue = D3D11_PRIMITIVE_TOPOLOGY;
@@ -69,10 +72,13 @@ private:
     }
 
 #ifdef ACTIVATE_BINDABLE_LOG
-    IBindable::LogComponent logComponent_;
+    IPipelineObject::LogComponent logComponent_;
 #endif
     MyValue data_;
     TopologyBinder binder_;
 };
+
+}   // namespace gfx
+}   // namespace po
 
 #endif  // __Topology

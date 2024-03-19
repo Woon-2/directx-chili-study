@@ -2,14 +2,14 @@
 #define __IlluminatedBox
 
 #include "PrimitiveEntity.hpp"
-#include "Scene.hpp"
-#include "RCDrawComponent.hpp"
+#include "GFX/Scenery/Scene.hpp"
+#include "GFX/Scenery/RCDrawComponent.hpp"
 
 #include "GFX/Primitives/Cube.hpp"
 #include "App/ChiliWindow.hpp"
 #include "GFX/Core/Factory.hpp"
 
-#include "SolidMaterial.hpp"
+#include "GFX/Scenery/SolidMaterial.hpp"
 #include "Image/Surface.hpp"
 #include "GFX/PipelineObjects/Texture.hpp"
 #include "GFX/PipelineObjects/Sampler.hpp"
@@ -19,7 +19,7 @@ class IlluminatedBox {
 };
 
 template <>
-class DrawComponent<IlluminatedBox> : public RCDrawCmp {
+class gfx::scenery::DrawComponent<IlluminatedBox> : public gfx::scenery::RCDrawCmp {
 public:
     struct {} tagVertexBuffer;
     struct {} tagNormalBuffer;
@@ -29,23 +29,23 @@ public:
     struct {} tagTransformCBufVP;
     struct {} tagViewport;
 
-    class MyVertexBuffer : public Primitives::Cube::CubeVertexBufferIndependent {
+    class MyVertexBuffer : public gfx::Primitives::Cube::CubeVertexBufferIndependent {
     public:
         MyVertexBuffer(GFXFactory factory)
-            : Primitives::Cube::CubeVertexBufferIndependent(factory) {}
+            : gfx::Primitives::Cube::CubeVertexBufferIndependent(factory) {}
 
         static constexpr auto size() {
-            return Primitives::Cube::CubeVertexBufferIndependent::size();
+            return gfx::Primitives::Cube::CubeVertexBufferIndependent::size();
         }
     };
 
-    class MyNormalBuffer : public Primitives::Cube::CubeNormalBufferIndependent {
+    class MyNormalBuffer : public gfx::Primitives::Cube::CubeNormalBufferIndependent {
     public:
         MyNormalBuffer(GFXFactory factory)
-            : Primitives::Cube::CubeNormalBufferIndependent(factory) {}
+            : gfx::Primitives::Cube::CubeNormalBufferIndependent(factory) {}
 
         static constexpr auto size() {
-            return Primitives::Cube::CubeNormalBufferIndependent::size();
+            return gfx::Primitives::Cube::CubeNormalBufferIndependent::size();
         }
     };
 
@@ -68,10 +68,10 @@ public:
     };
 
     using MyViewport = PEViewport;
-    using MyDrawCaller = DrawCaller;
+    using MyDrawCaller = gfx::po::DrawCaller;
 
-    DrawComponent( GFXFactory factory, GFXPipeline pipeline,
-        GFXStorage& storage, const ChiliWindow& wnd
+    DrawComponent( gfx::GFXFactory factory, gfx::GFXPipeline pipeline,
+        gfx::GFXStorage& storage, const ChiliWindow& wnd
     ) : transformGPUMapperV_(storage),
         transformGPUMapperVP_(storage),
         transformApplyerV_(transformGPUMapperV_),
@@ -105,7 +105,7 @@ public:
     #endif
     }
 
-    void VCALL updateTrans(const Transform transform) {
+    void VCALL updateTrans(const gfx::Transform transform) {
         transformGPUMapperV_.update(transform);
         transformGPUMapperVP_.update(transform);
     }
@@ -130,7 +130,7 @@ public:
         material_.as<MyMaterial>().setEmmisive(color);
     }
 
-    void updateMaterial(const SolidMaterialDesc& desc) {
+    void updateMaterial(const gfx::scenery::SolidMaterialDesc& desc) {
         updateDiffuse( dx::XMLoadFloat3A(&desc.diffuse) );
         updateSpecular( dx::XMLoadFloat3(&desc.specular) );
         updateShinyness(desc.shinyness);
@@ -138,16 +138,16 @@ public:
         updateAmbient( dx::XMLoadFloat3A(&desc.emmisive) );
     }
 
-    void sync(const Renderer& renderer) override {
-        if ( typeid(renderer) == typeid(BPhongRenderer) ) {
-            sync( static_cast<const BPhongRenderer&>(renderer) );
+    void sync(const gfx::scenery::Renderer& renderer) override {
+        if ( typeid(renderer) == typeid(gfx::scenery::BPhongRenderer) ) {
+            sync( static_cast<const gfx::scenery::BPhongRenderer&>(renderer) );
         }
         else {
             throw GFX_EXCEPT_CUSTOM("DrawComponent tried to synchronize with incompatible renderer.\n");
         }
     }
 
-    void sync(const BPhongRenderer& renderer) {
+    void sync(const gfx::scenery::BPhongRenderer& renderer) {
         assert(transformCBufV_.valid());
         transformCBufV_.as<MyTransformCBufV>().setSlot( 0u );
 
@@ -156,20 +156,20 @@ public:
 
         assert(posBuffer_.valid());
         posBuffer_.as<MyVertexBuffer>().setSlot(
-            BPhongRenderer::slotPosBuffer()
+            gfx::scenery::BPhongRenderer::slotPosBuffer()
         );
 
         assert(normalBuffer_.valid());
         normalBuffer_.as<MyNormalBuffer>().setSlot(
-            BPhongRenderer::slotNormalBuffer()
+            gfx::scenery::BPhongRenderer::slotNormalBuffer()
         );
 
         assert(normalBuffer_.valid());
         material_.as<MyMaterial>().setSlot(
-            BPhongRenderer::slotMaterialCBuffer()
+            gfx::scenery::BPhongRenderer::slotMaterialCBuffer()
         );
 
-        this->setRODesc( RenderObjectDesc{
+        this->setRODesc( gfx::scenery::RenderObjectDesc{
             .header = {
                 .IDBuffer = posBuffer_.id(),
                 .IDType = typeid(IlluminatedBox)
@@ -182,30 +182,30 @@ public:
         } );
     }
 
-    void sync(const CameraVision& vision) {
+    void sync(const gfx::scenery::CameraVision& vision) {
         transformApplyerV_.setTransform( vision.viewTrans() );
         transformApplyerVP_.setTransform( vision.viewTrans() * vision.projTrans() );
     }
 
 private:
-    MapTransformGPU transformGPUMapperV_;
-    MapTransformGPU transformGPUMapperVP_;
-    ApplyTransform transformApplyerV_;
-    ApplyTransform transformApplyerVP_;
+    gfx::scenery::MapTransformGPU transformGPUMapperV_;
+    gfx::scenery::MapTransformGPU transformGPUMapperVP_;
+    gfx::scenery::ApplyTransform transformApplyerV_;
+    gfx::scenery::ApplyTransform transformApplyerVP_;
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
-    IDrawComponent::LogComponent logComponent_;
+    gfx::scenery::IDrawComponent::LogComponent logComponent_;
 #endif
-    GFXRes posBuffer_;
-    GFXRes normalBuffer_;
-    GFXRes material_;
-    GFXRes topology_;
-    GFXRes viewport_;
-    GFXRes transformCBufV_;
-    GFXRes transformCBufVP_;
-    std::optional<RenderObjectDesc> RODesc_;
+    gfx::GFXRes posBuffer_;
+    gfx::GFXRes normalBuffer_;
+    gfx::GFXRes material_;
+    gfx::GFXRes topology_;
+    gfx::GFXRes viewport_;
+    gfx::GFXRes transformCBufV_;
+    gfx::GFXRes transformCBufVP_;
+    std::optional<gfx::scenery::RenderObjectDesc> RODesc_;
     MyDrawCaller drawCaller_;
-    GFXPipeline pipeline_;
-    GFXStorage* pStorage_;
+    gfx::GFXPipeline pipeline_;
+    gfx::GFXStorage* pStorage_;
 };
 
 template<>

@@ -1,4 +1,7 @@
-#include "Game/PointLight.hpp"
+#include "GFX/Scenery/PointLight.hpp"
+
+namespace gfx {
+namespace scenery {
 
 namespace Basic {
 
@@ -123,17 +126,17 @@ public:
 };
 
 class LightViz::DrawComponentLViz::MyColorCBuf
-    : public PSCBuffer<dx::XMVECTOR> {
+    : public po::PSCBuffer<dx::XMVECTOR> {
 public:
     MyColorCBuf(GFXFactory factory)
-        : PSCBuffer<dx::XMVECTOR>( std::move(factory),
+        : po::PSCBuffer<dx::XMVECTOR>( std::move(factory),
             D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE,
             std::ranges::single_view(dx::XMVectorReplicate(1.f))
         ) {}
 };
 
 class LightViz::DrawComponentLViz::MyDynColorCBuf
-    : public IBindable {
+    : public po::IPipelineObject {
 public:
     MyDynColorCBuf(GFXFactory factory)
         : wrapped_( std::move(factory) ),
@@ -168,7 +171,7 @@ private:
 };
 
 class LightViz::DrawComponentLViz::MyTransformCBuf
-    : public VSCBuffer<dx::XMMATRIX>{
+    : public po::VSCBuffer<dx::XMMATRIX>{
 public:
     MyTransformCBuf() = default;
     MyTransformCBuf(GFXFactory factory)
@@ -179,7 +182,7 @@ public:
 };
 
 class LightViz::DrawComponentLViz::MyViewport
-    : public Viewport {
+    : public po::Viewport {
 public:
     MyViewport(const Win32::Client& client)
         : Viewport( D3D11_VIEWPORT{
@@ -193,7 +196,7 @@ public:
 };
 
 class LightViz::DrawComponentLViz::MyTopology
-    : public Topology {
+    : public po::Topology {
 public:
     MyTopology()
         : Topology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) {}
@@ -329,3 +332,6 @@ void LightViz::DrawComponentLViz::swap(
     rhs.logComponent_.setLogSrc(&rhs);
 #endif
 }
+
+}   // namespace gfx::scenery
+}   // namespace gfx

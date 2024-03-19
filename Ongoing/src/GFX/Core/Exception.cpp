@@ -6,7 +6,10 @@
 #include <string>
 #include <sstream>
 
+namespace gfx {
+
 #ifndef NDEBUG
+
 GraphicsException::GraphicsException(int line, const char* file,
     HRESULT hr, const DXGIInfoMsgContainer<std::string>& msgs
 ) : Win32::WindowException(line, file, hr), info_() {
@@ -148,3 +151,5 @@ const char* DeviceRemovedException::type() const noexcept
 {
     return "DeviceRemovedException";
 }
+
+} // namespace gfx

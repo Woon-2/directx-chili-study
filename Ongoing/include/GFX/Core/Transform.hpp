@@ -7,6 +7,8 @@
 #include <memory>
 #include <optional>
 
+namespace gfx {
+
 class alignas(16) Transform {
 public:
     Transform() noexcept
@@ -105,5 +107,7 @@ private:
     Transform local_;
     Transform global_;
 };
+
+}  // namespace gfx
 
 #endif

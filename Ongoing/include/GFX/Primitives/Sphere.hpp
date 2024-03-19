@@ -12,6 +12,7 @@
 #include <iterator>
 #include <algorithm>
 
+namespace gfx {
 namespace Primitives {
 
 struct Sphere {
@@ -20,13 +21,13 @@ struct Sphere {
 
     static constexpr auto defNTesselation = 16u;
 
-    class SphereVertexBuffer : public VertexBuffer<MyVertex> {
+    class SphereVertexBuffer : public po::VertexBuffer<MyVertex> {
     public:
         SphereVertexBuffer() = default;
         SphereVertexBuffer( GFXFactory factory,
             std::size_t nTesselationLat = defNTesselation,
             std::size_t nTesselationLong = defNTesselation
-        ) : VertexBuffer<MyVertex>( factory,
+        ) : po::VertexBuffer<MyVertex>( factory,
                 Sphere::modelPositions< std::vector<MyVertex> >(
                     nTesselationLat, nTesselationLong
                 )
@@ -40,13 +41,13 @@ struct Sphere {
         }
     };
 
-    class SphereIndexBuffer : public IndexBuffer<MyIndex> {
+    class SphereIndexBuffer : public po::IndexBuffer<MyIndex> {
     public:
         SphereIndexBuffer() = default;
         SphereIndexBuffer( GFXFactory factory,
             std::size_t nTesselationLat = defNTesselation,
             std::size_t nTesselationLong = defNTesselation
-        ) : IndexBuffer<MyIndex>( factory,
+        ) : po::IndexBuffer<MyIndex>( factory,
                 Sphere::modelIndices< std::vector<MyIndex> >(
                     nTesselationLat, nTesselationLong
                 )
@@ -178,6 +179,7 @@ struct Sphere {
     }
 };
 
-} // namespace Primitives
+}   // namespace gfx::Primitives
+}   // namespace gfx
 
 #endif  // __PSphere

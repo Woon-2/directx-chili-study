@@ -4,6 +4,8 @@
 #include <d3d11.h>
 #include "Namespaces.hpp"
 
+namespace gfx {
+
 class GFXFactory {
 public:
     GFXFactory() = default;
@@ -39,5 +41,6 @@ private:
     wrl::ComPtr<ID3D11Device> pDevice_;
 };
 
+}   // namespace gfx
 
 #endif  // __GFXFactory

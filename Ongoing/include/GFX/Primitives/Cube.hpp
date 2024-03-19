@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <array>
 
+namespace gfx {
 namespace Primitives {
 
 struct Cube {
@@ -19,11 +20,11 @@ struct Cube {
 
     static constexpr auto side = 0.5f;
 
-    class CubeVertexBuffer : public VertexBuffer<MyVertex> {
+    class CubeVertexBuffer : public po::VertexBuffer<MyVertex> {
     public:
         CubeVertexBuffer() = default;
         CubeVertexBuffer(GFXFactory factory)
-            : VertexBuffer<MyVertex>( factory,
+            : po::VertexBuffer<MyVertex>( factory,
                 Cube::modelPositions< std::vector<MyVertex> >()
             ) {}
 
@@ -32,11 +33,11 @@ struct Cube {
         }
     };
 
-    class CubeVertexBufferIndependent : public VertexBuffer<MyVertex> {
+    class CubeVertexBufferIndependent : public po::VertexBuffer<MyVertex> {
     public:
         CubeVertexBufferIndependent() = default;
         CubeVertexBufferIndependent(GFXFactory factory)
-            : VertexBuffer<MyVertex>( factory,
+            : po::VertexBuffer<MyVertex>( factory,
                 Cube::modelPositionsIndependent< std::vector<MyVertex> >()
             ) {}
 
@@ -45,11 +46,11 @@ struct Cube {
         }
     };
 
-    class CubeNormalBufferIndependent : public VertexBuffer<MyNormal> {
+    class CubeNormalBufferIndependent : public po::VertexBuffer<MyNormal> {
     public:
         CubeNormalBufferIndependent() = default;
         CubeNormalBufferIndependent(GFXFactory factory)
-            : VertexBuffer<MyNormal>( factory,
+            : po::VertexBuffer<MyNormal>( factory,
                 Cube::modelNormalsIndependent< std::vector<MyNormal> >()
             ) {}
 
@@ -58,11 +59,11 @@ struct Cube {
         }
     };
 
-    class CubeIndexBuffer : public IndexBuffer<MyIndex> {
+    class CubeIndexBuffer : public po::IndexBuffer<MyIndex> {
     public:
         CubeIndexBuffer() = default;
         CubeIndexBuffer(GFXFactory factory)
-            : IndexBuffer<MyIndex>( factory,
+            : po::IndexBuffer<MyIndex>( factory,
                 Cube::modelIndices< std::vector<MyIndex> >()
             ) {}
 
@@ -170,6 +171,7 @@ struct Cube {
     }
 };
 
-}   // namespace Primitives
+}   // namespace gfx::Primitives
+}   // namespace gfx
 
 #endif  // __PCube

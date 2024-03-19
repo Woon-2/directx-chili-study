@@ -16,6 +16,9 @@
 
 #include <cassert>
 
+namespace gfx {
+namespace scenery {
+
 class Layer {
 public:
     void setup() {
@@ -193,5 +196,8 @@ public:
 private:
     Scene* pRawScene_;
 };
+
+}  // namespace gfx::scenery
+}  // namespace gfx
 
 #endif  // __Scene

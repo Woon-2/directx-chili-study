@@ -1,7 +1,7 @@
 #ifndef __CoordSystem
 #define __CoordSystem
 
-#include "Transform.hpp"
+#include "GFX/Core/Transform.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -47,7 +47,7 @@ private:
 class CoordSystem {
 public:
     CoordSystem()
-        : tc_(), total_( Transform() ), parent_(),
+        : tc_(), total_( gfx::Transform() ), parent_(),
         children_(), id_() {}
 
     ~CoordSystem();
@@ -78,31 +78,31 @@ public:
         return id_;
     }
 
-    void VCALL adjustLocal(const Transform trans) noexcept {
+    void VCALL adjustLocal(const gfx::Transform trans) noexcept {
         tc_.adjustLocal(trans);
         setDirty();
     }
 
-    void VCALL setLocal(const Transform trans) noexcept {
+    void VCALL setLocal(const gfx::Transform trans) noexcept {
         tc_.setLocal(trans);
         setDirty();
     }
 
-    const Transform& local() const noexcept {
+    const gfx::Transform& local() const noexcept {
         return tc_.local();
     }
 
-    void VCALL adjustGlobal(const Transform trans) noexcept {
+    void VCALL adjustGlobal(const gfx::Transform trans) noexcept {
         tc_.adjustGlobal(trans);
         setDirty();
     }
 
-    void VCALL setGlobal(const Transform trans) noexcept {
+    void VCALL setGlobal(const gfx::Transform trans) noexcept {
         tc_.setGlobal(trans);
         setDirty();
     }
 
-    const Transform& global() const noexcept {
+    const gfx::Transform& global() const noexcept {
         return tc_.global();
     }
 
@@ -116,7 +116,7 @@ public:
 
     void destroyCascade() noexcept;
 
-    const Transform& total() const noexcept {
+    const gfx::Transform& total() const noexcept {
         assert(!dirty());
         return total_.value();
     }
@@ -140,7 +140,7 @@ public:
     }
 
 private:
-    void VCALL setTotal(Transform total) {
+    void VCALL setTotal(gfx::Transform total) {
         total_ = total;
     }
 
@@ -149,8 +149,8 @@ private:
         CoordSystem& child
     );
 
-    BasicTransformComponent tc_;
-    std::optional<Transform> total_;
+    gfx::BasicTransformComponent tc_;
+    std::optional<gfx::Transform> total_;
     std::optional<const CoordSystem*> parent_;
     // children_ should be mutable to reflect destruction
     // of current CoordSystem on parent_

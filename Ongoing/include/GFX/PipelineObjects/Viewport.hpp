@@ -1,12 +1,15 @@
 #ifndef __Viewport
 #define __Viewport
 
-#include "Bindable.hpp"
+#include "PipelineObject.hpp"
 #include "GFX/Core/Pipeline.hpp"
 
 #include <d3d11.h>
 #include "GFX/Core/Namespaces.hpp"
 #include "GFX/Core/Exception.hpp"
+
+namespace gfx {
+namespace po {
 
 class ViewportBinder : public BinderInterface<ViewportBinder> {
 public:
@@ -20,7 +23,7 @@ private:
     }
 };
 
-class Viewport : public IBindable,
+class Viewport : public IPipelineObject,
     public LocalRebindInterface<Viewport> {
 public:
     friend class LocalRebindInterface<Viewport>;
@@ -81,10 +84,13 @@ private:
     }
 
 #ifdef ACTIVATE_BINDABLE_LOG
-    IBindable::LogComponent logComponent_;
+    IPipelineObject::LogComponent logComponent_;
 #endif
     D3D11_VIEWPORT data_;
     ViewportBinder binder_;
 };
+
+}   // namespace gfx::po
+}   // namespace gfx
 
 #endif  // __Viewport

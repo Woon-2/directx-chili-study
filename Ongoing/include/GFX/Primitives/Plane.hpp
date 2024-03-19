@@ -9,6 +9,7 @@
 #include <iterator>
 #include <algorithm>
 
+namespace gfx {
 namespace Primitives {
 
 struct Plane {
@@ -17,13 +18,13 @@ struct Plane {
 
     static constexpr auto defNTesselation = 16u;
 
-    class PlaneVertexBuffer : public VertexBuffer<MyVertex> {
+    class PlaneVertexBuffer : public po::VertexBuffer<MyVertex> {
     public:
         PlaneVertexBuffer() = default;
         PlaneVertexBuffer( GFXFactory factory,
             std::size_t nTesselationX = defNTesselation,
             std::size_t nTesselationY = defNTesselation
-        ) : VertexBuffer<MyVertex>( factory,
+        ) : po::VertexBuffer<MyVertex>( factory,
                 Plane::modelPositions< std::vector<MyVertex> >(
                     nTesselationX, nTesselationY
                 )
@@ -37,13 +38,13 @@ struct Plane {
         }
     };
 
-    class PlaneIndexBuffer : public IndexBuffer<MyIndex> {
+    class PlaneIndexBuffer : public po::IndexBuffer<MyIndex> {
     public:
         PlaneIndexBuffer() = default;
         PlaneIndexBuffer( GFXFactory factory,
             std::size_t nTesselationX = defNTesselation,
             std::size_t nTesselationY = defNTesselation
-        ) : IndexBuffer<MyIndex>( factory,
+        ) : po::IndexBuffer<MyIndex>( factory,
                 Plane::modelIndices< std::vector<MyIndex> >(
                     nTesselationX, nTesselationY
                 )
@@ -141,6 +142,7 @@ struct Plane {
     }
 };
 
-}   // namespace Primitives
+}   // namespace gfx::Primitives
+}   // namespace gfx
 
 #endif  // __PPlain

@@ -1,5 +1,8 @@
 #include "GFX/PipelineObjects/Shader.hpp"
 
+namespace gfx {
+namespace po {
+
 void VertexShaderBinder::doBind(GFXPipeline& pipeline,
     ID3D11VertexShader* pShader, ID3D11InputLayout* pIA
 ) {
@@ -74,3 +77,6 @@ void PixelShader::bind(GFXPipeline& pipeline) {
     }
 #endif 
 }
+
+}   // namespace gfx::po
+}   // namespace gfx

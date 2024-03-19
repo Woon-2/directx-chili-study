@@ -7,6 +7,8 @@
 #include "SwapChain.hpp"
 #include "Storage.hpp"
 
+namespace gfx{
+
 class Graphics {
 public:
     using MyWindow = ChiliWindow;
@@ -65,5 +67,7 @@ private:
 
     GFXRes appRenderTarget_;
 };
+
+} // namespace gfx
 
 #endif  // __Graphics

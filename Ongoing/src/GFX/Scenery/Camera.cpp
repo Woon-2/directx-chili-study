@@ -1,6 +1,9 @@
-#include "Game/Camera.hpp"
+#include "GFX/Scenery/Camera.hpp"
 
 #include <functional>
+
+namespace gfx {
+namespace scenery {
 
 CameraVision::CameraVision()
     : CameraVision( CameraVisionDesc{
@@ -110,3 +113,6 @@ void Camera::rotateZ(float theta) {
 void VCALL Camera::rotateAxis(dx::FXMVECTOR axis, float theta) {
     vision().viewTrans() *= dx::XMMatrixRotationAxis(axis, theta);
 }
+
+} // namespace gfx::scenery
+} // namespace gfx

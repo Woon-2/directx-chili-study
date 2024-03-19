@@ -1,10 +1,10 @@
 #ifndef __GFXCMDSummarizer
 #define __GFXCMDSummarizer
 
-#include "GFXCMDLogger.hpp"
+#include "GFX/Core/CMDLogger.hpp"
 
-#include "Renderer.hpp"
-#include "DrawComponent.hpp"
+#include "GFX/Scenery/Renderer.hpp"
+#include "GFx/Scenery/DrawComponent.hpp"
 
 #include <variant>
 #include <string>
@@ -12,7 +12,10 @@
 #include <optional>
 #include <unordered_map>
 
-#define GFXCMDSUM getGFXCMDSummarizer()
+#define GFXCMDSUM gfx::scenery::getGFXCMDSummarizer()
+
+namespace gfx {
+namespace scenery {
 
 class GFXCMDSummarizer {
 public:
@@ -292,5 +295,8 @@ private:
 };
 
 GFXCMDSummarizer& getGFXCMDSummarizer();
+
+}  // namespace gfx::scenery
+}  // namespace gfx
 
 #endif  // __GFXCMDSummarizer

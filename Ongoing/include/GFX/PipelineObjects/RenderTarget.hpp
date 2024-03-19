@@ -1,12 +1,15 @@
 #ifndef __RenderTarget
 #define __RenderTarget
 
-#include "Bindable.hpp"
+#include "PipelineObject.hpp"
 #include "GFX/Core/Pipeline.hpp"
 #include "GFX/Core/Factory.hpp"
 
 #include <d3d11.h>
 #include "GFX/Core/Namespaces.hpp"
+
+namespace gfx {
+namespace po {
 
 class RenderTargetBinder : public BinderInterface<RenderTargetBinder> {
 public:
@@ -18,7 +21,7 @@ private:
     );
 };
 
-class RenderTarget : public IBindable,
+class RenderTarget : public IPipelineObject,
     public LocalRebindInterface<RenderTarget> {
 public:
     friend class LocalRebindInterface<RenderTarget>;
@@ -90,12 +93,15 @@ private:
     }
 
 #ifdef ACTIVATE_BINDABLE_LOG
-    IBindable::LogComponent logComponent_;
+    IPipelineObject::LogComponent logComponent_;
 #endif
     GFXPipeline pipeline_;
     wrl::ComPtr<ID3D11RenderTargetView> pRTV_;
     wrl::ComPtr<ID3D11DepthStencilView> pDSV_;
     RenderTargetBinder binder_;
 };
+
+}   // namespace gfx::po
+}   // namespace gfx
 
 #endif  // __RenderTarget

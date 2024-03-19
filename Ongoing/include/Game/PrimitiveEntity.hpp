@@ -2,14 +2,14 @@
 #define __PrimitiveEntity
 
 #include "Entity.hpp"
-#include "Scene.hpp"
-#include "Renderer.hpp"
-#include "RCDrawComponent.hpp"
+#include "GFX/Scenery/Scene.hpp"
+#include "GFX/Scenery/Renderer.hpp"
+#include "GFX/Scenery/RCDrawComponent.hpp"
 #include "GTransformComponent.hpp"
-#include "TransformDrawContexts.hpp"
+#include "GFX/Scenery/TransformDrawContexts.hpp"
 #include "InputComponent.hpp"
 #include "InputSystem.hpp"
-#include "Camera.hpp"
+#include "GFX/Scenery/Camera.hpp"
 
 #include "App/ChiliWindow.hpp"
 #include "GFX/Core/Factory.hpp"
@@ -30,20 +30,20 @@
 #include <memory>
 
 struct PEFaceColorData {
-    GFXColor faceColors[6];
+    gfx::GFXColor faceColors[6];
 };
 
-class PETopology : public Topology {
+class PETopology : public gfx::po::Topology {
 public:
     PETopology()
-        : Topology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) {}
+        : gfx::po::Topology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) {}
 };
 
-class PETransformCBuf : public VSCBuffer<dx::XMMATRIX>{
+class PETransformCBuf : public gfx::po::VSCBuffer<dx::XMMATRIX>{
 public:
     PETransformCBuf() = default;
-    PETransformCBuf(GFXFactory factory)
-        : VSCBuffer<dx::XMMATRIX>(factory, D3D11_USAGE_DYNAMIC,
+    PETransformCBuf(gfx::GFXFactory factory)
+        : gfx::po::VSCBuffer<dx::XMMATRIX>(factory, D3D11_USAGE_DYNAMIC,
             D3D11_CPU_ACCESS_WRITE, initialTransforms()
         ) {}
 
@@ -51,11 +51,11 @@ private:
     static std::vector<dx::XMMATRIX> initialTransforms();
 };
 
-class PEIndexedColorCBuf : public PSCBuffer<PEFaceColorData> {
+class PEIndexedColorCBuf : public gfx::po::PSCBuffer<PEFaceColorData> {
 public:
     PEIndexedColorCBuf() = default;
-    PEIndexedColorCBuf(GFXFactory factory)
-        : PSCBuffer<PEFaceColorData>(
+    PEIndexedColorCBuf(gfx::GFXFactory factory)
+        : gfx::po::PSCBuffer<PEFaceColorData>(
             factory, D3D11_USAGE_DEFAULT, 0u, initialColors()
         ) {}
 
@@ -63,16 +63,16 @@ private:
     static std::vector<PEFaceColorData> initialColors();
 };
 
-class PEColorBuffer : public VertexBuffer<GFXColor> {
+class PEColorBuffer : public gfx::po::VertexBuffer<gfx::GFXColor> {
 public:
-    PEColorBuffer(GFXFactory factory, std::size_t size)
-        : VertexBuffer<GFXColor>( factory, makeRandom(size) ) {}
+    PEColorBuffer(gfx::GFXFactory factory, std::size_t size)
+        : gfx::po::VertexBuffer<gfx::GFXColor>( factory, makeRandom(size) ) {}
 
 private:
-    static std::vector<GFXColor> makeRandom(std::size_t size);
+    static std::vector<gfx::GFXColor> makeRandom(std::size_t size);
 };
 
-class PEViewport : public Viewport {
+class PEViewport : public gfx::po::Viewport {
 public:
     PEViewport(const Win32::Client& client)
         : Viewport( D3D11_VIEWPORT{
@@ -86,7 +86,7 @@ public:
 };
 
 template < class T, class PosBufferT, class IndexBufferT >
-class PEDrawComponent : public RCDrawCmp {
+class PEDrawComponent : public gfx::scenery::RCDrawCmp {
 public:
     struct {} tagPosBuffer;
     struct {} tagIndexBuffer;
@@ -96,10 +96,10 @@ public:
     struct {} tagBlendedColorBuffer;
     struct {} tagViewport;
 
-    using MyType = DrawComponent<T>;
-    using MyVertex = GFXVertex;
-    using MyIndex = GFXIndex;
-    using MyColor = GFXColor;
+    using MyType = gfx::scenery::DrawComponent<T>;
+    using MyVertex = gfx::GFXVertex;
+    using MyIndex = gfx::GFXIndex;
+    using MyColor = gfx::GFXColor;
     using MyConstantBufferColor = PEFaceColorData;
     using MyPosBuffer = PosBufferT;
     using MyIndexBuffer = IndexBufferT;
@@ -108,22 +108,22 @@ public:
     using MyIndexedColorCBuf = PEIndexedColorCBuf;
     using MyBlendedColorBuffer = PEColorBuffer;
     using MyViewport = PEViewport;
-    using MyDrawCaller = DrawCallerIndexed;
+    using MyDrawCaller = gfx::po::DrawCallerIndexed;
 
-    PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
-        GFXStorage& storage, const ChiliWindow& wnd
+    PEDrawComponent( gfx::GFXFactory factory, gfx::GFXPipeline pipeline,
+        gfx::GFXStorage& storage, const ChiliWindow& wnd
     ) : transformGPUMapper_(storage),
         transformApplyer_(transformGPUMapper_),
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        posBuffer_( GFXRes::makeLoaded<MyPosBuffer>(storage, factory) ),
-        indexBuffer_( GFXRes::makeLoaded<MyIndexBuffer>(storage, factory) ),
-        topology_( GFXRes::makeCached<MyTopology>(storage, tagTopology) ),
-        viewport_( GFXRes::makeCached<MyViewport>(storage, tagViewport, wnd.client()) ),
-        transformCBuf_( GFXRes::makeCached<MyTransformCBuf>(storage, tagTransformCBuf, factory) ),
-        indexedColorCBuf_( GFXRes::makeCached<MyIndexedColorCBuf>(storage, tagIndexedColorCBuf, factory) ),
-        blendedColorBuffer_( GFXRes::makeLoaded<MyBlendedColorBuffer>(
+        posBuffer_( gfx::GFXRes::makeLoaded<MyPosBuffer>(storage, factory) ),
+        indexBuffer_( gfx::GFXRes::makeLoaded<MyIndexBuffer>(storage, factory) ),
+        topology_( gfx::GFXRes::makeCached<MyTopology>(storage, tagTopology) ),
+        viewport_( gfx::GFXRes::makeCached<MyViewport>(storage, tagViewport, wnd.client()) ),
+        transformCBuf_( gfx::GFXRes::makeCached<MyTransformCBuf>(storage, tagTransformCBuf, factory) ),
+        indexedColorCBuf_( gfx::GFXRes::makeCached<MyIndexedColorCBuf>(storage, tagIndexedColorCBuf, factory) ),
+        blendedColorBuffer_( gfx::GFXRes::makeLoaded<MyBlendedColorBuffer>(
             storage, factory, MyPosBuffer::size()
         ) ),
         pipeline_(pipeline), pStorage_(&storage) {
@@ -143,25 +143,25 @@ public:
     }
 
     template <class ... TesselationFactors>
-    PEDrawComponent( GFXFactory factory, GFXPipeline pipeline,
-        GFXStorage& storage, const ChiliWindow& wnd,
+    PEDrawComponent( gfx::GFXFactory factory, gfx::GFXPipeline pipeline,
+        gfx::GFXStorage& storage, const ChiliWindow& wnd,
         TesselationFactors&& ... tesselationFactors
     ) : transformGPUMapper_(storage),
         transformApplyer_(transformGPUMapper_),
     #ifdef ACTIVATE_DRAWCOMPONENT_LOG
         logComponent_(this),
     #endif
-        posBuffer_( GFXRes::makeLoaded<MyPosBuffer>( storage, factory,
+        posBuffer_( gfx::GFXRes::makeLoaded<MyPosBuffer>( storage, factory,
             std::forward<TesselationFactors>(tesselationFactors)...
         ) ),
-        indexBuffer_( GFXRes::makeLoaded<MyIndexBuffer>( storage, factory,
+        indexBuffer_( gfx::GFXRes::makeLoaded<MyIndexBuffer>( storage, factory,
             std::forward<TesselationFactors>(tesselationFactors)...
         ) ),
-        topology_( GFXRes::makeCached( storage, tagTopology ) ),
-        viewport_( GFXRes::makeCached( storage, tagViewport, wnd.client() ) ),
-        transformCBuf_( GFXRes::makeCached( storage, tagTransformCBuf, factory ) ),
-        indexedColorCBuf_( GFXRes::makeCached( storage, tagIndexedColorCBuf, factory ) ),
-        blendedColorBuffer_( GFXRes::makeLoaded(storage, factory, MyPosBuffer::size(
+        topology_( gfx::GFXRes::makeCached( storage, tagTopology ) ),
+        viewport_( gfx::GFXRes::makeCached( storage, tagViewport, wnd.client() ) ),
+        transformCBuf_( gfx::GFXRes::makeCached( storage, tagTransformCBuf, factory ) ),
+        indexedColorCBuf_( gfx::GFXRes::makeCached( storage, tagIndexedColorCBuf, factory ) ),
+        blendedColorBuffer_( gfx::GFXRes::makeLoaded(storage, factory, MyPosBuffer::size(
             std::forward<TesselationFactors>(tesselationFactors)...
         ) ) ),
         pipeline_(pipeline), pStorage_(&storage) {
@@ -182,32 +182,32 @@ public:
 
     }
 
-    void update(const Transform transform) {
+    void update(const gfx::Transform transform) {
         transformGPUMapper_.update(transform);
     }
 
-    void sync(const Renderer& renderer) override {
-        if ( typeid(renderer) == typeid(IndexedRenderer) ) {
-            sync( static_cast<const IndexedRenderer&>(renderer) );
+    void sync(const gfx::scenery::Renderer& renderer) override {
+        if ( typeid(renderer) == typeid(gfx::scenery::IndexedRenderer) ) {
+            sync( static_cast<const gfx::scenery::IndexedRenderer&>(renderer) );
         }
-        else if ( typeid(renderer) == typeid(BlendedRenderer) ) {
-            sync( static_cast<const BlendedRenderer&>(renderer) );
+        else if ( typeid(renderer) == typeid(gfx::scenery::BlendedRenderer) ) {
+            sync( static_cast<const gfx::scenery::BlendedRenderer&>(renderer) );
         }
         else {
             throw GFX_EXCEPT_CUSTOM("DrawComponent tried to synchronize with incompatible renderer.\n");
         }
     }
     
-    void sync(const IndexedRenderer& renderer) {
+    void sync(const gfx::scenery::IndexedRenderer& renderer) {
         assert(posBuffer_.valid());
         static_cast<MyPosBuffer*>( posBuffer_.get() )
-            ->setSlot( IndexedRenderer::slotPosBuffer() );
+            ->setSlot( gfx::scenery::IndexedRenderer::slotPosBuffer() );
 
         assert(transformCBuf_.valid());
         static_cast<MyTransformCBuf*>( transformCBuf_.get() )
             ->setSlot( 0u );
 
-        this->setRODesc( RenderObjectDesc{
+        this->setRODesc( gfx::scenery::RenderObjectDesc{
             .header = {
                 .IDBuffer = posBuffer_.id(),
                 .IDType = typeid(T)
@@ -219,21 +219,21 @@ public:
         } );
     }
 
-    void sync(const BlendedRenderer& renderer) {
+    void sync(const gfx::scenery::BlendedRenderer& renderer) {
         assert(posBuffer_.valid());
         static_cast<MyPosBuffer*>( posBuffer_.get() )
-            ->setSlot( BlendedRenderer::slotPosBuffer() );
+            ->setSlot( gfx::scenery::BlendedRenderer::slotPosBuffer() );
             
         assert(blendedColorBuffer_.valid());
         static_cast<MyBlendedColorBuffer*>(
             blendedColorBuffer_.get()
-        )->setSlot( BlendedRenderer::slotColorBuffer() );
+        )->setSlot( gfx::scenery::BlendedRenderer::slotColorBuffer() );
 
         assert(transformCBuf_.valid());
         static_cast<MyTransformCBuf*>( transformCBuf_.get() )
             ->setSlot( 0u );
 
-        this->setRODesc( RenderObjectDesc{
+        this->setRODesc( gfx::scenery::RenderObjectDesc{
             .header = {
                 .IDBuffer = posBuffer_.id(),
                 .IDType = typeid(T)
@@ -245,27 +245,27 @@ public:
         } );
     }
 
-    void sync(const CameraVision& vision) {
+    void sync(const gfx::scenery::CameraVision& vision) {
         transformApplyer_.setTransform(
             vision.viewTrans() * vision.projTrans()
         );
     }
 
 private:
-    MapTransformGPU transformGPUMapper_;
-    ApplyTransform transformApplyer_;
+    gfx::scenery::MapTransformGPU transformGPUMapper_;
+    gfx::scenery::ApplyTransform transformApplyer_;
 #ifdef ACTIVATE_DRAWCOMPONENT_LOG
-    RCDrawCmp::LogComponent logComponent_;
+    gfx::scenery::RCDrawCmp::LogComponent logComponent_;
 #endif
-    GFXRes posBuffer_;
-    GFXRes indexBuffer_;
-    GFXRes topology_;
-    GFXRes viewport_;
-    GFXRes transformCBuf_;
-    GFXRes indexedColorCBuf_;
-    GFXRes blendedColorBuffer_;
-    GFXPipeline pipeline_;
-    GFXStorage* pStorage_;
+    gfx::GFXRes posBuffer_;
+    gfx::GFXRes indexBuffer_;
+    gfx::GFXRes topology_;
+    gfx::GFXRes viewport_;
+    gfx::GFXRes transformCBuf_;
+    gfx::GFXRes indexedColorCBuf_;
+    gfx::GFXRes blendedColorBuffer_;
+    gfx::GFXPipeline pipeline_;
+    gfx::GFXStorage* pStorage_;
 };
 
 template <class T>
@@ -284,11 +284,11 @@ public:
 
     // ct stands for construct
     template <class ... TesselationFactors>
-    void ctDrawComponent(GFXFactory factory, GFXPipeline pipeline,
-        GFXStorage& storage, const ChiliWindow& wnd,
+    void ctDrawComponent(gfx::GFXFactory factory, gfx::GFXPipeline pipeline,
+        gfx::GFXStorage& storage, const ChiliWindow& wnd,
         TesselationFactors&& ... tesselationFactors
     ) {
-        dc_.reset( new DrawComponent<T>(factory, pipeline, storage, wnd,
+        dc_.reset( new gfx::scenery::DrawComponent<T>(factory, pipeline, storage, wnd,
             std::forward<TesselationFactors>(tesselationFactors)...
         ) );
     }
@@ -312,17 +312,17 @@ public:
     Loader<PrimitiveEntity> loader() const noexcept;
 
 private:
-    std::shared_ptr< DrawComponent<T> >
+    std::shared_ptr< gfx::scenery::DrawComponent<T> >
     drawComponent() const noexcept {
         return dc_;
     }
 
-    std::shared_ptr<BasicTransformComponent>
+    std::shared_ptr<gfx::BasicTransformComponent>
     transformComponent() const noexcept {
         return tc_;
     }
 
-    std::shared_ptr< DrawComponent<T> > dc_;
+    std::shared_ptr< gfx::scenery::DrawComponent<T> > dc_;
     std::shared_ptr< GTransformComponent > tc_;
     std::shared_ptr< MouseInputComponent<T> > ic_;
 };
@@ -338,11 +338,11 @@ public:
     Loader(Loader&&) = delete;
     Loader& operator=(Loader&&) = delete;
 
-    void loadAt(Scene& scene, std::size_t idxLayer = 0u) {
+    void loadAt(gfx::scenery::Scene& scene, std::size_t idxLayer = 0u) {
         scene.layer(idxLayer).addDrawCmp(entity_.drawComponent().get());
     }
 
-    void loadAt(LSceneAdapter scene) {
+    void loadAt(gfx::scenery::LSceneAdapter scene) {
         scene.addDrawCmp(entity_.drawComponent().get());
     }
 

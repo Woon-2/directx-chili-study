@@ -1,4 +1,7 @@
-#include "Game/SolidMaterial.hpp"
+#include "GFX/Scenery/SolidMaterial.hpp"
+
+namespace gfx {
+namespace scenery {
 
 SolidMaterial::SolidMaterial(GFXFactory factory, GFXStorage& storage)
     : SolidMaterial( std::move(factory), storage, defMatDesc() ) {}
@@ -27,3 +30,6 @@ void SolidMaterial::bind(GFXPipeline& pipeline) /* overriden */ {
 
     cbuf_.dynamicUpdate( pipeline, [this](){ return &matDesc_; } );
 }
+
+}   // namespace gfx::scenery
+}   // namespace gfx

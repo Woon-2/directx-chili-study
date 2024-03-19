@@ -1,6 +1,8 @@
 #ifndef __IA
 #define __IA
 
+namespace gfx {
+
 struct GFXVertex {
     float x;
     float y;
@@ -26,5 +28,7 @@ struct GFXColor {
 };
 
 using GFXIndex = unsigned short;
+
+}   // namespace gfx
 
 #endif __IA

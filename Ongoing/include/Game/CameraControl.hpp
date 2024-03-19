@@ -1,7 +1,7 @@
 #ifndef __CameraControl
 #define __CameraControl
 
-#include "Camera.hpp"
+#include "GFX/Scenery/Camera.hpp"
 
 class CoordSystem;
 

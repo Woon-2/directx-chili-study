@@ -7,6 +7,9 @@
 #include <tuple>
 #include <vector>
 
+namespace gfx {
+namespace scenery {
+
 struct RenderObjectDesc {
     struct Header {
         GFXStorage::ID IDBuffer;
@@ -27,5 +30,8 @@ struct RenderObjectDesc {
     Header header;
     std::vector<GFXStorage::ID> IDs;
 };
+
+}   // namespace gfx::scenery
+}   // namespace gfx
 
 #endif  // __RenderObjectDesc

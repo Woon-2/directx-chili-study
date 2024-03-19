@@ -7,14 +7,18 @@
 
 #include <d3d11.h>
 
-#include "Game/GFXCMDLogger.hpp"
+#include "GFX/Core/CMDLogger.hpp"
 
 #include <vector>
 #include <memory>
 #include <ranges>
 #include <algorithm>
 
+namespace gfx {
+
 class GFXPipeline;
+
+namespace po {
 
 class BasicDrawCaller {
 public:
@@ -209,5 +213,8 @@ private:
     UINT startIndexLocation_;
     INT baseVertexLocation_;
 };
+
+}   // namespace gfx::po
+}   // namespace gfx
 
 #endif  // __DrawCaller

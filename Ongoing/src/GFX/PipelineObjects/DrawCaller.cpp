@@ -3,6 +3,9 @@
 #include "GFX/Core/Pipeline.hpp"
 #include "GFX/Core/Exception.hpp"
 
+namespace gfx {
+namespace po {
+
 void DrawCaller::basicDrawCall(GFXPipeline& pipeline) const {
     GFX_THROW_FAILED_VOID(
         pipeline.context()->Draw(numVertex_, startVertexLocation_)
@@ -32,3 +35,6 @@ void DrawCallerIndexed::indexedDrawCall(GFXPipeline& pipeline) const {
 void DrawCallerIndexed::drawCall(GFXPipeline& pipeline) const {
     indexedDrawCall(pipeline);
 }
+
+}   // namespace gfx::po
+}   // namespace gfx

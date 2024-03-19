@@ -14,6 +14,9 @@
 #include <ranges>
 #include <algorithm>
 
+namespace gfx {
+namespace scenery {
+
 class RendererSystem {
 public:
     using Slot = std::size_t;
@@ -111,5 +114,8 @@ private:
     GFXFactory factory_;
     GFXPipeline pipeline_;
 };
+
+}  // namespace gfx::scenery
+}  // namespace gfx
 
 #endif  // __RendererSystem

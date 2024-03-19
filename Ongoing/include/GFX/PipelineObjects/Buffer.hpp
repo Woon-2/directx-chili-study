@@ -1,7 +1,7 @@
 #ifndef __Buffer
 #define __Buffer
 
-#include "Bindable.hpp"
+#include "PipelineObject.hpp"
 #include "GFX/Core/Pipeline.hpp"
 #include "GFX/Core/Factory.hpp"
 
@@ -17,7 +17,10 @@
 #include <concepts>
 #include <functional>
 
-class Buffer : public IBindable {
+namespace gfx {
+namespace po {
+
+class Buffer : public IPipelineObject {
 public:
     Buffer( GFXFactory factory,
         const D3D11_BUFFER_DESC& bufferDesc,
@@ -165,7 +168,7 @@ private:
     } 
 
 #ifdef ACTIVATE_BINDABLE_LOG
-    IBindable::LogComponent logComponent_;
+    IPipelineObject::LogComponent logComponent_;
 #endif
     VertexBufferBinder binder_;
     UINT slot_;
@@ -261,7 +264,7 @@ private:
     }
 
 #ifdef ACTIVATE_BINDABLE_LOG
-    IBindable::LogComponent logComponent_;
+    IPipelineObject::LogComponent logComponent_;
 #endif
     IndexBufferBinder binder_;
 };
@@ -355,7 +358,7 @@ private:
     }
 
 #ifdef ACTIVATE_BINDABLE_LOG
-    IBindable::LogComponent logComponent_;
+    IPipelineObject::LogComponent logComponent_;
 #endif
     UINT slot_;
     VSCBufferBinder binder_;
@@ -420,10 +423,13 @@ private:
     }
 
 #ifdef ACTIVATE_BINDABLE_LOG
-    IBindable::LogComponent logComponent_;
+    IPipelineObject::LogComponent logComponent_;
 #endif
     UINT slot_;
     PSCBufferBinder binder_;
 };
+
+}   // namespace gfx::po
+}   // namespace gfx
 
 #endif  // __Buffer

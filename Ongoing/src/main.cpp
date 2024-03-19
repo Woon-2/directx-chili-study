@@ -11,7 +11,7 @@ int CALLBACK WinMain(
             App app;
             return app.run();
         }
-        catch (const GraphicsException& e) {
+        catch (const gfx::GraphicsException& e) {
             MessageBoxA(nullptr, e.what(), "Graphics Exception",
                 MB_OK | MB_ICONEXCLAMATION);
         }

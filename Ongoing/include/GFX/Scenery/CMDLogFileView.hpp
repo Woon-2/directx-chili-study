@@ -1,14 +1,17 @@
 #ifndef __GFXCMDLogFileView
 #define __GFXCMDLogFileView
 
-#include "GFXCMDSummarizer.hpp"
+#include "CMDSummarizer.hpp"
 
 #include <fstream>
 #include <filesystem>
 
 #include "Literal.hpp"
 
-#define GFXCMDLOG_FILEVIEW getGFXCMDLogFileView()
+#define GFXCMDLOG_FILEVIEW gfx::scenery::getGFXCMDLogFileView()
+
+namespace gfx {
+namespace scenery {
 
 class GFXCMDLogFileView {
 public:
@@ -29,5 +32,8 @@ private:
 };
 
 GFXCMDLogFileView& getGFXCMDLogFileView();
+
+}  // namespace gfx::scenery
+}  // namespace gfx
 
 #endif  // __GFXCMDLogFileView

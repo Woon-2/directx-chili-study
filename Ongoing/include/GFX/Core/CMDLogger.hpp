@@ -19,7 +19,9 @@
 // must lock logger for future multi-thread support,
 // or date race will take place.
 
-#define GFXCMDLOG getGFXCMDLogger()
+#define GFXCMDLOG gfx::getGFXCMDLogger()
+
+namespace gfx {
 
 class GFXCMDSourceCategory {
 public:
@@ -389,5 +391,7 @@ private:
 };
 
 GFXCMDLogger& getGFXCMDLogger();
+
+}   // namespace gfx
 
 #endif  // __GFXCMDLogger

@@ -5,6 +5,8 @@
 #include <dxgi.h>
 #include "Namespaces.hpp"
 
+namespace gfx {
+
 class GFXSwapChain {
 public:
     GFXSwapChain()
@@ -51,5 +53,7 @@ private:
     wrl::ComPtr<IDXGISwapChain> pSwapChain_;
     bool bDeviceRemoved_;
 };
+
+}   // namespace gfx
 
 #endif  // __GFXSwapChain

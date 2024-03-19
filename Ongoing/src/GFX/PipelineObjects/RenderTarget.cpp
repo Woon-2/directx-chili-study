@@ -2,6 +2,9 @@
 
 #include "GFX/Core/Exception.hpp"
 
+namespace gfx {
+namespace po {
+
 namespace {
     constexpr const GFXCMDSourceCategory logCategory() noexcept {
         return GFXCMDSourceCategory("RenderTarget");
@@ -167,3 +170,6 @@ void RenderTarget::bind(GFXPipeline& pipeline) {
 
 const dx::XMFLOAT4 RenderTarget::defClearColor
     = dx::XMFLOAT4(0.f, 0.f, 0.f, 1.f);
+
+}   // namespace gfx::po
+}   // namespace gfx

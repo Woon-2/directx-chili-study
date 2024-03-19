@@ -1,13 +1,16 @@
 #ifndef __Sampler
 #define __Sampler
 
-#include "Bindable.hpp"
+#include "PipelineObject.hpp"
 #include "GFX/Core/Factory.hpp"
 #include "GFX/Core/Pipeline.hpp"
 
 #include <d3d11.h>
 #include "GFX/Core/Namespaces.hpp"
 #include "GFX/Core/Exception.hpp"
+
+namespace gfx {
+namespace po {
 
 class SamplerBinder : public SlotBinderInterface<SamplerBinder> {
 public:
@@ -19,7 +22,7 @@ private:
     );
 };
 
-class Sampler : public IBindable,
+class Sampler : public IPipelineObject,
     SlotLocalRebindInterface<Sampler> {
 public:
     friend class SlotLocalRebindInterface<Sampler>;
@@ -42,11 +45,14 @@ private:
     void bind(GFXPipeline& pipeline) override final;
 
 #ifdef ACTIVATE_BINDABLE_LOG
-    IBindable::LogComponent logComponent_;
+    IPipelineObject::LogComponent logComponent_;
 #endif
     wrl::ComPtr<ID3D11SamplerState> pSampler_;
     UINT slot_;
     SamplerBinder binder_;
 };
+
+}   // namespace gfx::po
+}   // namespace gfx
 
 #endif  // __Sampler

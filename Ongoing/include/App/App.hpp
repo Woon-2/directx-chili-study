@@ -43,7 +43,7 @@ private:
     void setupMsgHandlers();
 
     MyWindow wnd_;
-    Graphics gfx_;
+    gfx::Graphics gfx_;
     MyKeyboard kbd_;
     MyMouse mouse_;
     Game game_;

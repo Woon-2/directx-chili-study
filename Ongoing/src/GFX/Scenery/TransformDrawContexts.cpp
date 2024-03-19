@@ -1,13 +1,16 @@
-#include "Game/TransformDrawContexts.hpp"
+#include "GFX/Scenery/TransformDrawContexts.hpp"
 #include "GFX/PipelineObjects/Buffer.hpp"
 
 #include <numeric>
+
+namespace gfx {
+namespace scenery {
 
 void MapTransformGPU::beforeDrawCall(GFXPipeline& pipeline) {
     assert( IDTransCBuf_.has_value() );
     assert( mappedStorage_->get(IDTransCBuf_.value()).has_value() );
 
-    auto transCBuf = static_cast< CBuffer<MatrixType>* >(
+    auto transCBuf = static_cast< po::CBuffer<MatrixType>* >(
         mappedStorage_->get(IDTransCBuf_.value()).value()
     );
 
@@ -35,3 +38,6 @@ void ApplyTransform::beforeDrawCall(GFXPipeline& pipeline) {
 void ApplyTransform::afterDrawCall(GFXPipeline& pipeline) {
     mapper_->popBackApplyee();
 }
+
+}   // namespace gfx::scenery
+}   // namespace gfx

@@ -1,6 +1,9 @@
-#include "Game/GFXCMDLogFileView.hpp"
+#include "GFX/Scenery/CMDLogFileView.hpp"
 
 #include <optional>
+
+namespace gfx {
+namespace scenery {
 
 void GFXCMDLogFileView::report() {
     // should protect frameID from overflow later.
@@ -42,3 +45,6 @@ GFXCMDLogFileView& getGFXCMDLogFileView() {
 
     return inst.value();
 }
+
+}   // namespace gfx::scenery
+}   // namespace gfx

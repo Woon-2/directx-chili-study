@@ -1,5 +1,8 @@
 #include "GFX/PipelineObjects/Texture.hpp"
 
+namespace gfx {
+namespace po {
+
 void TextureBinder::doBind( GFXPipeline& pipeline, UINT slot,
     ID3D11ShaderResourceView** srvArr
 ) {
@@ -84,3 +87,6 @@ void Texture::bind(GFXPipeline& pipeline) {
     }
 #endif 
 }
+
+}   // namespace gfx::po
+}   // namespace gfx

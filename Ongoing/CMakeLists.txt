@@ -40,7 +40,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 endif()
 
-project(POngoing VERSION 2024.02.22 LANGUAGES CXX)
+project(POngoing VERSION 2024.03.19 LANGUAGES CXX)
 
 message(STATUS "Configuring ${CMAKE_PROJECT_NAME}(v${CMAKE_PROJECT_VERSION})...")
 message(STATUS "Author: @Woon2 (wkdauddns9@gmail.com)")
@@ -66,50 +66,24 @@ target_sources(chili PRIVATE
     src/Game/PrimitiveEntity.cpp
     src/Game/Game.cpp
     src/Game/InputSystem.cpp
-    src/Game/Renderer.cpp
     src/Game/GTransformComponent.cpp
-    src/Game/GFXCMDLogger.cpp
-    src/Game/GFXCMDSummarizer.cpp
-    src/Game/GFXCMDLogFileView.cpp
-    src/Game/GFXCMDLogGUIView.cpp
     src/Game/SimulationUI.cpp
-    src/Game/Camera.cpp
     src/Game/CoordSystem.cpp
-    src/Game/TransformDrawContexts.cpp
-    src/Game/TransformCBuffer.cpp
     src/Game/CameraControl.cpp
-    src/Game/PointLight.cpp
     src/Game/PointLightControl.cpp
-    src/Game/SolidMaterial.cpp
+
     include/Game/PrimitiveEntity.hpp
     include/Game/Game.hpp
     include/Game/Entity.hpp
-    include/Game/Renderer.hpp
-    include/Game/RendererSystem.hpp
-    include/Game/Scene.hpp
     include/Game/InputSystem.hpp
-    include/Game/DrawComponent.hpp
-    include/Game/RCDrawComponent.hpp
     include/Game/InputComponent.hpp
-    include/Game/RenderObjectDesc.hpp
-    include/Game/RendererDesc.hpp
-    include/Game/Transform.hpp
     include/Game/Chrono.hpp
     include/Game/GTransformComponent.hpp
-    include/Game/GFXCMDLogger.hpp
-    include/Game/GFXCMDSummarizer.hpp
-    include/Game/GFXCMDLogFileView.hpp
-    include/Game/GFXCMDLogGUIView.hpp
     include/Game/SimulationUI.hpp
-    include/Game/Camera.hpp
     include/Game/CoordSystem.hpp
-    include/Game/TransformDrawContexts.hpp
-    include/Game/TransformCBuffer.hpp
     include/Game/CameraControl.hpp
-    include/Game/PointLight.hpp
     include/Game/PointLightControl.hpp
     include/Game/IlluminatedBox.hpp
-    include/Game/SolidMaterial.hpp
 )
 
 # GFX sources
@@ -118,6 +92,8 @@ target_sources(chili PRIVATE
     src/GFX/Core/Exception.cpp
     src/GFX/Core/SwapChain.cpp
     src/GFX/Core/Graphics.cpp
+    src/GFX/Core/CMDLogger.cpp
+
     include/GFX/Core/Graphics.hpp
     include/GFX/Core/Factory.hpp
     include/GFX/Core/SwapChain.hpp
@@ -125,6 +101,34 @@ target_sources(chili PRIVATE
     include/GFX/Core/Pipeline.hpp
     include/GFX/Core/Exception.hpp
     include/GFX/Core/Namespaces.hpp
+    include/GFX/Core/CMDLogger.hpp
+    include/GFX/Core/Transform.hpp
+
+    src/GFX/Scenery/Renderer.cpp
+    src/GFX/Scenery/Camera.cpp
+    src/GFX/Scenery/PointLight.cpp
+    src/GFX/Scenery/SolidMaterial.cpp
+    src/GFX/Scenery/TransformCBuffer.cpp
+    src/GFX/Scenery/TransformDrawContexts.cpp
+    src/GFX/Scenery/CMDSummarizer.cpp
+    src/GFX/Scenery/CMDLogFileView.cpp
+    src/GFX/Scenery/CMDLogGUIView.cpp
+
+    include/GFX/Scenery/Renderer.hpp
+    include/GFX/Scenery/RendererSystem.hpp
+    include/GFX/Scenery/Camera.hpp
+    include/GFX/Scenery/Scene.hpp
+    include/GFX/Scenery/DrawComponent.hpp
+    include/GFX/Scenery/RCDrawComponent.hpp
+    include/GFX/Scenery/RenderObjectDesc.hpp
+    include/GFX/Scenery/RendererDesc.hpp
+    include/GFX/Scenery/PointLight.hpp
+    include/GFX/Scenery/SolidMaterial.hpp
+    include/GFX/Scenery/TransformDrawContexts.hpp
+    include/GFX/Scenery/TransformCBuffer.hpp
+    include/GFX/Scenery/CMDSummarizer.hpp
+    include/GFX/Scenery/CMDLogFileView.hpp
+    include/GFX/Scenery/CMDLogGUIView.hpp
 
     src/GFX/PipelineObjects/Buffer.cpp
     src/GFX/PipelineObjects/DrawCaller.cpp
@@ -132,7 +136,8 @@ target_sources(chili PRIVATE
     src/GFX/PipelineObjects/Shader.cpp
     src/GFX/PipelineObjects/Texture.cpp
     src/GFX/PipelineObjects/Sampler.cpp
-    include/GFX/PipelineObjects/Bindable.hpp
+
+    include/GFX/PipelineObjects/PipelineObject.hpp
     include/GFX/PipelineObjects/Buffer.hpp
     include/GFX/PipelineObjects/DrawCaller.hpp
     include/GFX/PipelineObjects/DrawContext.hpp

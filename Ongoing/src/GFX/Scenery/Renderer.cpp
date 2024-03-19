@@ -1,14 +1,17 @@
-#include "Game/Renderer.hpp"
-#include "Game/RenderObjectDesc.hpp"
+#include "GFX/Scenery/Renderer.hpp"
+#include "GFX/Scenery/RenderObjectDesc.hpp"
 
-#include "GFX/PipelineObjects/Bindable.hpp"
+#include "GFX/PipelineObjects/PipelineObject.hpp"
 
-#include "Game/GFXCMDLogger.hpp"
+#include "GFX/Core/CMDLogger.hpp"
 
 #include <ranges>
 #include <algorithm>
 
 #include "ShaderPath.h"
+
+namespace gfx {
+namespace scenery {
 
 #ifdef ACTIVATE_RENDERER_LOG
 void Renderer::LogComponent::entryStackPush() {
@@ -349,3 +352,6 @@ void BPhongRenderer::loadBindables(GFXFactory factory) {
         mappedStorage(), tagPixelShader, factory
     );
 }
+
+}   // namespace gfx::scenery
+}   // namespace gfx

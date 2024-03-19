@@ -1,7 +1,7 @@
 #ifndef __Shader
 #define __Shader
 
-#include "Bindable.hpp"
+#include "PipelineObject.hpp"
 #include "GFX/Core/Factory.hpp"
 #include "GFX/Core/Pipeline.hpp"
 
@@ -13,6 +13,9 @@
 #include <ranges>
 #include <filesystem>
 
+namespace gfx {
+namespace po {
+
 class VertexShaderBinder : public BinderInterface<VertexShaderBinder> {
 public:
     friend class BinderInterface<VertexShaderBinder>; 
@@ -23,7 +26,7 @@ private:
     );
 };
 
-class VertexShader : public IBindable,
+class VertexShader : public IPipelineObject,
     public LocalRebindInterface<VertexShader> {
 public:
     friend class LocalRebindInterface<VertexShader>;
@@ -83,7 +86,7 @@ private:
     void bind(GFXPipeline& pipeline) override final;
 
 #ifdef ACTIVATE_BINDABLE_LOG
-    IBindable::LogComponent logComponent_;
+    IPipelineObject::LogComponent logComponent_;
 #endif
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11VertexShader> pVertexShader_;
@@ -99,7 +102,7 @@ private:
     void doBind(GFXPipeline& pipeline, ID3D11PixelShader* pShader);
 };
 
-class PixelShader : public IBindable,
+class PixelShader : public IPipelineObject,
     public LocalRebindInterface<PixelShader> {
 public:
     friend class LocalRebindInterface<PixelShader>;
@@ -126,11 +129,14 @@ private:
     void bind(GFXPipeline& pipeline) override final;
 
 #ifdef ACTIVATE_BINDABLE_LOG
-    IBindable::LogComponent logComponent_;
+    IPipelineObject::LogComponent logComponent_;
 #endif
     wrl::ComPtr<ID3DBlob> byteCode_;
     wrl::ComPtr<ID3D11PixelShader> pPixelShader_;
     PixelShaderBinder binder_;
 };
+
+}   // namespace gfx::po
+}   // namespace gfx
 
 #endif  // __Shader

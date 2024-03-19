@@ -15,6 +15,7 @@
 
 #include "AdditionalRanges.hpp"
 
+namespace gfx {
 namespace Primitives {
 
 struct Cone {
@@ -23,12 +24,12 @@ struct Cone {
 
     static constexpr auto defNTesselation = 16u;
 
-    class ConeVertexBuffer : public VertexBuffer<MyVertex> {
+    class ConeVertexBuffer : public po::VertexBuffer<MyVertex> {
     public:
         ConeVertexBuffer() = default;
         ConeVertexBuffer( GFXFactory factory,
             std::size_t nTesselation = defNTesselation
-        ) : VertexBuffer<MyVertex>( factory,
+        ) : po::VertexBuffer<MyVertex>( factory,
                 Cone::modelPositions< std::vector<MyVertex> >(nTesselation)
             ) {}
             
@@ -39,12 +40,12 @@ struct Cone {
         }
     };
 
-    class ConeIndexBuffer : public IndexBuffer<MyIndex> {
+    class ConeIndexBuffer : public po::IndexBuffer<MyIndex> {
     public:
         ConeIndexBuffer() = default;
         ConeIndexBuffer( GFXFactory factory,
             std::size_t nTesselation = defNTesselation
-        ) : IndexBuffer<MyIndex>( factory,
+        ) : po::IndexBuffer<MyIndex>( factory,
                 Cone::modelIndices< std::vector<MyIndex> >(nTesselation)
             ) {}
 
@@ -139,6 +140,7 @@ struct Cone {
     }
 };
 
-}   // namespace Primitives
+}   // namespace gfx::Primitives
+}   // namespace gfx
 
 #endif  // __PCone

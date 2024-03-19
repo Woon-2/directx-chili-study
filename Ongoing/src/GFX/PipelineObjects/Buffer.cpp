@@ -1,5 +1,8 @@
 #include "GFX/PipelineObjects/Buffer.hpp"
 
+namespace gfx {
+namespace po {
+
 void VertexBufferBinder::doBind( GFXPipeline& pipeline, UINT slot,
     ID3D11Buffer** pBuffers, const UINT* strides, const UINT* offsets
 ) {
@@ -39,3 +42,6 @@ void PSCBufferBinder::doBind( GFXPipeline& pipeline,
         )
     );
 }
+
+}   // namespace gfx::po
+}   // namespace gfx

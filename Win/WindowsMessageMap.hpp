@@ -2,6 +2,7 @@
 #define __WMM
 
 #include <unordered_map>
+#include <string>
 #include <Windows.h>
 
 class WindowsMessageMap

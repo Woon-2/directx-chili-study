@@ -52,7 +52,7 @@ App::~App() {
         try {
             update();
             render();
-        } catch (const GraphicsException& e) {
+        } catch (const gfx::GraphicsException& e) {
             MessageBoxA(nullptr, e.what(), "Graphics Exception",
                 MB_OK | MB_ICONEXCLAMATION);
             wnd_.close();

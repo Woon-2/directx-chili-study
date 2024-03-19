@@ -1,11 +1,14 @@
 #ifndef __Camera
 #define __Camera
 
-#include "Transform.hpp"
-#include "CoordSystem.hpp"
+#include "GFX/Core/Transform.hpp"
+#include "Game/CoordSystem.hpp"
 
 #include <optional>
 #include <memory>
+
+namespace gfx {
+namespace scenery {
 
 struct CameraViewTransDesc {
     dx::XMFLOAT3 eye;
@@ -213,5 +216,8 @@ private:
     CameraVision vision_;
     std::optional<CameraCoordComponent> coordComp_;
 };
+
+}  // namespace gfx::scenery
+}  // namespace gfx
 
 #endif  // __Camera

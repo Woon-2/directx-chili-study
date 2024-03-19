@@ -2,9 +2,9 @@
 
 #include "Game/IlluminatedBox.hpp"
 
-#include "Game/GFXCMDLogger.hpp"
-#include "Game/GFXCMDLogGUIView.hpp"
-#include "Game/GFXCMDLogFileView.hpp"
+#include "GFX/Core/CMDLogger.hpp"
+#include "GFX/Scenery/CMDLogGUIView.hpp"
+#include "GFX/Scenery/CMDLogFileView.hpp"
 
 #include "AdditionalRanges.hpp"
 #include "GFX/Core/Namespaces.hpp"
@@ -14,7 +14,7 @@
 GDIPlusManager gdipm;
 
 
-Game::Game(const ChiliWindow& wnd, Graphics& gfx,
+Game::Game(const ChiliWindow& wnd, gfx::Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse
 ) : rendererSystem_( gfx.factory(), gfx.pipeline() ),
     inputSystem_( kbd, mouse, wnd.client() ),
@@ -31,21 +31,21 @@ Game::Game(const ChiliWindow& wnd, Graphics& gfx,
     cameraControl_.show();
 
     auto slotBPhongRenderer = rendererSystem_
-        .addRenderer<BPhongRenderer>();
+        .addRenderer<gfx::scenery::BPhongRenderer>();
     rendererSystem_.enableLog(slotBPhongRenderer);
     rendererSystem_.sync(slotBPhongRenderer);
     rendererSystem_.scene(slotBPhongRenderer).setVision( camera_.vision() );
     rendererSystem_.scene(slotBPhongRenderer).addLayer();
 
     auto slotSolidRenderer = rendererSystem_
-        .addRenderer<SolidRenderer>();
+        .addRenderer<gfx::scenery::SolidRenderer>();
     rendererSystem_.enableLog(slotSolidRenderer);
     rendererSystem_.sync(slotSolidRenderer);
     rendererSystem_.scene(slotSolidRenderer).setVision( camera_.vision() );
 
     light_.ctLuminance(gfx.factory(), rendererSystem_.storage());
     light_.luminance().loader().loadAt(
-        rendererSystem_.adapt<LSceneAdapter>(slotBPhongRenderer)
+        rendererSystem_.adapt<gfx::scenery::LSceneAdapter>(slotBPhongRenderer)
     );
     light_.luminance().loader().loadAt(coordSystem_);
     light_.luminance().sync(rendererSystem_.renderer(slotBPhongRenderer));
@@ -108,7 +108,7 @@ void Game::updateEntities(milliseconds elapsed) {
 }
 
 void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
-    Graphics& gfx, Keyboard<MyChar>& kbd, Mouse& mouse
+    gfx::Graphics& gfx, Keyboard<MyChar>& kbd, Mouse& mouse
 ) {
     while (n--) {
         createIlBox( Distribution(15.f, 6.f), /* distRadius */   \
@@ -122,7 +122,7 @@ void Game::createObjects(std::size_t n, const ChiliWindow& wnd,
 
 void Game::createIlBox( Distribution distRadius,
     Distribution distCTP,  Distribution distDeltaCTP,
-    Distribution distDeltaRTY, const ChiliWindow& wnd, Graphics& gfx,
+    Distribution distDeltaRTY, const ChiliWindow& wnd, gfx::Graphics& gfx,
     Keyboard<MyChar>& kbd, Mouse& mouse
 ) {
     auto obj = std::make_unique<Entity<IlluminatedBox>>();
@@ -132,7 +132,7 @@ void Game::createIlBox( Distribution distRadius,
     );
     obj->ctTransformComponent(distRadius, distCTP, distDeltaCTP, distDeltaRTY);
 
-    obj->loader().loadAt( rendererSystem_.adapt<LSceneAdapter>(0u) );
+    obj->loader().loadAt( rendererSystem_.adapt<gfx::scenery::LSceneAdapter>(0u) );
 
     entities_.push_back( std::move(obj) );
 }

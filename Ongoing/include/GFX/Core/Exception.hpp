@@ -18,14 +18,14 @@
 #include "OneHotEncode.hpp"
 #include "EnumUtil.hpp"
 
-#define GFX_EXCEPT_NOINFO(hr) GraphicsException(__LINE__, __FILE__, (hr))
+#define GFX_EXCEPT_NOINFO(hr) gfx::GraphicsException(__LINE__, __FILE__, (hr))
 #define GFX_THROW_FAILED_NOINFO(hrcall) \
     if ( HRESULT hr = (hrcall); hr < 0 ) {  \
         throw GFX_EXCEPT_NOINFO(hr);    \
     }
 
 #ifdef NDEBUG
-#define GFX_DEVICE_REMOVED_EXCEPT(hr) DeviceRemovedException(__LINE__, __FILE__, (hr))
+#define GFX_DEVICE_REMOVED_EXCEPT(hr) gfx::DeviceRemovedException(__LINE__, __FILE__, (hr))
 #define GFX_EXCEPT(hr) GFX_EXCEPT_NOINFO((hr))
 #define GFX_EXCEPT_VOID() GFX_EXCEPT(E_INVALIDARG)
 #define GFX_EXCEPT_CUSTOM(description)
@@ -33,33 +33,36 @@
 #define GFX_THROW_FAILED_VOID(voidcall) (voidcall)
 #else
 #define GFX_DEVICE_REMOVED_EXCEPT(hr) \
-    DeviceRemovedException(__LINE__, __FILE__, (hr), getLogger().getMessages())
-#define GFX_EXCEPT(hr) GraphicsException(__LINE__, __FILE__, (hr), getLogger().getMessages())
+    gfx::DeviceRemovedException(__LINE__, __FILE__, (hr), gfx::getLogger().getMessages())
+#define GFX_EXCEPT(hr) gfx::GraphicsException(__LINE__, __FILE__, (hr), gfx::getLogger().getMessages())
 #define GFX_EXCEPT_VOID() GFX_EXCEPT(E_INVALIDARG)
-#define GFX_EXCEPT_CUSTOM(description) GraphicsException(__LINE__, __FILE__, \
-        E_INVALIDARG, DXGIInfoMsgContainer<std::string>(1, description) \
+#define GFX_EXCEPT_CUSTOM(description) gfx::GraphicsException(__LINE__, __FILE__, \
+        E_INVALIDARG, gfx::DXGIInfoMsgContainer<std::string>(1, description) \
     )
 #define GFX_THROW_FAILED(hrcall) \
     if ( HRESULT hr = (hrcall); hr < 0 )  \
         throw GFX_EXCEPT(hr)
 #define GFX_THROW_FAILED_VOID(voidcall) \
     [&]() {  \
-        auto __LoggedMessageSize = getLogger().size(    \
+        auto __LoggedMessageSize = gfx::getLogger().size(    \
             DXGIDebugLogSeverity::Error | DXGIDebugLogSeverity::Corruption    \
         );    \
         (voidcall); \
-        if ( getLogger().size(  \
+        if ( gfx::getLogger().size(  \
                 DXGIDebugLogSeverity::Error | DXGIDebugLogSeverity::Corruption  \
             ) != __LoggedMessageSize    \
         ) { \
             throw GFX_EXCEPT_VOID();    \
         }   \
     }()
-#define GFX_CLEAR_LOG() getLogger().clear()
+#define GFX_CLEAR_LOG() gfx::getLogger().clear()
 #endif  // NDEBUG
+
+namespace gfx {
 
 #ifdef NDEBUG
 // Graphics Exception for Release Mode
+
 class GraphicsException : public Win32::WindowException {
 public:
     using Win32::WindowException::WindowException;
@@ -200,6 +203,9 @@ private:
 };
 
 BasicDXGIDebugLogger& getLogger();
+
 #endif  // NDEBUG
+
+}   // namespace gfx
 
 #endif  // __GraphicsException

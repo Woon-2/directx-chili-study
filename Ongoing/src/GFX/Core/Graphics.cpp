@@ -8,6 +8,8 @@
 
 #include <cassert>
 
+namespace gfx {
+
 Graphics::Graphics(MyWindow& wnd)
     : wnd_(wnd), storage_(), factory_(), pipeline_(),
     swapchain_(nullptr), appRenderTarget_() {
@@ -51,7 +53,7 @@ void Graphics::present() {
 }
 
 void Graphics::clear(float r, float g, float b) {
-    appRenderTarget_.as<RenderTarget>().clear(r, g, b, 1.f);
+    appRenderTarget_.as<po::RenderTarget>().clear(r, g, b, 1.f);
 }
 
 void Graphics::initGFXComponents() {
@@ -133,7 +135,7 @@ void Graphics::constructAppRenderTarget() {
         )
     );
 
-    appRenderTarget_ = GFXRes::makeLoaded<RenderTarget>( storage_, factory_,
+    appRenderTarget_ = GFXRes::makeLoaded<po::RenderTarget>( storage_, factory_,
         pBackBuffer.Get(), pDepthStencil.Get(),
         D3D11_DEPTH_STENCIL_VIEW_DESC{
             .Format = DXGI_FORMAT_D32_FLOAT,
@@ -144,6 +146,8 @@ void Graphics::constructAppRenderTarget() {
         }
     );
 
-    appRenderTarget_.as<RenderTarget>().enableLocalRebind();
+    appRenderTarget_.as<po::RenderTarget>().enableLocalRebind();
     pipeline_.bind(&appRenderTarget_.get());
 }
+
+}   // namespace gfx

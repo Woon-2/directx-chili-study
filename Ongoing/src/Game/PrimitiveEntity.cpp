@@ -14,22 +14,22 @@ std::vector<dx::XMMATRIX> PETransformCBuf::initialTransforms() {
 
 std::vector<PEFaceColorData> PEIndexedColorCBuf::initialColors() {
     return std::vector<PEFaceColorData>{{
-        GFXColor{1.f, 0.f, 1.f, 1.f},
-        GFXColor{1.f, 0.f, 0.f, 1.f},
-        GFXColor{0.f, 1.f, 0.f, 1.f},
-        GFXColor{0.f, 0.f, 1.f, 1.f},
-        GFXColor{1.f, 1.f, 0.f, 1.f},
-        GFXColor{0.f, 1.f, 1.f, 1.f}
+        gfx::GFXColor{1.f, 0.f, 1.f, 1.f},
+        gfx::GFXColor{1.f, 0.f, 0.f, 1.f},
+        gfx::GFXColor{0.f, 1.f, 0.f, 1.f},
+        gfx::GFXColor{0.f, 0.f, 1.f, 1.f},
+        gfx::GFXColor{1.f, 1.f, 0.f, 1.f},
+        gfx::GFXColor{0.f, 1.f, 1.f, 1.f}
     }};
 }
 
-std::vector<GFXColor> PEColorBuffer::makeRandom(std::size_t size) {
+std::vector<gfx::GFXColor> PEColorBuffer::makeRandom(std::size_t size) {
     auto dist = std::uniform_real_distribution<float>(0.f, 1.f);
-    auto ret = std::vector<GFXColor>();
+    auto ret = std::vector<gfx::GFXColor>();
     ret.reserve(size);
 
     while (size--) {
-        ret.push_back( GFXColor{
+        ret.push_back( gfx::GFXColor{
             .r = dist(rng), .g = dist(rng), .b = dist(rng), .a = dist(rng)
         } );
     }

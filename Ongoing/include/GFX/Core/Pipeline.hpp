@@ -1,13 +1,14 @@
 #ifndef __Pipeline
 #define __Pipeline
 
-#include "GFX/PipelineObjects/Bindable.hpp"
+#include "GFX/PipelineObjects/PipelineObject.hpp"
 #include "GFX/PipelineObjects/DrawCaller.hpp"
 
 #include <d3d11.h>
 #include "Namespaces.hpp"
 #include "Exception.hpp"
 
+namespace gfx {
 class GFXPipeline {
 public:
     GFXPipeline() = default;
@@ -17,11 +18,11 @@ public:
 
     }
 
-    void bind(IBindable* bindable) {
+    void bind(po::IPipelineObject* bindable) {
         bindable->bind(*this);
     }
 
-    void drawCall(const BasicDrawCaller& drawCaller) {
+    void drawCall(const po::BasicDrawCaller& drawCaller) {
         drawCaller.beforeDrawCall(*this);
         drawCaller.drawCall(*this);
         drawCaller.afterDrawCall(*this);
@@ -54,5 +55,7 @@ public:
 private:
     wrl::ComPtr<ID3D11DeviceContext> pContext_;
 };
+
+}   // namespace gfx
 
 #endif  // __Pipeline

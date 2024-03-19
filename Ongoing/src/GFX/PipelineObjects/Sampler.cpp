@@ -1,5 +1,8 @@
 #include "GFX/PipelineObjects/Sampler.hpp"
 
+namespace gfx {
+namespace po {
+
 void SamplerBinder::doBind( GFXPipeline& pipeline,
     UINT slot, ID3D11SamplerState* pSampler
 ) {
@@ -42,3 +45,6 @@ void Sampler::bind(GFXPipeline& pipeline) {
         }
     #endif 
 }
+
+}   // namespace gfx
+}   // namespace po

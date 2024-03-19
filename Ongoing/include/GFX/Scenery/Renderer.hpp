@@ -17,6 +17,9 @@
 #include <vector>
 #include <filesystem>
 
+namespace gfx {
+namespace scenery {
+
 class Renderer {
 #ifdef ACTIVATE_RENDERER_LOG
 private:
@@ -133,7 +136,7 @@ public:
     struct {} tagVertexShader;
     struct {} tagPixelShader;
 
-    class MyVertexShader : public VertexShader {
+    class MyVertexShader : public po::VertexShader {
     public:
         MyVertexShader(GFXFactory factory);
 
@@ -142,7 +145,7 @@ public:
         std::filesystem::path csoPath() const noexcept;
     };
 
-    class MyPixelShader : public PixelShader {
+    class MyPixelShader : public po::PixelShader {
     public:
         MyPixelShader(GFXFactory factory);
 
@@ -181,7 +184,7 @@ public:
     struct {} tagVertexShader;
     struct {} tagPixelShader;
 
-    class MyVertexShader : public VertexShader {
+    class MyVertexShader : public po::VertexShader {
     public:
         MyVertexShader(GFXFactory factory);
 
@@ -190,7 +193,7 @@ public:
         std::filesystem::path csoPath() const noexcept;
     };
 
-    class MyPixelShader : public PixelShader {
+    class MyPixelShader : public po::PixelShader {
     public:
         MyPixelShader(GFXFactory factory);
 
@@ -221,7 +224,7 @@ public:
     struct {} tagVertexShader;
     struct {} tagPixelShader;
 
-    class MyVertexShader : public VertexShader {
+    class MyVertexShader : public po::VertexShader {
     public:
         MyVertexShader(GFXFactory factory);
 
@@ -230,7 +233,7 @@ public:
         std::filesystem::path csoPath() const noexcept;
     };
 
-    class MyPixelShader : public PixelShader {
+    class MyPixelShader : public po::PixelShader {
     public:
         MyPixelShader(GFXFactory factory);
 
@@ -264,7 +267,7 @@ public:
     struct {} tagVertexShader;
     struct {} tagPixelShader;
 
-    class MyVertexShader : public VertexShader {
+    class MyVertexShader : public po::VertexShader {
     public:
         MyVertexShader(GFXFactory factory);
 
@@ -273,7 +276,7 @@ public:
         std::filesystem::path csoPath() const noexcept;
     };
 
-    class MyPixelShader : public PixelShader {
+    class MyPixelShader : public po::PixelShader {
     public:
         MyPixelShader(GFXFactory factory);
 
@@ -315,7 +318,7 @@ public:
     struct {} tagVertexShader;
     struct {} tagPixelShader;
     
-    class MyVertexShader : public VertexShader {
+    class MyVertexShader : public po::VertexShader {
     public:
         MyVertexShader(GFXFactory factory);
 
@@ -324,7 +327,7 @@ public:
         std::filesystem::path csoPath() const noexcept;
     };
 
-    class MyPixelShader : public PixelShader {
+    class MyPixelShader : public po::PixelShader {
     public:
         MyPixelShader(GFXFactory factory);
 
@@ -360,5 +363,8 @@ private:
     GFXRes vertexShader_;
     GFXRes pixelShader_;
 };
+
+}  // namespace scenery
+}  // namespace gfx
 
 #endif  // __Renderer

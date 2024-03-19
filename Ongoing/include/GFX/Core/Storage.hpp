@@ -1,7 +1,7 @@
 #ifndef __GraphicsStorage
 #define __GraphicsStorage
 
-#include "GFX/PipelineObjects/Bindable.hpp"
+#include "GFX/PipelineObjects/PipelineObject.hpp"
 
 #include <map>
 #include <memory>
@@ -19,6 +19,8 @@
 
 #include "LRUCache.hpp"
 #include "Generator.hpp"
+
+namespace gfx {
 
 class GFXRes;
 
@@ -58,7 +60,7 @@ private:
     TRes* res_;
 };
 
-}   // namespace detail
+}   // namespace gfx::detail
 
 class GFXResView : public detail::GFXResViewBase<GFXRes> {
 public:
@@ -95,7 +97,7 @@ public:
 
     struct Pair {
         ID id;
-        IBindable* bindee;  
+        po::IPipelineObject* bindee;  
     };
 
     GFXRes()
@@ -141,7 +143,7 @@ public:
         return stored_.value().id;
     }
 
-    IBindable& get() {
+    po::IPipelineObject& get() {
         if (!valid()) [[unlikely]] {
             reconstruct();
         }
@@ -149,7 +151,7 @@ public:
         return *stored_.value().bindee;
     }
 
-    const IBindable& get() const {
+    const po::IPipelineObject& get() const {
         if (!valid()) [[unlikely]] {
             reconstruct();
         }
@@ -167,11 +169,11 @@ public:
         return static_cast<const T&>(get());
     }
 
-    IBindable* operator->() {
+    po::IPipelineObject* operator->() {
         return &get();
     }
 
-    const IBindable* operator->() const {
+    const po::IPipelineObject* operator->() const {
         return &get();
     }
 
@@ -204,15 +206,15 @@ private:
     );
 
     template <class T, class ... Args>
-        requires std::is_base_of_v<IBindable, T>
+        requires std::is_base_of_v<po::IPipelineObject, T>
     Generator<Pair> makeGenStandAlone(Args ... args);
 
     template <class T, class ... Args>
-        requires std::is_base_of_v<IBindable, T>
+        requires std::is_base_of_v<po::IPipelineObject, T>
     Generator<Pair> makeGenStorageLoad(GFXStorage& storage, Args ... args);
 
     template <class T, class Tag, class ... Args>
-        requires std::is_base_of_v<IBindable, T>
+        requires std::is_base_of_v<po::IPipelineObject, T>
     Generator<Pair> makeGenStorageCache(GFXStorage& storage, Tag tag, Args ... args);
 
     template <class Arg>
@@ -313,7 +315,7 @@ public:
         ManagedBindable()
             : bindee_(nullptr), owner_(nullptr) {}
 
-        ManagedBindable(IBindable* bindee, GFXRes* owner)
+        ManagedBindable(po::IPipelineObject* bindee, GFXRes* owner)
             : bindee_(bindee), owner_(owner) {}
 
         ~ManagedBindable() {
@@ -340,12 +342,12 @@ public:
         }
         
 
-        IBindable* get() const noexcept {
+        po::IPipelineObject* get() const noexcept {
             return bindee_;
         }
 
     private:
-        IBindable* bindee_;
+        po::IPipelineObject* bindee_;
         GFXRes* owner_;
     };
 
@@ -378,7 +380,7 @@ public:
         return ret;
     }
 
-    std::optional<IBindable*> get(const ID& id) const noexcept {
+    std::optional<po::IPipelineObject*> get(const ID& id) const noexcept {
         if ( auto it = resources_.find(id); it != resources_.end() ) {
             return it->second.get();
         }
@@ -386,11 +388,11 @@ public:
     }
 
     template <class Tag>
-    std::optional<IBindable*> get() const noexcept {
+    std::optional<po::IPipelineObject*> get() const noexcept {
         return get( typeid(Tag) );
     }
 
-    std::optional<IBindable*> get(std::type_index tagID) const noexcept {
+    std::optional<po::IPipelineObject*> get(std::type_index tagID) const noexcept {
         if ( auto cache_res = IDCache_.at( tagID ); cache_res.hit() ) {
             assert( resources_.contains( cache_res.value() ) );
             return resources_.at( cache_res.value() ).get();
@@ -420,7 +422,7 @@ private:
 };
 
 template <class T, class ... Args>
-    requires std::is_base_of_v<IBindable, T>
+    requires std::is_base_of_v<po::IPipelineObject, T>
 Generator<GFXRes::Pair> GFXRes::makeGenStandAlone(Args ... args) {
     for (;;) {
         co_yield Pair{
@@ -431,7 +433,7 @@ Generator<GFXRes::Pair> GFXRes::makeGenStandAlone(Args ... args) {
 }
 
 template <class T, class ... Args>
-    requires std::is_base_of_v<IBindable, T>
+    requires std::is_base_of_v<po::IPipelineObject, T>
 Generator<GFXRes::Pair> GFXRes::makeGenStorageLoad(
     GFXStorage& storage, Args ... args
 ) {
@@ -441,7 +443,7 @@ Generator<GFXRes::Pair> GFXRes::makeGenStorageLoad(
 }
 
 template <class T, class Tag, class ... Args>
-    requires std::is_base_of_v<IBindable, T>
+    requires std::is_base_of_v<po::IPipelineObject, T>
 Generator<GFXRes::Pair> GFXRes::makeGenStorageCache(
     GFXStorage& storage, Tag tag, Args ... args
 ) {
@@ -449,5 +451,7 @@ Generator<GFXRes::Pair> GFXRes::makeGenStorageCache(
         co_yield storage.cache<T>(this, tag, unpackArg(args)...);
     }
 }
+
+}   // namespace gfx
 
 #endif  // __GraphicsStorage

@@ -1,22 +1,26 @@
-#ifndef __Bindable
-#define __Bindable
+#ifndef __PipelineObject
+#define __PipelineObject
 
 #define ACTIVATE_BINDABLE_LOG
 
-#include "Game/GFXCMDLogger.hpp"
+#include "GFX/Core/CMDLogger.hpp"
 
 #include <utility>
 #include <array>
 #include <ranges>
 #include <algorithm>
 
+namespace gfx {
+
 class GFXPipeline;
 
-class IBindable {
+namespace po {
+
+class IPipelineObject {
 public:
     friend class GFXPipeline;
 
-    virtual ~IBindable() = 0 {}
+    virtual ~IPipelineObject() = 0 {}
 
 #ifdef ACTIVATE_BINDABLE_LOG
 protected:
@@ -29,7 +33,7 @@ private:
 };
 
 #ifdef ACTIVATE_BINDABLE_LOG
-class IBindable::LogComponent {
+class IPipelineObject::LogComponent {
 public:
     LogComponent() noexcept
         : category_(), logSrc_(nullptr), bLogEnabled_(false) {}
@@ -291,4 +295,7 @@ public:
 private:
 };
 
-#endif  // __Bindable
+} // namespace gfx::po
+} // namespace gfx
+
+#endif  // __PipelineObject

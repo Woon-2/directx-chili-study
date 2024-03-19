@@ -1,7 +1,7 @@
 #ifndef __Texture
 #define __Texture
 
-#include "Bindable.hpp"
+#include "PipelineObject.hpp"
 #include "GFX/Core/Factory.hpp"
 #include "GFX/Core/Pipeline.hpp"
 
@@ -10,6 +10,9 @@
 #include "GFX/Core/Exception.hpp"
 
 #include "Image/Surface.hpp"
+
+namespace gfx {
+namespace po {
 
 class TextureBinder : public SlotBinderInterface<TextureBinder> {
 public:
@@ -21,7 +24,7 @@ private:
     );
 };
 
-class Texture : public IBindable,
+class Texture : public IPipelineObject,
     SlotLocalRebindInterface<Texture> {
 public:
     friend class SlotLocalRebindInterface<Texture>; 
@@ -44,11 +47,14 @@ private:
     void bind(GFXPipeline& pipeline) override final;
 
 #ifdef ACTIVATE_BINDABLE_LOG
-    IBindable::LogComponent logComponent_;
+    IPipelineObject::LogComponent logComponent_;
 #endif
     wrl::ComPtr<ID3D11ShaderResourceView> pSRV_;
     UINT slot_;
     TextureBinder binder_;
 };
+
+}   // namespace gfx
+}   // namespace po
 
 #endif  // __Texture

@@ -3,6 +3,9 @@
 
 #include "DrawComponent.hpp"
 
+namespace gfx {
+namespace scenery {
+
 class Renderer;
 class CameraVision;
 
@@ -16,5 +19,8 @@ protected:
     using LogComponent = DynDrawCmpBase::LogComponent;
 #endif
 };
+
+}  // namespace gfx::scenery
+}  // namespace gfx
 
 #endif  // __RCDrawComponent

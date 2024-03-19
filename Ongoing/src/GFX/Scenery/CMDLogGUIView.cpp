@@ -1,8 +1,11 @@
-#include "Game/GFXCMDLogGUIView.hpp"
+#include "GFX/Scenery/CMDLogGUIView.hpp"
 
 #include "imgui.h"
 
 #include <optional>
+
+namespace gfx {
+namespace scenery {
 
 GFXCMDLogGuiView::GFXCMDLogGuiView()
     : nFrameSample_(0u), frameID_(0), willShow_(true) {}
@@ -54,3 +57,6 @@ GFXCMDLogGuiView& getGFXCMDLogGuiView() {
 
     return inst.value();
 }
+
+}   // namespace gfx::scenery
+}   // namespace gfx

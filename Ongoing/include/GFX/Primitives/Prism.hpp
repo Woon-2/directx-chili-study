@@ -12,6 +12,7 @@
 #include <iterator>
 #include <algorithm>
 
+namespace gfx {
 namespace Primitives {
 
 struct Prism {
@@ -20,12 +21,12 @@ struct Prism {
 
     static constexpr auto defNTesselation = 16u;
 
-    class PrismVertexBuffer : public VertexBuffer<MyVertex> {
+    class PrismVertexBuffer : public po::VertexBuffer<MyVertex> {
     public:
         PrismVertexBuffer() = default;
         PrismVertexBuffer( GFXFactory factory,
             std::size_t nTesselation = defNTesselation
-        ) : VertexBuffer<MyVertex>( factory,
+        ) : po::VertexBuffer<MyVertex>( factory,
                 Prism::modelPositions< std::vector<MyVertex> >( nTesselation )
             ) {}
             
@@ -36,12 +37,12 @@ struct Prism {
         }
     };
 
-    class PrismIndexBuffer : public IndexBuffer<MyIndex> {
+    class PrismIndexBuffer : public po::IndexBuffer<MyIndex> {
     public:
         PrismIndexBuffer() = default;
         PrismIndexBuffer( GFXFactory factory,
             std::size_t nTesselation = defNTesselation
-        ) : IndexBuffer<MyIndex>( factory,
+        ) : po::IndexBuffer<MyIndex>( factory,
                 Prism::modelIndices< std::vector<MyIndex> >(nTesselation)
             ) {}
 
@@ -157,6 +158,7 @@ struct Prism {
     }
 };
 
-}   // namespace Primitives
+}   // namespace gfx::Primitives
+}   // namespace gfx
 
 #endif  // __PPrism

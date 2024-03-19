@@ -1,9 +1,12 @@
 #ifndef __GFXCMDLogGUIView
 #define __GFXCMDLogGUIView
 
-#include "GFXCMDSummarizer.hpp"
+#include "CMDSummarizer.hpp"
 
-#define GFXCMDLOG_GUIVIEW getGFXCMDLogGuiView()
+#define GFXCMDLOG_GUIVIEW gfx::scenery::getGFXCMDLogGuiView()
+
+namespace gfx {
+namespace scenery {
 
 class GFXCMDLogGuiView {
 public:
@@ -22,5 +25,8 @@ private:
 };
 
 GFXCMDLogGuiView& getGFXCMDLogGuiView();
+
+}  // namespace gfx::scenery
+}  // namespace gfx
 
 #endif  // __GFXCMDLogGUIView

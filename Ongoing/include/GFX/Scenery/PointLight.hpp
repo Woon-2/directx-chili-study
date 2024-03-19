@@ -1,7 +1,7 @@
 #ifndef __PointLight
 #define __PointLight
 
-#include "GFX/PipelineObjects/Bindable.hpp"
+#include "GFX/PipelineObjects/PipelineObject.hpp"
 #include "GFX/PipelineObjects/Buffer.hpp"
 #include "GFX/Core/Factory.hpp"
 #include "GFX/Core/Storage.hpp"
@@ -9,11 +9,14 @@
 #include "GFX/Core/Namespaces.hpp"
 #include "GFX/Core/Exception.hpp"
 
-#include "CoordSystem.hpp"
+#include "Game/CoordSystem.hpp"
 #include "Camera.hpp"
 
 #include <ranges>
 #include <optional>
+
+namespace gfx {
+namespace scenery {
 
 struct BPPointLightDesc {
     dx::XMFLOAT3A pos;
@@ -32,9 +35,9 @@ namespace Utilized {
 
 namespace Basic {
 
-class BPDynPointLight : public IBindable{
+class BPDynPointLight : public po::IPipelineObject{
 private:
-    using MyPSCBuffer = PSCBuffer<BPPointLightDesc>;
+    using MyPSCBuffer = po::PSCBuffer<BPPointLightDesc>;
 
 public:
     friend class Utilized::BPDynPointLight;
@@ -122,7 +125,7 @@ namespace Utilized {
 // utilize CoordSystem and CameraVision.
 // bind its position as on view space.
 // if more modification is needed, adopt decorater pattern.
-class BPDynPointLight : public IBindable {
+class BPDynPointLight : public po::IPipelineObject {
 public:
     BPDynPointLight() = default;
     BPDynPointLight(GFXFactory factory);
@@ -213,9 +216,14 @@ private:
 
 } // namespace Utilized
 
-using namespace Utilized;
+} // namespace gfx::scenery
+} // namespace gfx
 
-#include "Entity.hpp"
+using namespace gfx::scenery::Utilized;
+
+#include "Game/Entity.hpp"
+#include "Game/Chrono.hpp"
+
 #include "Scene.hpp"
 #include "Renderer.hpp"
 #include "RCDrawComponent.hpp"
@@ -228,6 +236,9 @@ using namespace Utilized;
 #include "GFX/Primitives/Sphere.hpp"
 
 #include <tuple>
+
+namespace gfx {
+namespace scenery {
 
 class Luminance : public IEntity {
 public:
@@ -320,7 +331,7 @@ private:
         class MyTransformCBuf;
         class MyViewport;
         class MyTopology;
-        using MyDrawCaller = DrawCallerIndexed;
+        using MyDrawCaller = po::DrawCallerIndexed;
 
         DrawComponentLViz( GFXFactory factory, GFXStorage& storage,
             const Win32::Client& client
@@ -462,5 +473,8 @@ private:
     std::optional<Luminance> luminance_;
     std::optional<LightViz> viz_;
 };
+
+}  // namespace gfx::scenery
+}  // namespace gfx
 
 #endif  // __PointLight
